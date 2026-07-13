@@ -142,35 +142,32 @@
   }
   .menu-social a:hover{color:var(--white);}
 
-  /* ---------- HERO SLIDER (center-panel + blurred sides, scroll-driven) ---------- */
+  /* ---------- HERO SLIDER (prev/current/next stage, smooth zoom crossfade) ---------- */
   .hero-wrap{ position:relative; }
   .hero-sticky{
     position:sticky; top:0; height:100vh; overflow:hidden; background:var(--ink);
   }
-  .slide-track{
-    display:flex; height:100%; width:100%; will-change:transform;
-    transition:transform .18s cubic-bezier(.22,.61,.36,1);
+  .stage{position:absolute; inset:0;}
+  .layer{
+    position:absolute; top:0; height:100%; background-size:cover; background-position:center;
+    transition:opacity .55s ease, transform .8s cubic-bezier(.22,.61,.36,1), filter .55s ease;
   }
-  .slide{
-    position:relative; flex:0 0 100%; width:100%; height:100%; overflow:hidden;
+  .layer.prev, .layer.next{
+    width:31%; filter:blur(7px) brightness(0.7); transform:scale(1.06);
   }
-  .slide-blur{
-    position:absolute; top:0; left:0; width:100%; height:100%; background-size:cover; background-position:center;
-    filter:blur(9px) brightness(0.78) saturate(1.05); transform:scale(1.08);
+  .layer.prev{left:0;}
+  .layer.next{right:0;}
+  .layer.current{
+    left:50%; width:46%; min-width:340px; transform:translateX(-50%) scale(1);
+    box-shadow:0 40px 100px rgba(0,0,0,0.55); z-index:2; cursor:none;
   }
-  .slide-center{
-    position:absolute; top:0; bottom:0; left:50%; transform:translateX(-50%);
-    width:46%; min-width:340px; background-size:cover; background-position:center;
-    box-shadow:0 40px 100px rgba(0,0,0,0.55); display:block;
-    transition:transform .4s ease;
-  }
-  .slide-center::after{
+  .layer.current::after{
     content:''; position:absolute; inset:0;
-    background:linear-gradient(0deg, rgba(10,10,16,0.55) 0%, transparent 40%);
+    background:linear-gradient(0deg, rgba(10,10,16,0.5) 0%, transparent 40%);
   }
   .slide-label{
     position:absolute; left:0; right:0; bottom:64px; z-index:6; text-align:center;
-    pointer-events:none;
+    pointer-events:none; transition:opacity .4s ease;
   }
   .slide-eyebrow{
     font-family:'Poppins'; font-size:11px; letter-spacing:0.25em; text-transform:uppercase;
@@ -424,61 +421,15 @@
 
 <div class="hero-wrap" id="heroWrap">
   <section class="hero-sticky" id="home">
-    <div class="slide-track" id="slideTrack">
-    <div class="slide active" data-idx="0">
-      <div class="slide-blur bg-1"></div>
-      <a class="slide-center bg-1" href="services.html" aria-label="Laser Cutting"></a>
-      <div class="slide-label">
-        <div class="slide-eyebrow">Service / 01</div>
-        <h1>Laser Cutting</h1>
-        <div class="slide-rule"></div>
-      </div>
+    <div class="stage">
+      <div class="layer prev" id="prevLayer"></div>
+      <div class="layer next" id="nextLayer"></div>
+      <a class="layer current" id="currentLayer" href="services.html" aria-label="Laser Cutting"></a>
     </div>
-    <div class="slide" data-idx="1">
-      <div class="slide-blur bg-2"></div>
-      <a class="slide-center bg-2" href="services.html" aria-label="Plasma Cutting"></a>
-      <div class="slide-label">
-        <div class="slide-eyebrow">Service / 02</div>
-        <h1>Plasma Cutting</h1>
-        <div class="slide-rule"></div>
-      </div>
-    </div>
-    <div class="slide" data-idx="2">
-      <div class="slide-blur bg-3"></div>
-      <a class="slide-center bg-3" href="services.html" aria-label="Welded Fabrication"></a>
-      <div class="slide-label">
-        <div class="slide-eyebrow">Service / 03</div>
-        <h1>Welded Fabrication</h1>
-        <div class="slide-rule"></div>
-      </div>
-    </div>
-    <div class="slide" data-idx="3">
-      <div class="slide-blur bg-4"></div>
-      <a class="slide-center bg-4" href="services.html" aria-label="Machining"></a>
-      <div class="slide-label">
-        <div class="slide-eyebrow">Service / 04</div>
-        <h1>Machining</h1>
-        <div class="slide-rule"></div>
-      </div>
-    </div>
-    <div class="slide" data-idx="4">
-      <div class="slide-blur bg-5"></div>
-      <a class="slide-center bg-5" href="services.html" aria-label="Cutting &amp; Bending"></a>
-      <div class="slide-label">
-        <div class="slide-eyebrow">Service / 05</div>
-        <h1>Cutting &amp; Bending</h1>
-        <div class="slide-rule"></div>
-      </div>
-    </div>
-    <div class="slide" data-idx="5">
-      <div class="slide-blur bg-6"></div>
-      <a class="slide-center bg-6" href="products.html" aria-label="Steel &amp; Iron Products"></a>
-      <div class="slide-label">
-        <div class="slide-eyebrow">Product / 06</div>
-        <h1>Steel &amp; Iron Products</h1>
-        <div class="slide-rule"></div>
-      </div>
-    </div>
+    <div class="slide-label" id="slideLabel">
+      <div class="slide-eyebrow" id="labelEyebrow">Service / 01</div>
+      <h1 id="labelTitle">Laser Cutting</h1>
+      <div class="slide-rule"></div>
     </div>
     <div class="scroll-hint"><div class="line"></div>SCROLL</div>
     <div class="hero-dots" id="heroDots"></div>
@@ -591,59 +542,85 @@
   revealEls.forEach(el=> revealObserver.observe(el));
 
 
-  // Hero slider - scroll-driven horizontal filmstrip (landscape sliding, like a carousel)
-  const slides = document.querySelectorAll('.slide');
-  const dotsWrap = document.getElementById('heroDots');
+  // Hero slider - prev/current/next stage with smooth zoom crossfade transitions
+  const heroSlides = [
+    { eyebrow: 'Service / 01', title: 'Laser Cutting', img: 'https://picsum.photos/id/1076/1200/1600', link: 'services.html' },
+    { eyebrow: 'Service / 02', title: 'Plasma Cutting', img: 'https://picsum.photos/id/1078/1200/1600', link: 'services.html' },
+    { eyebrow: 'Service / 03', title: 'Welded Fabrication', img: 'https://picsum.photos/id/1081/1200/1600', link: 'services.html' },
+    { eyebrow: 'Service / 04', title: 'Machining', img: 'https://picsum.photos/id/1082/1200/1600', link: 'services.html' },
+    { eyebrow: 'Service / 05', title: 'Cutting & Bending', img: 'https://picsum.photos/id/1084/1200/1600', link: 'services.html' },
+    { eyebrow: 'Product / 06', title: 'Steel & Iron Products', img: 'https://picsum.photos/id/1050/1200/1600', link: 'products.html' }
+  ];
+  const n = heroSlides.length;
   const heroWrap = document.getElementById('heroWrap');
-  const slideTrack = document.getElementById('slideTrack');
-  slides.forEach((s,i)=>{
+  const prevLayer = document.getElementById('prevLayer');
+  const currentLayer = document.getElementById('currentLayer');
+  const nextLayer = document.getElementById('nextLayer');
+  const labelEyebrow = document.getElementById('labelEyebrow');
+  const labelTitle = document.getElementById('labelTitle');
+  const slideLabel = document.getElementById('slideLabel');
+  const dotsWrap = document.getElementById('heroDots');
+
+  heroSlides.forEach((s,i)=>{
     const d = document.createElement('div');
     d.className = 'dot' + (i===0 ? ' active' : '');
     dotsWrap.appendChild(d);
   });
   const dots = document.querySelectorAll('.dot');
-  heroWrap.style.height = (slides.length * 100) + 'vh';
+  heroWrap.style.height = (n * 100) + 'vh';
 
-  let current = 0;
-  function setActiveDot(i){
-    if(i === current) return;
-    dots[current].classList.remove('active');
-    current = i;
-    dots[current].classList.add('active');
+  let heroIndex = 0;
+
+  function paint(idx){
+    const prev = heroSlides[(idx - 1 + n) % n];
+    const cur = heroSlides[idx];
+    const next = heroSlides[(idx + 1) % n];
+    prevLayer.style.backgroundImage = `url(${prev.img})`;
+    nextLayer.style.backgroundImage = `url(${next.img})`;
+    currentLayer.style.backgroundImage = `url(${cur.img})`;
+    currentLayer.href = cur.link;
+    currentLayer.setAttribute('aria-label', cur.title);
+    labelEyebrow.textContent = cur.eyebrow;
+    labelTitle.textContent = cur.title;
   }
-  function onScroll(){
-    const rect = heroWrap.getBoundingClientRect();
-    const total = heroWrap.offsetHeight - window.innerHeight;
-    const scrolled = Math.min(Math.max(-rect.top, 0), total);
-    const progress = total > 0 ? scrolled / total : 0;
+  paint(0);
 
-    const maxShift = (slides.length - 1) * 100;
-    slideTrack.style.transform = `translateX(-${progress * maxShift}vw)`;
+  function goToIndex(newIdx){
+    newIdx = (newIdx + n) % n;
+    if (newIdx === heroIndex) return;
+    heroIndex = newIdx;
 
-    let idx = Math.round(progress * (slides.length - 1));
-    idx = Math.min(slides.length - 1, Math.max(0, idx));
-    setActiveDot(idx);
+    // Zoom-out + fade the current sharp panel, then swap and zoom back in
+    currentLayer.style.opacity = '0';
+    currentLayer.style.transform = 'translateX(-50%) scale(1.08)';
+    slideLabel.style.opacity = '0';
+    prevLayer.style.opacity = '0.4';
+    nextLayer.style.opacity = '0.4';
 
-    clearTimeout(snapTimer);
-    snapTimer = setTimeout(()=> snapToNearest(rect, total, scrolled), 130);
+    setTimeout(()=>{
+      paint(heroIndex);
+      currentLayer.style.transition = 'none';
+      currentLayer.style.transform = 'translateX(-50%) scale(0.92)';
+      // eslint-disable-next-line no-unused-expressions
+      currentLayer.offsetHeight;
+      currentLayer.style.transition = 'opacity .6s ease, transform .7s cubic-bezier(.22,.61,.36,1), filter .55s ease';
+      currentLayer.style.opacity = '1';
+      currentLayer.style.transform = 'translateX(-50%) scale(1)';
+      slideLabel.style.opacity = '1';
+      prevLayer.style.opacity = '1';
+      nextLayer.style.opacity = '1';
+    }, 320);
+
+    dots[Array.from(dots).findIndex(d=>d.classList.contains('active'))]?.classList.remove('active');
+    dots.forEach(d=>d.classList.remove('active'));
+    dots[heroIndex].classList.add('active');
   }
-  let snapTimer;
-  function snapToNearest(rect, total, scrolled){
-    if (total <= 0 || scrolled <= 0 || scrolled >= total) return;
-    const progress = scrolled / total;
-    const idx = Math.round(progress * (slides.length - 1));
-    const targetScrolled = (idx / (slides.length - 1)) * total;
-    const heroTopAbsolute = window.scrollY + rect.top;
-    const targetY = heroTopAbsolute + targetScrolled;
-    window.scrollTo({ top: targetY, behavior:'smooth' });
-  }
-  window.addEventListener('scroll', onScroll, {passive:true});
-  onScroll();
 
   let wheelLocked = false;
   window.addEventListener('wheel', function(e){
     if (fullMenu.classList.contains('open')) return;
-    const heroTop = window.scrollY + heroWrap.getBoundingClientRect().top;
+    const rect = heroWrap.getBoundingClientRect();
+    const heroTop = window.scrollY + rect.top;
     const total = heroWrap.offsetHeight - window.innerHeight;
     if (total <= 0) return;
     const heroBottom = heroTop + total;
@@ -652,19 +629,20 @@
     if (!insideHero) return;
 
     const dir = e.deltaY > 0 ? 1 : -1;
-    const atLastGoingDown = current === slides.length - 1 && dir === 1;
-    const atFirstGoingUp = current === 0 && dir === -1;
+    const atLastGoingDown = heroIndex === n - 1 && dir === 1;
+    const atFirstGoingUp = heroIndex === 0 && dir === -1;
     if (atLastGoingDown || atFirstGoingUp) return;
 
     e.preventDefault();
     if (wheelLocked) return;
     wheelLocked = true;
 
-    const nextIdx = Math.min(slides.length - 1, Math.max(0, current + dir));
-    const targetScrolled = (nextIdx / (slides.length - 1)) * total;
+    const nextIdx = Math.min(n - 1, Math.max(0, heroIndex + dir));
+    const targetScrolled = (nextIdx / (n - 1)) * total;
     window.scrollTo({ top: heroTop + targetScrolled, behavior:'smooth' });
+    goToIndex(nextIdx);
 
-    setTimeout(()=>{ wheelLocked = false; }, 550);
+    setTimeout(()=>{ wheelLocked = false; }, 780);
   }, { passive:false });
 
 </script>
