@@ -147,7 +147,9 @@
   .hero-sticky{
     position:sticky; top:0; height:100vh; overflow:hidden; background:var(--ink);
   }
-  .stage{position:absolute; inset:0;}
+  .stage{position:absolute; inset:0; transition:transform .7s cubic-bezier(.22,.61,.36,1);}
+  .stage.dir-next{transform:translateX(-16%);}
+  .stage.dir-prev{transform:translateX(16%);}
   .layer{
     position:absolute; top:0; height:100%; background-size:cover; background-position:center;
     transition:opacity .55s ease, transform .8s cubic-bezier(.22,.61,.36,1), filter .55s ease;
@@ -421,7 +423,7 @@
 
 <div class="hero-wrap" id="heroWrap">
   <section class="hero-sticky" id="home">
-    <div class="stage">
+    <div class="stage" id="stage">
       <div class="layer prev" id="prevLayer"></div>
       <div class="layer next" id="nextLayer"></div>
       <a class="layer current" id="currentLayer" href="services.html" aria-label="Laser Cutting"></a>
@@ -553,6 +555,7 @@
   ];
   const n = heroSlides.length;
   const heroWrap = document.getElementById('heroWrap');
+  const stage = document.getElementById('stage');
   const prevLayer = document.getElementById('prevLayer');
   const currentLayer = document.getElementById('currentLayer');
   const nextLayer = document.getElementById('nextLayer');
@@ -585,33 +588,40 @@
   }
   paint(0);
 
-  function goToIndex(newIdx){
+  function goToIndex(newIdx, dir){
     newIdx = (newIdx + n) % n;
     if (newIdx === heroIndex) return;
     heroIndex = newIdx;
 
-    // Zoom-out + fade the current sharp panel, then swap and zoom back in
-    currentLayer.style.opacity = '0';
-    currentLayer.style.transform = 'translateX(-50%) scale(1.08)';
+    // Slide the whole stage sideways in the direction of travel, with a subtle zoom cue
+    stage.style.transition = 'transform .7s cubic-bezier(.22,.61,.36,1)';
+    stage.classList.remove('dir-next','dir-prev');
+    // eslint-disable-next-line no-unused-expressions
+    stage.offsetHeight;
+    stage.classList.add(dir === 1 ? 'dir-next' : 'dir-prev');
+    currentLayer.style.opacity = '0.75';
+    currentLayer.style.transform = 'translateX(-50%) scale(0.95)';
     slideLabel.style.opacity = '0';
-    prevLayer.style.opacity = '0.4';
-    nextLayer.style.opacity = '0.4';
 
     setTimeout(()=>{
       paint(heroIndex);
+
+      // Snap the stage back to center instantly (no transition) then repaint - creates a seamless loop
+      stage.style.transition = 'none';
+      stage.classList.remove('dir-next','dir-prev');
       currentLayer.style.transition = 'none';
-      currentLayer.style.transform = 'translateX(-50%) scale(0.92)';
+      currentLayer.style.transform = 'translateX(-50%) scale(1.06)';
       // eslint-disable-next-line no-unused-expressions
-      currentLayer.offsetHeight;
-      currentLayer.style.transition = 'opacity .6s ease, transform .7s cubic-bezier(.22,.61,.36,1), filter .55s ease';
+      stage.offsetHeight;
+
+      // Zoom the fresh image gently back to rest for a smooth settle
+      currentLayer.style.transition = 'opacity .45s ease, transform .55s cubic-bezier(.22,.61,.36,1)';
       currentLayer.style.opacity = '1';
       currentLayer.style.transform = 'translateX(-50%) scale(1)';
+      slideLabel.style.transition = 'opacity .4s ease .1s';
       slideLabel.style.opacity = '1';
-      prevLayer.style.opacity = '1';
-      nextLayer.style.opacity = '1';
-    }, 320);
+    }, 700);
 
-    dots[Array.from(dots).findIndex(d=>d.classList.contains('active'))]?.classList.remove('active');
     dots.forEach(d=>d.classList.remove('active'));
     dots[heroIndex].classList.add('active');
   }
@@ -640,7 +650,7 @@
     const nextIdx = Math.min(n - 1, Math.max(0, heroIndex + dir));
     const targetScrolled = (nextIdx / (n - 1)) * total;
     window.scrollTo({ top: heroTop + targetScrolled, behavior:'smooth' });
-    goToIndex(nextIdx);
+    goToIndex(nextIdx, dir);
 
     setTimeout(()=>{ wheelLocked = false; }, 780);
   }, { passive:false });
