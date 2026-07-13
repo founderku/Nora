@@ -88,10 +88,11 @@
   /* ---------- FULLSCREEN MENU ---------- */
   .fullmenu{
     position:fixed; inset:0; background:var(--ink); z-index:75;
-    display:flex; flex-direction:column; justify-content:center;
+    display:flex; flex-direction:column; justify-content:center; align-items:center;
     padding:0 60px; transform:translateX(100%); transition:transform .6s cubic-bezier(.65,0,.35,1);
   }
   .fullmenu.open{transform:translateX(0);}
+  .menu-inner{width:100%; max-width:640px;}
   .menu-close{
     position:absolute; top:30px; right:32px; width:44px; height:44px;
     display:flex; align-items:center; justify-content:center;
@@ -380,6 +381,7 @@
   <button class="menu-close" id="menuClose" aria-label="Close menu">
     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M4 4 L20 20 M20 4 L4 20"/></svg>
   </button>
+  <div class="menu-inner">
   <ul class="menu-list">
     <li><a href="index.html" class="menu-item">Home</a></li>
     <li>
@@ -394,6 +396,7 @@
     <li><a href="blog.html" class="menu-item">Blog</a></li>
     <li><a href="contact.html" class="menu-item active">Contact</a></li>
   </ul>
+  </div>
   <div class="menu-social">
     <a href="#">Facebook</a>
     <a href="#">Instagram</a>
