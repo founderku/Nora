@@ -603,7 +603,7 @@
     dotsWrap.appendChild(d);
   });
   const dots = document.querySelectorAll('.dot');
-  heroWrap.style.height = (slides.length * 100) + 'vh';
+  heroWrap.style.height = (slides.length * 55) + 'vh';
 
   let current = 0;
   function setActiveDot(i){
@@ -628,7 +628,7 @@
   function tick(){
     // Ease the visible position toward the real scroll position - a gentle
     // trailing glide, the same smoothing technique used by the cursor.
-    shownProgress += (targetProgress - shownProgress) * 0.09;
+    shownProgress += (targetProgress - shownProgress) * 0.14;
     if (Math.abs(targetProgress - shownProgress) < 0.0005) shownProgress = targetProgress;
 
     const maxShift = (slides.length - 1) * 100;
