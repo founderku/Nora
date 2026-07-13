@@ -630,6 +630,27 @@
   // window.scrollTo's native smooth animation fires continuous scroll events,
   // and onScroll above updates the transform every one of those frames -
   // that's what keeps the motion fluid with zero pause.
+  //
+  // We drive the scroll ourselves with requestAnimationFrame instead of the
+  // browser's native smooth-scroll, because native smooth-scroll speed/easing
+  // varies a lot between browsers. This gives a consistent, slow, buttery glide.
+  function easeInOutCubic(t){ return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3)/2; }
+  let scrollAnim = null;
+  function animateScrollTo(targetY, duration){
+    if (scrollAnim) cancelAnimationFrame(scrollAnim);
+    const startY = window.scrollY;
+    const diff = targetY - startY;
+    const startTime = performance.now();
+    function step(now){
+      const t = Math.min((now - startTime) / duration, 1);
+      window.scrollTo(0, startY + diff * easeInOutCubic(t));
+      if (t < 1) scrollAnim = requestAnimationFrame(step);
+      else scrollAnim = null;
+    }
+    scrollAnim = requestAnimationFrame(step);
+  }
+
+  const GLIDE_DURATION = 1400;
   let wheelBusy = false;
   window.addEventListener('wheel', function(e){
     if (fullMenu.classList.contains('open')) return;
@@ -652,9 +673,9 @@
 
     const nextIdx = Math.min(slides.length - 1, Math.max(0, current + dir));
     const targetScrolled = (nextIdx / (slides.length - 1)) * total;
-    window.scrollTo({ top: heroTop + targetScrolled, behavior:'smooth' });
+    animateScrollTo(heroTop + targetScrolled, GLIDE_DURATION);
 
-    setTimeout(()=>{ wheelBusy = false; }, 500);
+    setTimeout(()=>{ wheelBusy = false; }, GLIDE_DURATION + 60);
   }, { passive:false });
 
 </script>
