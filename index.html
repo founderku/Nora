@@ -589,8 +589,10 @@
   revealEls.forEach(el=> revealObserver.observe(el));
 
 
-  // Hero slider - continuous scroll-tied filmstrip. The transform follows real scroll
-  // position every frame (native smooth-scroll driven), so motion never freezes or waits.
+  // Hero slider - pure native scroll, visually smoothed with easing (lerp).
+  // We NEVER call scrollTo or preventDefault here, so the browser's own scroll
+  // can never fight us, freeze, or skip ahead. The slide track just eases
+  // toward the real scroll position every animation frame, like the cursor does.
   const slides = document.querySelectorAll('.slide');
   const dotsWrap = document.getElementById('heroDots');
   const heroWrap = document.getElementById('heroWrap');
@@ -605,78 +607,40 @@
 
   let current = 0;
   function setActiveDot(i){
-    if(i === current) return;
+    if (i === current) return;
     dots[current].classList.remove('active');
     current = i;
     dots[current].classList.add('active');
   }
-  function onScroll(){
+
+  let targetProgress = 0;
+  let shownProgress = 0;
+
+  function readScroll(){
     const rect = heroWrap.getBoundingClientRect();
     const total = heroWrap.offsetHeight - window.innerHeight;
     const scrolled = Math.min(Math.max(-rect.top, 0), total);
-    const progress = total > 0 ? scrolled / total : 0;
+    targetProgress = total > 0 ? scrolled / total : 0;
+  }
+  window.addEventListener('scroll', readScroll, { passive: true });
+  readScroll();
+
+  function tick(){
+    // Ease the visible position toward the real scroll position - a gentle
+    // trailing glide, the same smoothing technique used by the cursor.
+    shownProgress += (targetProgress - shownProgress) * 0.09;
+    if (Math.abs(targetProgress - shownProgress) < 0.0005) shownProgress = targetProgress;
 
     const maxShift = (slides.length - 1) * 100;
-    slideTrack.style.transform = `translateX(-${progress * maxShift}vw)`;
+    slideTrack.style.transform = `translateX(-${shownProgress * maxShift}vw)`;
 
-    let idx = Math.round(progress * (slides.length - 1));
+    let idx = Math.round(shownProgress * (slides.length - 1));
     idx = Math.min(slides.length - 1, Math.max(0, idx));
     setActiveDot(idx);
+
+    requestAnimationFrame(tick);
   }
-  window.addEventListener('scroll', onScroll, {passive:true});
-  onScroll();
-
-  // A single scroll gesture glides straight to the next/previous slide.
-  // window.scrollTo's native smooth animation fires continuous scroll events,
-  // and onScroll above updates the transform every one of those frames -
-  // that's what keeps the motion fluid with zero pause.
-  //
-  // We drive the scroll ourselves with requestAnimationFrame instead of the
-  // browser's native smooth-scroll, because native smooth-scroll speed/easing
-  // varies a lot between browsers. This gives a consistent, slow, buttery glide.
-  function easeInOutCubic(t){ return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3)/2; }
-  let scrollAnim = null;
-  function animateScrollTo(targetY, duration){
-    if (scrollAnim) cancelAnimationFrame(scrollAnim);
-    const startY = window.scrollY;
-    const diff = targetY - startY;
-    const startTime = performance.now();
-    function step(now){
-      const t = Math.min((now - startTime) / duration, 1);
-      window.scrollTo(0, startY + diff * easeInOutCubic(t));
-      if (t < 1) scrollAnim = requestAnimationFrame(step);
-      else scrollAnim = null;
-    }
-    scrollAnim = requestAnimationFrame(step);
-  }
-
-  const GLIDE_DURATION = 1400;
-  let wheelBusy = false;
-  window.addEventListener('wheel', function(e){
-    if (fullMenu.classList.contains('open')) return;
-    const heroTop = window.scrollY + heroWrap.getBoundingClientRect().top;
-    const total = heroWrap.offsetHeight - window.innerHeight;
-    if (total <= 0) return;
-    const heroBottom = heroTop + total;
-    const y = window.scrollY;
-    const insideHero = y >= heroTop - 2 && y <= heroBottom + 2;
-    if (!insideHero) return;
-
-    const dir = e.deltaY > 0 ? 1 : -1;
-    const atLastGoingDown = current === slides.length - 1 && dir === 1;
-    const atFirstGoingUp = current === 0 && dir === -1;
-    if (atLastGoingDown || atFirstGoingUp) return;
-
-    e.preventDefault();
-    if (wheelBusy) return;
-    wheelBusy = true;
-
-    const nextIdx = Math.min(slides.length - 1, Math.max(0, current + dir));
-    const targetScrolled = (nextIdx / (slides.length - 1)) * total;
-    animateScrollTo(heroTop + targetScrolled, GLIDE_DURATION);
-
-    setTimeout(()=>{ wheelBusy = false; }, GLIDE_DURATION + 60);
-  }, { passive:false });
+  requestAnimationFrame(tick);
 
 </script>
 </body>
