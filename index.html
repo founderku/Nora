@@ -142,19 +142,15 @@
   }
   .menu-social a:hover{color:var(--white);}
 
-  /* ---------- HERO SLIDER (continuous scroll-tied filmstrip, neighbors peek naturally) ---------- */
+  /* ---------- HERO SLIDER (native CSS scroll-snap, zero custom scroll math) ---------- */
+  html{ scroll-snap-type: y proximity; }
   .hero-wrap{ position:relative; }
-  .hero-sticky{
-    position:sticky; top:0; height:100vh; overflow:hidden; background:var(--ink);
-  }
-  .slide-track{
-    display:flex; height:100%; width:100%; will-change:transform;
-  }
-  .slide{
-    position:relative; flex:0 0 100%; width:100%; height:100%; overflow:hidden;
+  .hero-slide{
+    height:100vh; position:relative; overflow:hidden; background:var(--ink);
+    scroll-snap-align:start; scroll-snap-stop:always;
   }
   .slide-blur{
-    position:absolute; top:0; left:0; width:100%; height:100%; background-size:cover; background-position:center;
+    position:absolute; inset:0; background-size:cover; background-position:center;
     filter:blur(9px) brightness(0.78) saturate(1.05); transform:scale(1.08);
   }
   .slide-center{
@@ -180,12 +176,12 @@
   }
   .slide-rule{width:40px; height:3px; background:var(--coral); margin:0 auto;}
   .hero-dots{
-    position:absolute; bottom:24px; right:36px; z-index:7; display:flex; flex-direction:column; gap:10px;
+    position:fixed; bottom:24px; right:36px; z-index:70; display:flex; flex-direction:column; gap:10px;
   }
   .dot{width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.3); transition:background .2s;}
   .dot.active{background:var(--coral);}
   .scroll-hint{
-    position:absolute; left:36px; bottom:24px; z-index:7;
+    position:fixed; left:36px; bottom:24px; z-index:70;
     font-family:'Poppins'; font-size:11px; letter-spacing:0.15em; text-transform:uppercase;
     color:rgba(255,255,255,0.6); display:flex; align-items:center; gap:10px;
   }
@@ -421,67 +417,63 @@
 
 
 <div class="hero-wrap" id="heroWrap">
-  <section class="hero-sticky" id="home">
-    <div class="slide-track" id="slideTrack">
-    <div class="slide" data-idx="0">
-      <div class="slide-blur bg-1"></div>
-      <a class="slide-center bg-1" href="services.html" aria-label="Laser Cutting"></a>
-      <div class="slide-label">
-        <div class="slide-eyebrow">Service / 01</div>
-        <h1>Laser Cutting</h1>
-        <div class="slide-rule"></div>
-      </div>
+  <section class="hero-slide" data-idx="0">
+    <div class="slide-blur bg-1"></div>
+    <a class="slide-center bg-1" href="services.html" aria-label="Laser Cutting"></a>
+    <div class="slide-label">
+      <div class="slide-eyebrow">Service / 01</div>
+      <h1>Laser Cutting</h1>
+      <div class="slide-rule"></div>
     </div>
-    <div class="slide" data-idx="1">
-      <div class="slide-blur bg-2"></div>
-      <a class="slide-center bg-2" href="services.html" aria-label="Plasma Cutting"></a>
-      <div class="slide-label">
-        <div class="slide-eyebrow">Service / 02</div>
-        <h1>Plasma Cutting</h1>
-        <div class="slide-rule"></div>
-      </div>
+  </section>
+  <section class="hero-slide" data-idx="1">
+    <div class="slide-blur bg-2"></div>
+    <a class="slide-center bg-2" href="services.html" aria-label="Plasma Cutting"></a>
+    <div class="slide-label">
+      <div class="slide-eyebrow">Service / 02</div>
+      <h1>Plasma Cutting</h1>
+      <div class="slide-rule"></div>
     </div>
-    <div class="slide" data-idx="2">
-      <div class="slide-blur bg-3"></div>
-      <a class="slide-center bg-3" href="services.html" aria-label="Welded Fabrication"></a>
-      <div class="slide-label">
-        <div class="slide-eyebrow">Service / 03</div>
-        <h1>Welded Fabrication</h1>
-        <div class="slide-rule"></div>
-      </div>
+  </section>
+  <section class="hero-slide" data-idx="2">
+    <div class="slide-blur bg-3"></div>
+    <a class="slide-center bg-3" href="services.html" aria-label="Welded Fabrication"></a>
+    <div class="slide-label">
+      <div class="slide-eyebrow">Service / 03</div>
+      <h1>Welded Fabrication</h1>
+      <div class="slide-rule"></div>
     </div>
-    <div class="slide" data-idx="3">
-      <div class="slide-blur bg-4"></div>
-      <a class="slide-center bg-4" href="services.html" aria-label="Machining"></a>
-      <div class="slide-label">
-        <div class="slide-eyebrow">Service / 04</div>
-        <h1>Machining</h1>
-        <div class="slide-rule"></div>
-      </div>
+  </section>
+  <section class="hero-slide" data-idx="3">
+    <div class="slide-blur bg-4"></div>
+    <a class="slide-center bg-4" href="services.html" aria-label="Machining"></a>
+    <div class="slide-label">
+      <div class="slide-eyebrow">Service / 04</div>
+      <h1>Machining</h1>
+      <div class="slide-rule"></div>
     </div>
-    <div class="slide" data-idx="4">
-      <div class="slide-blur bg-5"></div>
-      <a class="slide-center bg-5" href="services.html" aria-label="Cutting &amp; Bending"></a>
-      <div class="slide-label">
-        <div class="slide-eyebrow">Service / 05</div>
-        <h1>Cutting &amp; Bending</h1>
-        <div class="slide-rule"></div>
-      </div>
+  </section>
+  <section class="hero-slide" data-idx="4">
+    <div class="slide-blur bg-5"></div>
+    <a class="slide-center bg-5" href="services.html" aria-label="Cutting &amp; Bending"></a>
+    <div class="slide-label">
+      <div class="slide-eyebrow">Service / 05</div>
+      <h1>Cutting &amp; Bending</h1>
+      <div class="slide-rule"></div>
     </div>
-    <div class="slide" data-idx="5">
-      <div class="slide-blur bg-6"></div>
-      <a class="slide-center bg-6" href="products.html" aria-label="Steel &amp; Iron Products"></a>
-      <div class="slide-label">
-        <div class="slide-eyebrow">Product / 06</div>
-        <h1>Steel &amp; Iron Products</h1>
-        <div class="slide-rule"></div>
-      </div>
+  </section>
+  <section class="hero-slide" data-idx="5">
+    <div class="slide-blur bg-6"></div>
+    <a class="slide-center bg-6" href="products.html" aria-label="Steel &amp; Iron Products"></a>
+    <div class="slide-label">
+      <div class="slide-eyebrow">Product / 06</div>
+      <h1>Steel &amp; Iron Products</h1>
+      <div class="slide-rule"></div>
     </div>
-    </div>
-    <div class="scroll-hint"><div class="line"></div>SCROLL</div>
-    <div class="hero-dots" id="heroDots"></div>
   </section>
 </div>
+<div class="scroll-hint" id="scrollHint"><div class="line"></div>SCROLL</div>
+<div class="hero-dots" id="heroDots"></div>
 
 
 <footer>
@@ -589,58 +581,44 @@
   revealEls.forEach(el=> revealObserver.observe(el));
 
 
-  // Hero slider - pure native scroll, visually smoothed with easing (lerp).
-  // We NEVER call scrollTo or preventDefault here, so the browser's own scroll
-  // can never fight us, freeze, or skip ahead. The slide track just eases
-  // toward the real scroll position every animation frame, like the cursor does.
-  const slides = document.querySelectorAll('.slide');
+  // Hero - native CSS scroll-snap does all the sliding. This script only
+  // keeps the dots and the scroll hint in sync via IntersectionObserver,
+  // no manual scroll math, nothing that can fight the browser.
+  const heroSlideEls = document.querySelectorAll('.hero-slide');
   const dotsWrap = document.getElementById('heroDots');
   const heroWrap = document.getElementById('heroWrap');
-  const slideTrack = document.getElementById('slideTrack');
-  slides.forEach((s,i)=>{
+  const scrollHint = document.getElementById('scrollHint');
+
+  heroSlideEls.forEach((s,i)=>{
     const d = document.createElement('div');
     d.className = 'dot' + (i===0 ? ' active' : '');
     dotsWrap.appendChild(d);
   });
   const dots = document.querySelectorAll('.dot');
-  heroWrap.style.height = (slides.length * 55) + 'vh';
 
-  let current = 0;
-  function setActiveDot(i){
-    if (i === current) return;
-    dots[current].classList.remove('active');
-    current = i;
-    dots[current].classList.add('active');
+  const slideObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if (entry.isIntersecting && entry.intersectionRatio > 0.55){
+        const idx = Array.from(heroSlideEls).indexOf(entry.target);
+        dots.forEach(d=>d.classList.remove('active'));
+        dots[idx].classList.add('active');
+      }
+    });
+  }, { threshold: [0.55] });
+  heroSlideEls.forEach(el=> slideObserver.observe(el));
+
+  // Hide dots/hint once the visitor has scrolled past the hero entirely
+  function toggleHeroChrome(){
+    const heroBottom = heroWrap.getBoundingClientRect().bottom;
+    const past = heroBottom <= 0;
+    dotsWrap.style.opacity = past ? '0' : '1';
+    dotsWrap.style.pointerEvents = past ? 'none' : 'auto';
+    scrollHint.style.opacity = past ? '0' : '1';
   }
-
-  let targetProgress = 0;
-  let shownProgress = 0;
-
-  function readScroll(){
-    const rect = heroWrap.getBoundingClientRect();
-    const total = heroWrap.offsetHeight - window.innerHeight;
-    const scrolled = Math.min(Math.max(-rect.top, 0), total);
-    targetProgress = total > 0 ? scrolled / total : 0;
-  }
-  window.addEventListener('scroll', readScroll, { passive: true });
-  readScroll();
-
-  function tick(){
-    // Ease the visible position toward the real scroll position - a gentle
-    // trailing glide, the same smoothing technique used by the cursor.
-    shownProgress += (targetProgress - shownProgress) * 0.14;
-    if (Math.abs(targetProgress - shownProgress) < 0.0005) shownProgress = targetProgress;
-
-    const maxShift = (slides.length - 1) * 100;
-    slideTrack.style.transform = `translateX(-${shownProgress * maxShift}vw)`;
-
-    let idx = Math.round(shownProgress * (slides.length - 1));
-    idx = Math.min(slides.length - 1, Math.max(0, idx));
-    setActiveDot(idx);
-
-    requestAnimationFrame(tick);
-  }
-  requestAnimationFrame(tick);
+  dotsWrap.style.transition = 'opacity .3s ease';
+  scrollHint.style.transition = 'opacity .3s ease';
+  window.addEventListener('scroll', toggleHeroChrome, { passive: true });
+  toggleHeroChrome();
 
 </script>
 </body>
