@@ -18,6 +18,7 @@
     --white:#FFFFFF;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
   html,body{background:var(--ink); color:var(--white); cursor:none;}
   body{
     font-family:'Poppins', sans-serif;
@@ -28,6 +29,21 @@
   h1,h2,h3{font-family:'Playfair Display', serif; font-weight:600; line-height:1.05;}
   a{color:inherit; text-decoration:none;}
   .wrap{max-width:1300px; margin:0 auto; padding:0 60px;}
+
+  /* ---------- SCROLL REVEAL ---------- */
+  .reveal{opacity:0; transform:translateY(36px); transition:opacity .8s cubic-bezier(.16,.84,.44,1), transform .8s cubic-bezier(.16,.84,.44,1);}
+  .reveal.in{opacity:1; transform:translateY(0);}
+  .reveal-stagger > *{opacity:0; transform:translateY(28px); transition:opacity .7s cubic-bezier(.16,.84,.44,1), transform .7s cubic-bezier(.16,.84,.44,1);}
+  .reveal-stagger.in > *{opacity:1; transform:translateY(0);}
+  .reveal-stagger.in > *:nth-child(1){transition-delay:.02s;}
+  .reveal-stagger.in > *:nth-child(2){transition-delay:.09s;}
+  .reveal-stagger.in > *:nth-child(3){transition-delay:.16s;}
+  .reveal-stagger.in > *:nth-child(4){transition-delay:.23s;}
+  .reveal-stagger.in > *:nth-child(5){transition-delay:.30s;}
+  .reveal-stagger.in > *:nth-child(6){transition-delay:.37s;}
+  @media (prefers-reduced-motion: reduce){
+    .reveal, .reveal-stagger > *{opacity:1; transform:none; transition:none;}
+  }
 
   /* ---------- CUSTOM CURSOR ---------- */
   #cursor{
@@ -88,11 +104,11 @@
   /* ---------- FULLSCREEN MENU ---------- */
   .fullmenu{
     position:fixed; inset:0; background:var(--ink); z-index:75;
-    display:flex; flex-direction:column; justify-content:center; align-items:center;
-    padding:0 60px; transform:translateX(100%); transition:transform .6s cubic-bezier(.65,0,.35,1);
+    display:flex; flex-direction:column; justify-content:center;
+    padding:0 60px 0 clamp(60px, 12vw, 200px); transform:translateX(100%); transition:transform .6s cubic-bezier(.65,0,.35,1);
   }
   .fullmenu.open{transform:translateX(0);}
-  .menu-inner{width:100%; max-width:640px;}
+  .menu-inner{width:100%; max-width:900px;}
   .menu-close{
     position:absolute; top:30px; right:32px; width:44px; height:44px;
     display:flex; align-items:center; justify-content:center;
@@ -133,23 +149,24 @@
   }
   .slide-track{
     display:flex; height:100%; width:100%; will-change:transform;
-    transition:transform .05s linear;
+    transition:transform .18s cubic-bezier(.22,.61,.36,1);
   }
   .slide{
     position:relative; flex:0 0 100%; width:100%; height:100%; overflow:hidden;
   }
   .slide-blur{
     position:absolute; top:0; left:0; width:100%; height:100%; background-size:cover; background-position:center;
-    filter:blur(22px) brightness(0.55) saturate(1.1); transform:scale(1.15);
+    filter:blur(9px) brightness(0.78) saturate(1.05); transform:scale(1.08);
   }
   .slide-center{
     position:absolute; top:0; bottom:0; left:50%; transform:translateX(-50%);
     width:46%; min-width:340px; background-size:cover; background-position:center;
     box-shadow:0 40px 100px rgba(0,0,0,0.55); display:block;
+    transition:transform .4s ease;
   }
   .slide-center::after{
     content:''; position:absolute; inset:0;
-    background:linear-gradient(0deg, rgba(10,10,16,0.75) 0%, transparent 35%);
+    background:linear-gradient(0deg, rgba(10,10,16,0.55) 0%, transparent 40%);
   }
   .slide-label{
     position:absolute; left:0; right:0; bottom:64px; z-index:6; text-align:center;
@@ -405,14 +422,14 @@
 </div>
 
 
-<section class="banner"><div class="banner-content"><h2 class="serif">Blog</h2></div></section>
+<section class="banner"><div class="banner-content reveal"><h2 class="serif">Blog</h2></div></section>
 <section class="section" style="padding-top:70px;">
   <div class="wrap">
     <span class="section-eyebrow">News &amp; Updates</span>
     <h2 class="section-title">Latest from Nora.</h2>
   </div>
   <div class="wrap">
-  <div class="blog-grid">
+  <div class="blog-grid reveal-stagger">
     <div class="blog-card">
       <div class="thumb bg-7"></div>
       <div class="body">
@@ -527,6 +544,18 @@
     corpToggle.classList.toggle('active');
     corpSub.classList.toggle('open');
   });
+
+  // Smooth scroll-reveal animations across the site
+  const revealEls = document.querySelectorAll('.reveal, .reveal-stagger');
+  const revealObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if (entry.isIntersecting){
+        entry.target.classList.add('in');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+  revealEls.forEach(el=> revealObserver.observe(el));
 
 
 </script>
