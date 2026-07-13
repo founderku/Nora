@@ -31,12 +31,12 @@
 
   /* ---------- CUSTOM CURSOR ---------- */
   #cursor{
-    position:fixed; top:0; left:0; width:26px; height:26px; border-radius:50%;
+    position:fixed; top:0; left:0; width:16px; height:16px; border-radius:50%;
     border:1.5px solid var(--white); pointer-events:none; z-index:9999;
     transform:translate(-50%,-50%); transition:width .25s, height .25s, background .25s, border-color .25s;
     mix-blend-mode:difference;
   }
-  #cursor.grow{width:64px; height:64px; background:var(--white);}
+  #cursor.grow{width:38px; height:38px; background:var(--white);}
 
   /* ---------- SOCIAL RAIL ---------- */
   .social-rail{
@@ -89,6 +89,11 @@
     padding:0 60px; transform:translateY(-100%); transition:transform .5s cubic-bezier(.65,0,.35,1);
   }
   .fullmenu.open{transform:translateY(0);}
+  .menu-close{
+    position:absolute; top:30px; right:32px; width:44px; height:44px;
+    display:flex; align-items:center; justify-content:center;
+    background:none; border:none; z-index:90; cursor:none;
+  }
   .menu-list{list-style:none;}
   .menu-list > li{margin-bottom:6px;}
   .menu-item{
@@ -337,8 +342,9 @@
 
 <div class="topbar">
   <div class="logo">
-    <svg class="mark" viewBox="0 0 34 34" fill="none">
-      <path d="M4 26 L14 6 L14 15 L26 6 L16 26 L16 17 Z" fill="#EB5D45"/>
+    <svg class="mark" viewBox="0 0 34 34">
+      <circle cx="17" cy="17" r="17" fill="#EB5D45"/>
+      <path d="M10 23 L17 10 L17 15.5 L24 10 L17 24 L17 18.5 Z" fill="#14141E"/>
     </svg>
     <div>
       <div class="word">NORA</div>
@@ -349,6 +355,9 @@
 </div>
 
 <div class="fullmenu" id="fullMenu">
+  <button class="menu-close" id="menuClose" aria-label="Close menu">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M4 4 L20 20 M20 4 L4 20"/></svg>
+  </button>
   <ul class="menu-list">
     <li><a href="#home" class="menu-item">anasayfa</a></li>
     <li>
@@ -621,6 +630,7 @@
     savedScrollY = window.scrollY;
     fullMenu.classList.add('open');
     menuBtn.classList.add('open');
+    menuBtn.style.visibility = 'hidden';
     document.body.style.position = 'fixed';
     document.body.style.top = -savedScrollY + 'px';
     document.body.style.left = '0';
@@ -629,6 +639,7 @@
   function closeMenu(){
     fullMenu.classList.remove('open');
     menuBtn.classList.remove('open');
+    menuBtn.style.visibility = 'visible';
     document.body.style.position = '';
     document.body.style.top = '';
     document.body.style.left = '';
@@ -638,6 +649,7 @@
   menuBtn.addEventListener('click', ()=>{
     if (fullMenu.classList.contains('open')) closeMenu(); else openMenu();
   });
+  document.getElementById('menuClose').addEventListener('click', closeMenu);
   document.querySelectorAll('.fullmenu a, .fullmenu > ul > li > a.menu-item').forEach(el=>{
     el.addEventListener('click', closeMenu);
   });
