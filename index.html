@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nora Paslanmaz ve Demir Çelik</title>
+<title>Home | Nora Paslanmaz ve Demir Celik</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -41,7 +41,7 @@
 
   /* ---------- SOCIAL RAIL ---------- */
   .social-rail{
-    position:fixed; left:14px; top:50%; transform:translateY(-50%); z-index:60;
+    position:fixed; left:14px; top:50%; transform:translateY(-50%); z-index:95;
     display:flex; flex-direction:column; gap:10px;
   }
   .social-rail a{
@@ -89,9 +89,9 @@
   .fullmenu{
     position:fixed; inset:0; background:var(--ink); z-index:75;
     display:flex; flex-direction:column; justify-content:center;
-    padding:0 60px; transform:translateY(-100%); transition:transform .5s cubic-bezier(.65,0,.35,1);
+    padding:0 60px; transform:translateX(100%); transition:transform .6s cubic-bezier(.65,0,.35,1);
   }
-  .fullmenu.open{transform:translateY(0);}
+  .fullmenu.open{transform:translateX(0);}
   .menu-close{
     position:absolute; top:30px; right:32px; width:44px; height:44px;
     display:flex; align-items:center; justify-content:center;
@@ -100,12 +100,12 @@
   .menu-list{list-style:none;}
   .menu-list > li{margin-bottom:6px;}
   .menu-item{
-    font-family:'Playfair Display'; font-size:clamp(24px,3.2vw,40px); font-weight:600;
-    color:var(--gray); display:flex; align-items:center; gap:16px; padding:4px 0;
+    font-family:'Playfair Display'; font-size:clamp(28px,4vw,52px); font-weight:600;
+    color:var(--gray); display:flex; align-items:center; gap:16px; padding:5px 0;
     transition:color .2s; cursor:none;
   }
   .menu-item:hover, .menu-item.active{color:var(--white);}
-  .menu-item .chev{font-size:16px; transition:transform .3s;}
+  .menu-item .chev{font-size:18px; transition:transform .3s;}
   .menu-item.active .chev{transform:rotate(180deg);}
   .submenu{
     list-style:none; max-height:0; overflow:hidden; transition:max-height .4s ease;
@@ -116,7 +116,7 @@
   .submenu a{
     font-family:'Playfair Display'; font-size:16px; font-weight:600; color:var(--lavender);
   }
-  .submenu a:hover{color:var(--white);}
+  .submenu a:hover, .submenu a.active{color:var(--white);}
   .menu-social{
     position:absolute; bottom:36px; right:60px; display:flex; gap:24px;
   }
@@ -187,6 +187,8 @@
   .bg-4{background:url('https://picsum.photos/id/1082/1200/1600') center/cover no-repeat;}
   .bg-5{background:url('https://picsum.photos/id/1084/1200/1600') center/cover no-repeat;}
   .bg-6{background:url('https://picsum.photos/id/1050/1200/1600') center/cover no-repeat;}
+  .bg-7{background:url('https://picsum.photos/id/1025/1200/1600') center/cover no-repeat;}
+  .bg-8{background:url('https://picsum.photos/id/1069/1200/1600') center/cover no-repeat;}
 
   /* ---------- SECTION TRANSITION BANNER (style like reference "Blog"/"Referanslar" pages) ---------- */
   .banner{
@@ -259,6 +261,9 @@
     font-family:'Poppins'; font-size:11px; color:var(--coral); border-left:2px solid var(--coral);
     padding-left:12px; margin-top:22px; letter-spacing:0.03em;
   }
+  .about-stats{display:flex; gap:36px; margin-top:32px; flex-wrap:wrap;}
+  .stat b{font-family:'Playfair Display'; font-size:32px; display:block; color:var(--white);}
+  .stat span{font-family:'Poppins'; font-size:11px; color:var(--gray); text-transform:uppercase; letter-spacing:0.05em;}
 
   /* ---------- PARTNERS / CERT GRID (style like reference logo grid) ---------- */
   .partners{background:var(--ink2); padding:80px 0;}
@@ -270,6 +275,22 @@
     font-family:'Poppins'; font-size:11px; color:var(--gray); letter-spacing:0.08em; text-transform:uppercase;
     text-align:center; padding:14px;
   }
+
+  /* ---------- BLOG ---------- */
+  .blog-grid{
+    display:grid; grid-template-columns:repeat(3, 1fr); gap:24px;
+  }
+  .blog-card{background:var(--ink2); border:1px solid rgba(255,255,255,0.08); overflow:hidden;}
+  .blog-card .thumb{height:190px; background-size:cover; background-position:center;}
+  .blog-card .body{padding:24px;}
+  .blog-card .date{font-family:'Poppins'; font-size:11px; color:var(--gray); letter-spacing:0.05em; margin-bottom:10px; display:block;}
+  .blog-card h3{font-size:19px; color:var(--white); margin-bottom:10px;}
+  .blog-card p{font-family:'Poppins'; font-size:13px; color:var(--gray); line-height:1.7; margin-bottom:18px;}
+  .blog-card .more{
+    display:inline-block; font-family:'Poppins'; font-size:11px; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--white); border:1px solid var(--coral); padding:9px 16px; transition:background .2s;
+  }
+  .blog-card .more:hover{background:var(--coral);}
 
   /* ---------- CONTACT ---------- */
   .contact-grid{display:grid; grid-template-columns:1fr 1fr; gap:70px;}
@@ -313,21 +334,19 @@
     .topbar{padding:24px 24px;}
     .fullmenu{padding:0 24px;}
     .menu-social{right:24px;}
-    .slide-content{padding:0 24px 70px;}
     .banner-content{padding:0 24px 34px;}
     .service-grid{grid-template-columns:1fr;}
     .products-grid{grid-template-columns:1fr;}
     .about-grid{grid-template-columns:1fr;}
     .contact-grid{grid-template-columns:1fr;}
     .partner-grid{grid-template-columns:repeat(2,1fr);}
+    .blog-grid{grid-template-columns:1fr;}
     .social-rail a{width:42px; height:42px; font-size:16px;}
   }
 </style>
 </head>
 <body>
-
 <div id="cursor"></div>
-
 <div class="social-rail">
   <a class="phone" href="tel:02166215541" aria-label="Call us">
     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
@@ -344,16 +363,16 @@
 </div>
 
 <div class="topbar">
-  <div class="logo">
+  <a href="index.html" class="logo">
     <svg class="mark" viewBox="0 0 34 34">
       <circle cx="17" cy="17" r="17" fill="#EB5D45"/>
       <path d="M10 23 L17 10 L17 15.5 L24 10 L17 24 L17 18.5 Z" fill="#14141E"/>
     </svg>
     <div>
       <div class="word">NORA</div>
-      <span class="tag">Paslanmaz &middot; Demir Çelik</span>
+      <span class="tag">Stainless &amp; Steel</span>
     </div>
-  </div>
+  </a>
   <button class="menu-btn" id="menuBtn"><span class="bar"></span></button>
 </div>
 
@@ -362,18 +381,18 @@
     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M4 4 L20 20 M20 4 L4 20"/></svg>
   </button>
   <ul class="menu-list">
-    <li><a href="#home" class="menu-item">anasayfa</a></li>
+    <li><a href="index.html" class="menu-item active">Home</a></li>
     <li>
-      <div class="menu-item" id="corporateToggle">kurumsal <span class="chev">&#8964;</span></div>
+      <div class="menu-item " id="corporateToggle">Corporate <span class="chev">&#8964;</span></div>
       <ul class="submenu" id="corporateSub">
-        <li><a href="#about">Hakkımızda</a></li>
-        <li><a href="#certificates">Belgelerimiz</a></li>
-        <li><a href="#services">Hizmetlerimiz</a></li>
+        <li><a href="about.html" class="">About Us</a></li>
+        <li><a href="certificates.html" class="">Certificates</a></li>
+        <li><a href="services.html" class="">Services</a></li>
       </ul>
     </li>
-    <li><a href="#products" class="menu-item">ürünler</a></li>
-    <li><a href="#blog" class="menu-item">blog</a></li>
-    <li><a href="#contact" class="menu-item">iletişim</a></li>
+    <li><a href="products.html" class="menu-item">Products</a></li>
+    <li><a href="blog.html" class="menu-item">Blog</a></li>
+    <li><a href="contact.html" class="menu-item">Contact</a></li>
   </ul>
   <div class="menu-social">
     <a href="#">Facebook</a>
@@ -382,12 +401,13 @@
   </div>
 </div>
 
+
 <div class="hero-wrap" id="heroWrap">
   <section class="hero-sticky" id="home">
     <div class="slide-track" id="slideTrack">
     <div class="slide active" data-idx="0">
       <div class="slide-blur bg-1"></div>
-      <a class="slide-center bg-1" href="#services" aria-label="Laser Cutting"></a>
+      <a class="slide-center bg-1" href="services.html" aria-label="Laser Cutting"></a>
       <div class="slide-label">
         <div class="slide-eyebrow">Service / 01</div>
         <h1>Laser Cutting</h1>
@@ -396,7 +416,7 @@
     </div>
     <div class="slide" data-idx="1">
       <div class="slide-blur bg-2"></div>
-      <a class="slide-center bg-2" href="#services" aria-label="Plasma Cutting"></a>
+      <a class="slide-center bg-2" href="services.html" aria-label="Plasma Cutting"></a>
       <div class="slide-label">
         <div class="slide-eyebrow">Service / 02</div>
         <h1>Plasma Cutting</h1>
@@ -405,7 +425,7 @@
     </div>
     <div class="slide" data-idx="2">
       <div class="slide-blur bg-3"></div>
-      <a class="slide-center bg-3" href="#services" aria-label="Welded Fabrication"></a>
+      <a class="slide-center bg-3" href="services.html" aria-label="Welded Fabrication"></a>
       <div class="slide-label">
         <div class="slide-eyebrow">Service / 03</div>
         <h1>Welded Fabrication</h1>
@@ -414,7 +434,7 @@
     </div>
     <div class="slide" data-idx="3">
       <div class="slide-blur bg-4"></div>
-      <a class="slide-center bg-4" href="#services" aria-label="Machining"></a>
+      <a class="slide-center bg-4" href="services.html" aria-label="Machining"></a>
       <div class="slide-label">
         <div class="slide-eyebrow">Service / 04</div>
         <h1>Machining</h1>
@@ -423,7 +443,7 @@
     </div>
     <div class="slide" data-idx="4">
       <div class="slide-blur bg-5"></div>
-      <a class="slide-center bg-5" href="#services" aria-label="Cutting &amp; Bending"></a>
+      <a class="slide-center bg-5" href="services.html" aria-label="Cutting &amp; Bending"></a>
       <div class="slide-label">
         <div class="slide-eyebrow">Service / 05</div>
         <h1>Cutting &amp; Bending</h1>
@@ -432,7 +452,7 @@
     </div>
     <div class="slide" data-idx="5">
       <div class="slide-blur bg-6"></div>
-      <a class="slide-center bg-6" href="#products" aria-label="Steel &amp; Iron Products"></a>
+      <a class="slide-center bg-6" href="products.html" aria-label="Steel &amp; Iron Products"></a>
       <div class="slide-label">
         <div class="slide-eyebrow">Product / 06</div>
         <h1>Steel &amp; Iron Products</h1>
@@ -440,154 +460,26 @@
       </div>
     </div>
     </div>
-
     <div class="scroll-hint"><div class="line"></div>SCROLL</div>
     <div class="hero-dots" id="heroDots"></div>
   </section>
 </div>
 
-<section class="section" id="services">
-  <div class="wrap">
-    <span class="section-eyebrow">Capabilities</span>
-    <h2 class="section-title">Six processes, one facility &mdash; cutting, bending, welding, and machining under one roof.</h2>
-  </div>
-  <div class="service-grid">
-    <div class="service-card">
-      <span class="idx">01</span>
-      <h3>Lazer Kesim</h3>
-      <p>Clean, high-precision laser cuts on stainless, iron, aluminum, and other sheet metals.</p>
-      <a class="more" href="#contact">Get a Quote</a>
-    </div>
-    <div class="service-card">
-      <span class="idx">02</span>
-      <h3>Plazma Kesim</h3>
-      <p>High-speed plasma cutting for steel and non-ferrous material, fast and low-waste.</p>
-      <a class="more" href="#contact">Get a Quote</a>
-    </div>
-    <div class="service-card">
-      <span class="idx">03</span>
-      <h3>Kaynaklı İmalat</h3>
-      <p>Structural and custom welding across stainless, iron, aluminum, and steel.</p>
-      <a class="more" href="#contact">Get a Quote</a>
-    </div>
-    <div class="service-card">
-      <span class="idx">04</span>
-      <h3>Talaşlı İmalat</h3>
-      <p>CNC turning, milling, drilling, and grinding to exact tolerance.</p>
-      <a class="more" href="#contact">Get a Quote</a>
-    </div>
-    <div class="service-card">
-      <span class="idx">05</span>
-      <h3>Kesim Büküm</h3>
-      <p>CNC press-brake bending across a range of thicknesses and tonnages.</p>
-      <a class="more" href="#contact">Get a Quote</a>
-    </div>
-    <div class="service-card">
-      <span class="idx">06</span>
-      <h3>Demir Çelik Ürün</h3>
-      <p>Sheet, profile, pipe, rolled products, and steel mesh at competitive pricing.</p>
-      <a class="more" href="#contact">Get a Quote</a>
-    </div>
-  </div>
-</section>
-
-<section class="banner" id="products">
-  <div class="banner-content"><h2 class="serif">Ürünler</h2></div>
-</section>
-
-<section class="section" style="padding-top:70px;">
-  <div class="wrap">
-    <span class="section-eyebrow">Product Lines</span>
-    <h2 class="section-title">Steel and stainless, by category.</h2>
-  </div>
-  <div class="products-grid">
-    <div class="product-panel pp1">
-      <div class="product-content">
-        <h3 class="serif">Demir Çelik Ürünleri</h3>
-        <p>Sheet, profile, pipe, rolled stock, and welded steel mesh for structural and industrial use.</p>
-        <span class="product-badge">Awaiting full catalogue</span>
-      </div>
-    </div>
-    <div class="product-panel pp2">
-      <div class="product-content">
-        <h3 class="serif">Paslanmaz Ürünleri</h3>
-        <p>Corrosion-resistant sheet, pipe, and profile in grades suited to industrial and architectural use.</p>
-        <span class="product-badge">Awaiting full catalogue</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="banner" id="about">
-  <div class="banner-content"><h2 class="serif">Hakkımızda</h2></div>
-</section>
-
-<section class="section" style="padding-top:70px;">
-  <div class="wrap about-grid">
-    <div>
-      <span class="section-eyebrow">Corporate</span>
-      <h2 class="section-title" style="margin-bottom:20px;">Manufacturing partner for stainless and steel.</h2>
-      <p>Nora Paslanmaz ve Demir Çelik operates from our Istanbul facility, combining laser and plasma cutting, welded fabrication, CNC machining, and bending under one roof.</p>
-      <p>We work directly with manufacturers, contractors, and workshops across Turkey, quoting to the part rather than the catalogue.</p>
-      <div class="placeholder-note">[ Placeholder &mdash; awaiting company history &amp; profile from client ]</div>
-    </div>
-    <div class="about-visual"></div>
-  </div>
-</section>
-
-<section class="partners" id="certificates">
-  <div class="wrap">
-    <span class="section-eyebrow">Certificates &amp; References</span>
-    <h2 class="section-title" style="margin-bottom:40px;">Trusted by industry partners.</h2>
-  </div>
-  <div class="partner-grid">
-    <div class="partner-box">[ Certificate 1 ]</div>
-    <div class="partner-box">[ Certificate 2 ]</div>
-    <div class="partner-box">[ Client Ref. 1 ]</div>
-    <div class="partner-box">[ Client Ref. 2 ]</div>
-  </div>
-</section>
-
-<section class="banner" id="blog">
-  <div class="banner-content"><h2 class="serif">Blog</h2></div>
-</section>
-
-<section class="section" id="contact">
-  <div class="wrap contact-grid">
-    <div>
-      <span class="section-eyebrow">Get in Touch</span>
-      <h2 class="section-title">Request a quote.</h2>
-      <ul class="contact-list">
-        <li><b>Phone</b> 0216 621 55 41</li>
-        <li><b>Email</b> info@norapaslanmazcelik.com</li>
-        <li><b>Address</b> OSB Des Sanayi Sitesi 115 Sok. No:30, Yukarı Dudullu, Ümraniye / İstanbul</li>
-      </ul>
-    </div>
-    <div class="form-box">
-      <form>
-        <div class="form-row"><label>Full Name</label><input type="text" placeholder="Your name"></div>
-        <div class="form-row"><label>Company</label><input type="text" placeholder="Company name"></div>
-        <div class="form-row"><label>Message</label><textarea placeholder="Quantity, dimensions, and any specs..."></textarea></div>
-        <button type="button" class="submit-btn">Send Inquiry</button>
-      </form>
-    </div>
-  </div>
-</section>
 
 <footer>
   <div class="wrap">
     <div class="footer-grid">
       <div class="footer-col">
-        <h4>Nora Paslanmaz ve Çelik</h4>
-        <a href="#about">Kurumsal</a>
-        <a href="#services">Hizmetler</a>
-        <a href="#products">Ürünler</a>
+        <h4>Nora Paslanmaz ve Celik</h4>
+        <a href="about.html">Corporate</a>
+        <a href="services.html">Services</a>
+        <a href="products.html">Products</a>
       </div>
       <div class="footer-col">
         <h4>Company</h4>
-        <a href="#certificates">Belgelerimiz</a>
-        <a href="#">Referanslarımız</a>
-        <a href="#blog">Blog</a>
+        <a href="certificates.html">Certificates</a>
+        <a href="certificates.html">References</a>
+        <a href="blog.html">Blog</a>
       </div>
       <div class="footer-col">
         <h4>Contact</h4>
@@ -596,18 +488,19 @@
       </div>
       <div class="footer-col">
         <h4>Language</h4>
-        <a href="#">Türkçe</a>
+        <a href="#">Turkish</a>
         <a href="#">English</a>
-        <a href="#">Français</a>
-        <a href="#">العربية</a>
+        <a href="#">French</a>
+        <a href="#">Arabic</a>
       </div>
     </div>
     <div class="footer-bottom">
-      <span>&copy; 2026 Nora Paslanmaz ve Demir Çelik</span>
+      <span>&copy; 2026 Nora Paslanmaz ve Demir Celik</span>
       <span>norapaslanmazcelik.com</span>
     </div>
   </div>
 </footer>
+
 
 <script>
   // Custom round cursor
@@ -656,9 +549,6 @@
     if (fullMenu.classList.contains('open')) closeMenu(); else openMenu();
   });
   document.getElementById('menuClose').addEventListener('click', closeMenu);
-  document.querySelectorAll('.fullmenu a, .fullmenu > ul > li > a.menu-item').forEach(el=>{
-    el.addEventListener('click', closeMenu);
-  });
 
   // Corporate submenu toggle
   const corpToggle = document.getElementById('corporateToggle');
@@ -667,6 +557,7 @@
     corpToggle.classList.toggle('active');
     corpSub.classList.toggle('open');
   });
+
 
   // Hero slider - scroll-driven horizontal filmstrip (landscape sliding, like a carousel)
   const slides = document.querySelectorAll('.slide');
@@ -679,7 +570,6 @@
     dotsWrap.appendChild(d);
   });
   const dots = document.querySelectorAll('.dot');
-  // Each slide gets one viewport-height of scroll distance to move through
   heroWrap.style.height = (slides.length * 100) + 'vh';
 
   let current = 0;
@@ -695,7 +585,6 @@
     const scrolled = Math.min(Math.max(-rect.top, 0), total);
     const progress = total > 0 ? scrolled / total : 0;
 
-    // Slide the filmstrip horizontally in direct proportion to scroll progress
     const maxShift = (slides.length - 1) * 100;
     slideTrack.style.transform = `translateX(-${progress * maxShift}vw)`;
 
@@ -708,7 +597,7 @@
   }
   let snapTimer;
   function snapToNearest(rect, total, scrolled){
-    if (total <= 0 || scrolled <= 0 || scrolled >= total) return; // already resting at start/end
+    if (total <= 0 || scrolled <= 0 || scrolled >= total) return;
     const progress = scrolled / total;
     const idx = Math.round(progress * (slides.length - 1));
     const targetScrolled = (idx / (slides.length - 1)) * total;
@@ -719,7 +608,6 @@
   window.addEventListener('scroll', onScroll, {passive:true});
   onScroll();
 
-  // One wheel scroll = jump straight to next/previous slide while inside the hero
   let wheelLocked = false;
   window.addEventListener('wheel', function(e){
     if (fullMenu.classList.contains('open')) return;
@@ -734,8 +622,7 @@
     const dir = e.deltaY > 0 ? 1 : -1;
     const atLastGoingDown = current === slides.length - 1 && dir === 1;
     const atFirstGoingUp = current === 0 && dir === -1;
-
-    if (atLastGoingDown || atFirstGoingUp) return; // release control, let page scroll normally past the hero
+    if (atLastGoingDown || atFirstGoingUp) return;
 
     e.preventDefault();
     if (wheelLocked) return;
@@ -747,7 +634,7 @@
 
     setTimeout(()=>{ wheelLocked = false; }, 550);
   }, { passive:false });
-</script>
 
+</script>
 </body>
 </html>
