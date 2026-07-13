@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog | Nora Paslanmaz ve Demir Celik</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#14141E;
+    --ink2:#1B1B2B;
+    --ink3:#20202F;
+    --coral:#EB5D45;
+    --lavender:#B7AEDB;
+    --gray:#9AA0AC;
+    --white:#FFFFFF;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:var(--ink); color:var(--white); cursor:none;}
+  body{
+    font-family:'Poppins', sans-serif;
+    overflow-x:hidden;
+  }
+  a, button{cursor:none;}
+  .serif{font-family:'Playfair Display', serif;}
+  h1,h2,h3{font-family:'Playfair Display', serif; font-weight:600; line-height:1.05;}
+  a{color:inherit; text-decoration:none;}
+  .wrap{max-width:1300px; margin:0 auto; padding:0 60px;}
+
+  /* ---------- CUSTOM CURSOR ---------- */
+  #cursor{
+    position:fixed; top:0; left:0; width:16px; height:16px; border-radius:50%;
+    border:1.5px solid var(--white); pointer-events:none; z-index:9999;
+    transform:translate(-50%,-50%); transition:width .25s, height .25s, background .25s, border-color .25s, opacity .2s;
+    mix-blend-mode:difference; opacity:0;
+  }
+  #cursor.visible{opacity:1;}
+  #cursor.grow{width:38px; height:38px; background:var(--white);}
+
+  /* ---------- SOCIAL RAIL ---------- */
+  .social-rail{
+    position:fixed; left:14px; top:50%; transform:translateY(-50%); z-index:95;
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .social-rail a{
+    width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:20px; color:var(--white); box-shadow:0 4px 14px rgba(0,0,0,0.35);
+  }
+  .social-rail a.phone{background:#3B7DD8;}
+  .social-rail a.telegram{background:#29A9EA;}
+  .social-rail a.whatsapp{background:#25D366;}
+  .social-rail a.instagram{background:#E1306C;}
+
+  /* ---------- TOP BAR ---------- */
+  .topbar{
+    position:fixed; top:0; left:0; right:0; z-index:85;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:30px 60px; mix-blend-mode:normal; pointer-events:none;
+  }
+  .topbar .logo{pointer-events:auto;}
+  .topbar .menu-btn{pointer-events:auto;}
+  .logo{display:flex; align-items:center; gap:12px;}
+  .logo .mark{width:34px; height:34px; flex-shrink:0;}
+  .logo .word{
+    font-family:'Poppins'; font-weight:800; font-size:22px; letter-spacing:0.01em; color:var(--white);
+  }
+  .logo .tag{
+    font-family:'Poppins'; font-weight:600; font-size:9px; letter-spacing:0.15em;
+    color:var(--gray); text-transform:uppercase; display:block; margin-top:1px;
+  }
+  .menu-btn{
+    width:52px; height:52px; display:flex; align-items:center; justify-content:center;
+    background:none; border:none; color:var(--white); z-index:80; position:relative;
+  }
+  .menu-btn .bar{width:26px; height:2px; background:var(--white); position:relative; transition:background .2s;}
+  .menu-btn .bar::before, .menu-btn .bar::after{
+    content:''; position:absolute; left:0; width:26px; height:2px; background:var(--white);
+    transition:transform .3s ease, top .3s ease;
+  }
+  .menu-btn .bar::before{top:-8px;}
+  .menu-btn .bar::after{top:8px;}
+  .menu-btn.open .bar{background:transparent;}
+  .menu-btn.open .bar::before{top:0; transform:rotate(45deg);}
+  .menu-btn.open .bar::after{top:0; transform:rotate(-45deg);}
+
+  /* ---------- FULLSCREEN MENU ---------- */
+  .fullmenu{
+    position:fixed; inset:0; background:var(--ink); z-index:75;
+    display:flex; flex-direction:column; justify-content:center;
+    padding:0 60px; transform:translateX(100%); transition:transform .6s cubic-bezier(.65,0,.35,1);
+  }
+  .fullmenu.open{transform:translateX(0);}
+  .menu-close{
+    position:absolute; top:30px; right:32px; width:44px; height:44px;
+    display:flex; align-items:center; justify-content:center;
+    background:none; border:none; z-index:90; cursor:none;
+  }
+  .menu-list{list-style:none;}
+  .menu-list > li{margin-bottom:6px;}
+  .menu-item{
+    font-family:'Playfair Display'; font-size:clamp(28px,4vw,52px); font-weight:600;
+    color:var(--gray); display:flex; align-items:center; gap:16px; padding:5px 0;
+    transition:color .2s; cursor:none;
+  }
+  .menu-item:hover, .menu-item.active{color:var(--white);}
+  .menu-item .chev{font-size:18px; transition:transform .3s;}
+  .menu-item.active .chev{transform:rotate(180deg);}
+  .submenu{
+    list-style:none; max-height:0; overflow:hidden; transition:max-height .4s ease;
+    padding-left:8px;
+  }
+  .submenu.open{max-height:600px;}
+  .submenu li{padding:6px 0;}
+  .submenu a{
+    font-family:'Playfair Display'; font-size:16px; font-weight:600; color:var(--lavender);
+  }
+  .submenu a:hover, .submenu a.active{color:var(--white);}
+  .menu-social{
+    position:absolute; bottom:36px; right:60px; display:flex; gap:24px;
+  }
+  .menu-social a{
+    font-family:'Poppins'; font-size:11px; letter-spacing:0.12em; color:var(--gray); text-transform:uppercase;
+  }
+  .menu-social a:hover{color:var(--white);}
+
+  /* ---------- HERO SLIDER (center-panel + blurred sides, scroll-driven) ---------- */
+  .hero-wrap{ position:relative; }
+  .hero-sticky{
+    position:sticky; top:0; height:100vh; overflow:hidden; background:var(--ink);
+  }
+  .slide-track{
+    display:flex; height:100%; width:100%; will-change:transform;
+    transition:transform .05s linear;
+  }
+  .slide{
+    position:relative; flex:0 0 100%; width:100%; height:100%; overflow:hidden;
+  }
+  .slide-blur{
+    position:absolute; top:0; left:0; width:100%; height:100%; background-size:cover; background-position:center;
+    filter:blur(22px) brightness(0.55) saturate(1.1); transform:scale(1.15);
+  }
+  .slide-center{
+    position:absolute; top:0; bottom:0; left:50%; transform:translateX(-50%);
+    width:46%; min-width:340px; background-size:cover; background-position:center;
+    box-shadow:0 40px 100px rgba(0,0,0,0.55); display:block;
+  }
+  .slide-center::after{
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(0deg, rgba(10,10,16,0.75) 0%, transparent 35%);
+  }
+  .slide-label{
+    position:absolute; left:0; right:0; bottom:64px; z-index:6; text-align:center;
+    pointer-events:none;
+  }
+  .slide-eyebrow{
+    font-family:'Poppins'; font-size:11px; letter-spacing:0.25em; text-transform:uppercase;
+    color:var(--coral); margin-bottom:10px; font-weight:600;
+  }
+  .slide-label h1{
+    font-family:'Poppins'; font-weight:700; font-size:clamp(22px,2.6vw,34px);
+    letter-spacing:0.04em; text-transform:uppercase; color:var(--white); margin-bottom:12px;
+  }
+  .slide-rule{width:40px; height:3px; background:var(--coral); margin:0 auto;}
+  .hero-dots{
+    position:absolute; bottom:24px; right:36px; z-index:7; display:flex; flex-direction:column; gap:10px;
+  }
+  .dot{width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.3); transition:background .2s;}
+  .dot.active{background:var(--coral);}
+  .scroll-hint{
+    position:absolute; left:36px; bottom:24px; z-index:7;
+    font-family:'Poppins'; font-size:11px; letter-spacing:0.15em; text-transform:uppercase;
+    color:rgba(255,255,255,0.6); display:flex; align-items:center; gap:10px;
+  }
+  .scroll-hint .line{width:1px; height:30px; background:rgba(255,255,255,0.4); position:relative; overflow:hidden;}
+  .scroll-hint .line::after{
+    content:''; position:absolute; top:-30px; left:0; width:100%; height:30px; background:var(--coral);
+    animation:scrolldown 1.8s ease-in-out infinite;
+  }
+  @keyframes scrolldown{ 0%{top:-30px;} 100%{top:30px;} }
+
+  /* Slide imagery - dummy placeholder photography (swap these URLs for the client's real photos later) */
+  .bg-1{background:url('https://picsum.photos/id/1076/1200/1600') center/cover no-repeat;}
+  .bg-2{background:url('https://picsum.photos/id/1078/1200/1600') center/cover no-repeat;}
+  .bg-3{background:url('https://picsum.photos/id/1081/1200/1600') center/cover no-repeat;}
+  .bg-4{background:url('https://picsum.photos/id/1082/1200/1600') center/cover no-repeat;}
+  .bg-5{background:url('https://picsum.photos/id/1084/1200/1600') center/cover no-repeat;}
+  .bg-6{background:url('https://picsum.photos/id/1050/1200/1600') center/cover no-repeat;}
+  .bg-7{background:url('https://picsum.photos/id/1025/1200/1600') center/cover no-repeat;}
+  .bg-8{background:url('https://picsum.photos/id/1069/1200/1600') center/cover no-repeat;}
+
+  /* ---------- SECTION TRANSITION BANNER (style like reference "Blog"/"Referanslar" pages) ---------- */
+  .banner{
+    position:relative; height:46vh; min-height:320px; display:flex; align-items:flex-end;
+    background:radial-gradient(circle at 60% 30%, #2b2b3d, #14141E 70%);
+    overflow:hidden;
+  }
+  .banner::after{
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(0deg, rgba(10,10,16,0.9), rgba(10,10,16,0.2));
+  }
+  .banner-content{position:relative; z-index:2; padding:0 60px 44px;}
+  .banner h2{font-size:clamp(42px,6vw,90px); color:var(--white);}
+
+  /* ---------- SERVICES SECTION ---------- */
+  .section{padding:110px 0;}
+  .section-eyebrow{
+    font-family:'Poppins'; font-size:12px; letter-spacing:0.2em; text-transform:uppercase;
+    color:var(--coral); margin-bottom:16px; font-weight:600;
+  }
+  .section-title{font-size:clamp(30px,4vw,50px); color:var(--white); margin-bottom:50px; max-width:640px;}
+
+  .service-grid{
+    display:grid; grid-template-columns:repeat(3, 1fr); gap:1px; background:rgba(255,255,255,0.08);
+  }
+  .service-card{
+    background:var(--ink2); padding:44px 34px; transition:background .3s;
+  }
+  .service-card:hover{background:var(--ink3);}
+  .service-card .idx{
+    font-family:'Poppins'; font-size:12px; color:var(--coral); letter-spacing:0.1em; margin-bottom:18px; display:block;
+  }
+  .service-card h3{font-family:'Playfair Display'; font-size:24px; color:var(--white); margin-bottom:14px; font-weight:600;}
+  .service-card p{font-family:'Poppins'; font-size:14px; color:var(--gray); line-height:1.7;}
+  .service-card .more{
+    display:inline-block; margin-top:20px; font-family:'Poppins'; font-size:11px;
+    letter-spacing:0.1em; text-transform:uppercase; color:var(--white);
+    border:1px solid var(--coral); padding:10px 18px; transition:background .2s;
+  }
+  .service-card .more:hover{background:var(--coral);}
+
+  /* ---------- PRODUCTS ---------- */
+  .products-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:1px; background:rgba(255,255,255,0.08);
+  }
+  .product-panel{
+    position:relative; min-height:420px; display:flex; align-items:flex-end; overflow:hidden;
+  }
+  .product-panel::after{
+    content:''; position:absolute; inset:0; background:linear-gradient(0deg, rgba(10,10,16,0.9), rgba(10,10,16,0.25));
+  }
+  .product-panel.pp1{background:radial-gradient(circle at 40% 30%, #3a3a52, #14141E 70%);}
+  .product-panel.pp2{background:radial-gradient(circle at 60% 30%, #2f3d46, #14141E 70%);}
+  .product-content{position:relative; z-index:2; padding:36px;}
+  .product-content h3{font-size:30px; color:var(--white); margin-bottom:12px;}
+  .product-content p{font-family:'Poppins'; font-size:14px; color:rgba(255,255,255,0.7); max-width:340px; margin-bottom:16px;}
+  .product-badge{
+    display:inline-block; font-family:'Poppins'; font-size:11px; color:var(--coral);
+    border:1px solid var(--coral); padding:6px 12px; letter-spacing:0.08em;
+  }
+
+  /* ---------- ABOUT ---------- */
+  .about-grid{display:grid; grid-template-columns:1fr 1fr; gap:70px; align-items:center;}
+  .about-visual{
+    aspect-ratio:4/5; background:radial-gradient(circle at 50% 30%, #33323f, #14141E 75%);
+    position:relative;
+  }
+  .about p{font-family:'Poppins'; font-size:15px; color:var(--gray); margin-bottom:18px; max-width:480px; line-height:1.8;}
+  .placeholder-note{
+    font-family:'Poppins'; font-size:11px; color:var(--coral); border-left:2px solid var(--coral);
+    padding-left:12px; margin-top:22px; letter-spacing:0.03em;
+  }
+  .about-stats{display:flex; gap:36px; margin-top:32px; flex-wrap:wrap;}
+  .stat b{font-family:'Playfair Display'; font-size:32px; display:block; color:var(--white);}
+  .stat span{font-family:'Poppins'; font-size:11px; color:var(--gray); text-transform:uppercase; letter-spacing:0.05em;}
+
+  /* ---------- PARTNERS / CERT GRID (style like reference logo grid) ---------- */
+  .partners{background:var(--ink2); padding:80px 0;}
+  .partner-grid{
+    display:grid; grid-template-columns:repeat(4, 1fr); gap:1px; background:rgba(255,255,255,0.06);
+  }
+  .partner-box{
+    background:var(--ink2); height:130px; display:flex; align-items:center; justify-content:center;
+    font-family:'Poppins'; font-size:11px; color:var(--gray); letter-spacing:0.08em; text-transform:uppercase;
+    text-align:center; padding:14px;
+  }
+
+  /* ---------- BLOG ---------- */
+  .blog-grid{
+    display:grid; grid-template-columns:repeat(3, 1fr); gap:24px;
+  }
+  .blog-card{background:var(--ink2); border:1px solid rgba(255,255,255,0.08); overflow:hidden;}
+  .blog-card .thumb{height:190px; background-size:cover; background-position:center;}
+  .blog-card .body{padding:24px;}
+  .blog-card .date{font-family:'Poppins'; font-size:11px; color:var(--gray); letter-spacing:0.05em; margin-bottom:10px; display:block;}
+  .blog-card h3{font-size:19px; color:var(--white); margin-bottom:10px;}
+  .blog-card p{font-family:'Poppins'; font-size:13px; color:var(--gray); line-height:1.7; margin-bottom:18px;}
+  .blog-card .more{
+    display:inline-block; font-family:'Poppins'; font-size:11px; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--white); border:1px solid var(--coral); padding:9px 16px; transition:background .2s;
+  }
+  .blog-card .more:hover{background:var(--coral);}
+
+  /* ---------- CONTACT ---------- */
+  .contact-grid{display:grid; grid-template-columns:1fr 1fr; gap:70px;}
+  .contact-list{list-style:none; margin-top:30px;}
+  .contact-list li{
+    display:flex; gap:18px; padding:16px 0; border-bottom:1px solid rgba(255,255,255,0.1);
+    font-family:'Poppins'; font-size:14px; color:var(--gray);
+  }
+  .contact-list b{color:var(--white); width:100px; flex-shrink:0; font-size:11px; text-transform:uppercase; letter-spacing:0.08em;}
+  .form-box{background:var(--ink2); padding:40px; border:1px solid rgba(255,255,255,0.08);}
+  .form-row{margin-bottom:18px;}
+  .form-row label{
+    display:block; font-family:'Poppins'; font-size:11px; text-transform:uppercase; letter-spacing:0.08em;
+    color:var(--gray); margin-bottom:8px;
+  }
+  .form-row input, .form-row textarea{
+    width:100%; background:transparent; border:1px solid rgba(255,255,255,0.2); color:var(--white);
+    padding:12px 14px; font-family:'Poppins'; font-size:14px;
+  }
+  .form-row input:focus, .form-row textarea:focus{outline:none; border-color:var(--coral);}
+  .form-row textarea{min-height:90px; resize:vertical;}
+  .submit-btn{
+    font-family:'Poppins'; font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:var(--white);
+    border:1px solid var(--coral); background:none; padding:14px 26px; transition:background .2s;
+  }
+  .submit-btn:hover{background:var(--coral);}
+
+  /* ---------- FOOTER ---------- */
+  footer{background:#0F0F17; padding:60px 0 28px;}
+  .footer-grid{display:flex; justify-content:space-between; flex-wrap:wrap; gap:30px; margin-bottom:40px;}
+  .footer-col h4{font-family:'Poppins'; font-size:11px; text-transform:uppercase; letter-spacing:0.1em; color:var(--white); margin-bottom:16px;}
+  .footer-col a{display:block; font-family:'Poppins'; font-size:13px; color:var(--gray); margin-bottom:10px;}
+  .footer-col a:hover{color:var(--coral);}
+  .footer-bottom{
+    border-top:1px solid rgba(255,255,255,0.08); padding-top:22px; display:flex;
+    justify-content:space-between; font-family:'Poppins'; font-size:11px; color:var(--gray); flex-wrap:wrap; gap:10px;
+  }
+
+  @media (max-width:860px){
+    .wrap{padding:0 24px;}
+    .topbar{padding:24px 24px;}
+    .fullmenu{padding:0 24px;}
+    .menu-social{right:24px;}
+    .banner-content{padding:0 24px 34px;}
+    .service-grid{grid-template-columns:1fr;}
+    .products-grid{grid-template-columns:1fr;}
+    .about-grid{grid-template-columns:1fr;}
+    .contact-grid{grid-template-columns:1fr;}
+    .partner-grid{grid-template-columns:repeat(2,1fr);}
+    .blog-grid{grid-template-columns:1fr;}
+    .social-rail a{width:42px; height:42px; font-size:16px;}
+  }
+</style>
+</head>
+<body>
+<div id="cursor"></div>
+<div class="social-rail">
+  <a class="phone" href="tel:02166215541" aria-label="Call us">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+  </a>
+  <a class="telegram" href="#" aria-label="Telegram">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="#fff"><path d="M21.05 3.76 2.98 10.73c-1.24.49-1.23 1.17-.23 1.48l4.63 1.45 1.79 5.5c.22.6.38.85.78.85.4 0 .58-.18.8-.4l1.9-1.85 4.08 3.02c.75.42 1.3.2 1.48-.7l2.68-12.6c.26-1.1-.42-1.6-1.84-.72zM8.5 13.44l8.9-5.6c.43-.26.82-.12.5.17l-7.2 6.5-.28 3.1z"/></svg>
+  </a>
+  <a class="whatsapp" href="#" aria-label="WhatsApp">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="#fff"><path d="M17.47 14.38c-.29-.15-1.7-.84-1.97-.93-.26-.1-.46-.15-.65.14-.2.3-.75.94-.92 1.13-.17.2-.34.22-.63.08-.29-.15-1.22-.45-2.33-1.44-.86-.77-1.44-1.72-1.6-2.02-.17-.29-.02-.45.13-.6.13-.13.29-.34.44-.5.15-.18.2-.3.29-.5.1-.2.05-.37-.02-.51-.08-.15-.65-1.58-.9-2.16-.24-.58-.48-.5-.65-.5-.17 0-.37-.02-.56-.02-.2 0-.51.07-.78.37s-1.03 1-1.03 2.45 1.05 2.85 1.2 3.05c.15.2 2.06 3.15 5 4.42.7.3 1.24.48 1.67.61.7.22 1.34.19 1.84.12.56-.08 1.7-.7 1.95-1.36.24-.67.24-1.24.17-1.36-.07-.12-.26-.2-.55-.35z"/><path d="M12.04 2C6.55 2 2.1 6.44 2.1 11.94c0 1.87.51 3.62 1.4 5.12L2 22l5.08-1.44a9.9 9.9 0 0 0 4.96 1.33h.01c5.49 0 9.94-4.44 9.94-9.94S17.53 2 12.04 2zm0 18.16h-.01a8.2 8.2 0 0 1-4.18-1.15l-.3-.18-3.02.85.85-2.94-.2-.31a8.16 8.16 0 0 1-1.26-4.4c0-4.51 3.67-8.18 8.19-8.18a8.13 8.13 0 0 1 5.79 2.4 8.13 8.13 0 0 1 2.39 5.78c0 4.52-3.68 8.13-8.25 8.13z"/></svg>
+  </a>
+  <a class="instagram" href="#" aria-label="Instagram">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1"/></svg>
+  </a>
+</div>
+
+<div class="topbar">
+  <a href="index.html" class="logo">
+    <svg class="mark" viewBox="0 0 34 34">
+      <circle cx="17" cy="17" r="17" fill="#EB5D45"/>
+      <path d="M10 23 L17 10 L17 15.5 L24 10 L17 24 L17 18.5 Z" fill="#14141E"/>
+    </svg>
+    <div>
+      <div class="word">NORA</div>
+      <span class="tag">Stainless &amp; Steel</span>
+    </div>
+  </a>
+  <button class="menu-btn" id="menuBtn"><span class="bar"></span></button>
+</div>
+
+<div class="fullmenu" id="fullMenu">
+  <button class="menu-close" id="menuClose" aria-label="Close menu">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M4 4 L20 20 M20 4 L4 20"/></svg>
+  </button>
+  <ul class="menu-list">
+    <li><a href="index.html" class="menu-item">Home</a></li>
+    <li>
+      <div class="menu-item " id="corporateToggle">Corporate <span class="chev">&#8964;</span></div>
+      <ul class="submenu" id="corporateSub">
+        <li><a href="about.html" class="">About Us</a></li>
+        <li><a href="certificates.html" class="">Certificates</a></li>
+        <li><a href="services.html" class="">Services</a></li>
+      </ul>
+    </li>
+    <li><a href="products.html" class="menu-item">Products</a></li>
+    <li><a href="blog.html" class="menu-item active">Blog</a></li>
+    <li><a href="contact.html" class="menu-item">Contact</a></li>
+  </ul>
+  <div class="menu-social">
+    <a href="#">Facebook</a>
+    <a href="#">Instagram</a>
+    <a href="#">Linkedin</a>
+  </div>
+</div>
+
+
+<section class="banner"><div class="banner-content"><h2 class="serif">Blog</h2></div></section>
+<section class="section" style="padding-top:70px;">
+  <div class="wrap">
+    <span class="section-eyebrow">News &amp; Updates</span>
+    <h2 class="section-title">Latest from Nora.</h2>
+  </div>
+  <div class="wrap">
+  <div class="blog-grid">
+    <div class="blog-card">
+      <div class="thumb bg-7"></div>
+      <div class="body">
+        <span class="date">[ Placeholder date ]</span>
+        <h3>Post title carried over from the old site</h3>
+        <p>Placeholder summary. Existing blog post content will be migrated here once provided by the client.</p>
+        <a class="more" href="#">Read More</a>
+      </div>
+    </div>
+    <div class="blog-card">
+      <div class="thumb bg-8"></div>
+      <div class="body">
+        <span class="date">[ Placeholder date ]</span>
+        <h3>Second post title carried over from the old site</h3>
+        <p>Placeholder summary. Existing blog post content will be migrated here once provided by the client.</p>
+        <a class="more" href="#">Read More</a>
+      </div>
+    </div>
+  </div>
+  </div>
+</section>
+
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <h4>Nora Paslanmaz ve Celik</h4>
+        <a href="about.html">Corporate</a>
+        <a href="services.html">Services</a>
+        <a href="products.html">Products</a>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="certificates.html">Certificates</a>
+        <a href="certificates.html">References</a>
+        <a href="blog.html">Blog</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <a href="tel:02166215541">0216 621 55 41</a>
+        <a href="mailto:info@norapaslanmazcelik.com">info@norapaslanmazcelik.com</a>
+      </div>
+      <div class="footer-col">
+        <h4>Language</h4>
+        <a href="#">Turkish</a>
+        <a href="#">English</a>
+        <a href="#">French</a>
+        <a href="#">Arabic</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Nora Paslanmaz ve Demir Celik</span>
+      <span>norapaslanmazcelik.com</span>
+    </div>
+  </div>
+</footer>
+
+
+<script>
+  // Custom round cursor
+  const cursor = document.getElementById('cursor');
+  let mx=0, my=0, cx=0, cy=0;
+  document.addEventListener('mousemove', e=>{
+    mx=e.clientX; my=e.clientY;
+    if (!cursor.classList.contains('visible')) { cx = mx; cy = my; cursor.classList.add('visible'); }
+  });
+  function animCursor(){
+    cx += (mx-cx)*0.18; cy += (my-cy)*0.18;
+    cursor.style.left = cx+'px'; cursor.style.top = cy+'px';
+    requestAnimationFrame(animCursor);
+  }
+  animCursor();
+  document.querySelectorAll('a, button, .menu-item').forEach(el=>{
+    el.addEventListener('mouseenter', ()=>cursor.classList.add('grow'));
+    el.addEventListener('mouseleave', ()=>cursor.classList.remove('grow'));
+  });
+
+  // Fullscreen menu toggle
+  const menuBtn = document.getElementById('menuBtn');
+  const fullMenu = document.getElementById('fullMenu');
+  let savedScrollY = 0;
+  function openMenu(){
+    savedScrollY = window.scrollY;
+    fullMenu.classList.add('open');
+    menuBtn.classList.add('open');
+    menuBtn.style.visibility = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.top = -savedScrollY + 'px';
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+  }
+  function closeMenu(){
+    fullMenu.classList.remove('open');
+    menuBtn.classList.remove('open');
+    menuBtn.style.visibility = 'visible';
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    window.scrollTo(0, savedScrollY);
+  }
+  menuBtn.addEventListener('click', ()=>{
+    if (fullMenu.classList.contains('open')) closeMenu(); else openMenu();
+  });
+  document.getElementById('menuClose').addEventListener('click', closeMenu);
+
+  // Corporate submenu toggle
+  const corpToggle = document.getElementById('corporateToggle');
+  const corpSub = document.getElementById('corporateSub');
+  corpToggle.addEventListener('click', ()=>{
+    corpToggle.classList.toggle('active');
+    corpSub.classList.toggle('open');
+  });
+
+
+</script>
+</body>
+</html>
