@@ -198,16 +198,25 @@
   @keyframes scrolldown{ 0%{top:-30px;} 100%{top:30px;} }
 
   /* Slide imagery - pure CSS gradients (zero network dependency, always renders instantly).
+     Each slide gets a clearly distinct hue so the sliding motion is obvious.
      Swap these for the client's real product/facility photos later:
      just change background to url('photo.jpg') center/cover no-repeat on each .bg-N class. */
-  .bg-1{background:radial-gradient(circle at 30% 25%, #5b6b7d, #1c2128 70%);}
-  .bg-2{background:radial-gradient(circle at 70% 30%, #d97b3f, #23180f 70%);}
-  .bg-3{background:radial-gradient(circle at 40% 70%, #3f7ea6, #10181d 70%);}
-  .bg-4{background:radial-gradient(circle at 60% 40%, #6b6f76, #17181a 70%);}
-  .bg-5{background:radial-gradient(circle at 50% 60%, #c99a3f, #201a0d 70%);}
-  .bg-6{background:radial-gradient(circle at 35% 35%, #4a5568, #14171c 70%);}
+  .bg-1{background:linear-gradient(145deg, #2d4a63 0%, #17222c 60%), radial-gradient(circle at 30% 25%, #4a7ba6, #14171c 75%); background-blend-mode:screen;}
+  .bg-2{background:linear-gradient(145deg, #8a4a22 0%, #2a1810 60%), radial-gradient(circle at 70% 30%, #e08a45, #1c120b 75%); background-blend-mode:screen;}
+  .bg-3{background:linear-gradient(145deg, #1f5c5a 0%, #0f1f1f 60%), radial-gradient(circle at 40% 70%, #3aa19c, #0d1817 75%); background-blend-mode:screen;}
+  .bg-4{background:linear-gradient(145deg, #4f4468 0%, #1a1723 60%), radial-gradient(circle at 60% 40%, #8a77b8, #141019 75%); background-blend-mode:screen;}
+  .bg-5{background:linear-gradient(145deg, #8a6d22 0%, #241d0c 60%), radial-gradient(circle at 50% 60%, #d4ae45, #1a1509 75%); background-blend-mode:screen;}
+  .bg-6{background:linear-gradient(145deg, #6e2f3a 0%, #1f0f13 60%), radial-gradient(circle at 35% 35%, #b85a6c, #170b0e 75%); background-blend-mode:screen;}
   .bg-7{background:radial-gradient(circle at 55% 45%, #7c8591, #191c20 70%);}
   .bg-8{background:radial-gradient(circle at 45% 55%, #b56a4a, #201410 70%);}
+
+  /* Huge ghost index number behind each panel - makes the sliding motion unmistakable */
+  .slide-num{
+    position:absolute; top:50%; left:6%; transform:translateY(-50%);
+    font-family:'Playfair Display'; font-weight:600; font-size:clamp(160px, 26vw, 380px);
+    color:rgba(255,255,255,0.06); line-height:1; z-index:1; pointer-events:none;
+    user-select:none;
+  }
 
   @keyframes kenburns{
     0%{ transform:scale(1.08); }
@@ -439,6 +448,7 @@
     <div class="slide-track" id="slideTrack">
     <section class="hero-slide" data-idx="0">
       <div class="slide-blur bg-1"></div>
+      <div class="slide-num">01</div>
       <a class="slide-center bg-1" href="services.html" aria-label="Laser Cutting"></a>
       <div class="slide-label">
         <div class="slide-eyebrow">Service / 01</div>
@@ -448,6 +458,7 @@
     </section>
     <section class="hero-slide" data-idx="1">
       <div class="slide-blur bg-2"></div>
+      <div class="slide-num">02</div>
       <a class="slide-center bg-2" href="services.html" aria-label="Plasma Cutting"></a>
       <div class="slide-label">
         <div class="slide-eyebrow">Service / 02</div>
@@ -457,6 +468,7 @@
     </section>
     <section class="hero-slide" data-idx="2">
       <div class="slide-blur bg-3"></div>
+      <div class="slide-num">03</div>
       <a class="slide-center bg-3" href="services.html" aria-label="Welded Fabrication"></a>
       <div class="slide-label">
         <div class="slide-eyebrow">Service / 03</div>
@@ -466,6 +478,7 @@
     </section>
     <section class="hero-slide" data-idx="3">
       <div class="slide-blur bg-4"></div>
+      <div class="slide-num">04</div>
       <a class="slide-center bg-4" href="services.html" aria-label="Machining"></a>
       <div class="slide-label">
         <div class="slide-eyebrow">Service / 04</div>
@@ -475,6 +488,7 @@
     </section>
     <section class="hero-slide" data-idx="4">
       <div class="slide-blur bg-5"></div>
+      <div class="slide-num">05</div>
       <a class="slide-center bg-5" href="services.html" aria-label="Cutting &amp; Bending"></a>
       <div class="slide-label">
         <div class="slide-eyebrow">Service / 05</div>
@@ -484,6 +498,7 @@
     </section>
     <section class="hero-slide" data-idx="5">
       <div class="slide-blur bg-6"></div>
+      <div class="slide-num">06</div>
       <a class="slide-center bg-6" href="products.html" aria-label="Steel &amp; Iron Products"></a>
       <div class="slide-label">
         <div class="slide-eyebrow">Product / 06</div>
