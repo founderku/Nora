@@ -142,13 +142,16 @@
   }
   .menu-social a:hover{color:var(--white);}
 
-  /* ---------- HERO SLIDER (horizontal filmstrip, sticky-pinned, scroll-tied) ---------- */
-  .hero-wrap{ position:relative; }
-  .hero-sticky{
-    position:sticky; top:0; height:100vh; overflow:hidden; background:var(--ink);
+  /* ---------- HERO SLIDER (locked carousel: fixed overlay, one wheel tick = one slide) ---------- */
+  .hero-spacer{ height:100vh; }
+  .hero-fixed{
+    position:fixed; inset:0; z-index:50; overflow:hidden; background:var(--ink);
+    opacity:1; visibility:visible; transition:opacity .3s ease;
   }
+  .hero-fixed.exited{ opacity:0; visibility:hidden; pointer-events:none; }
   .slide-track{
-    display:flex; height:100%; width:100%; will-change:transform;
+    display:flex; height:100%; width:100%;
+    transition:transform .9s cubic-bezier(.65,0,.35,1);
   }
   .hero-slide{
     position:relative; flex:0 0 100%; width:100%; height:100%; overflow:hidden; background:var(--ink);
@@ -156,20 +159,35 @@
   .slide-blur{
     position:absolute; top:0; left:0; width:100%; height:100%; background-size:cover; background-position:center;
     filter:blur(9px) brightness(0.78) saturate(1.05); transform:scale(1.08);
+    transition:filter .9s ease;
   }
   .slide-center{
     position:absolute; top:0; bottom:0; left:50%; transform:translateX(-50%) scale(1);
     width:46%; min-width:340px; background-size:cover; background-position:center;
     box-shadow:0 40px 100px rgba(0,0,0,0.55); display:block;
-    opacity:1; transition:opacity .6s ease, transform .6s cubic-bezier(.16,.84,.44,1);
+    transition:transform .9s cubic-bezier(.65,0,.35,1), box-shadow .9s ease;
   }
   .slide-center::after{
     content:''; position:absolute; inset:0;
     background:linear-gradient(0deg, rgba(10,10,16,0.5) 0%, transparent 40%);
   }
+  /* Shared-element feel: every panel breathes together while the track is
+     mid-glide, so the motion reads as one continuous element transforming
+     rather than static images sliding past each other */
+  .slide-track.sliding .slide-center{
+    transform:translateX(-50%) scale(0.88);
+    box-shadow:0 20px 50px rgba(0,0,0,0.35);
+  }
+  .slide-track.sliding .slide-blur{
+    filter:blur(14px) brightness(0.6) saturate(1.05);
+  }
+  .slide-track.sliding .slide-label{
+    opacity:0; transform:translateY(14px);
+  }
   .slide-label{
     position:absolute; left:0; right:0; bottom:64px; z-index:6; text-align:center;
-    pointer-events:none; opacity:1; transition:opacity .5s ease .1s, transform .5s ease .1s;
+    pointer-events:none; opacity:1; transform:translateY(0);
+    transition:opacity .5s ease .35s, transform .5s cubic-bezier(.22,.61,.36,1) .35s;
   }
   .slide-eyebrow{
     font-family:'Poppins'; font-size:11px; letter-spacing:0.25em; text-transform:uppercase;
@@ -183,8 +201,15 @@
   .hero-dots{
     position:absolute; bottom:24px; right:36px; z-index:70; display:flex; flex-direction:column; gap:10px;
   }
-  .dot{width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.3); transition:background .2s;}
-  .dot.active{background:var(--coral);}
+  .dot{
+    width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.3);
+    position:relative; transition:background .3s ease;
+  }
+  .dot.active{ background:var(--coral); }
+  .dot.active::after{
+    content:''; position:absolute; inset:-4px; border-radius:50%;
+    border:1.5px solid var(--coral);
+  }
   .scroll-hint{
     position:absolute; left:36px; bottom:24px; z-index:70;
     font-family:'Poppins'; font-size:11px; letter-spacing:0.15em; text-transform:uppercase;
@@ -207,10 +232,8 @@
   .bg-4{background:linear-gradient(145deg, #4f4468 0%, #1a1723 60%), radial-gradient(circle at 60% 40%, #8a77b8, #141019 75%); background-blend-mode:screen;}
   .bg-5{background:linear-gradient(145deg, #8a6d22 0%, #241d0c 60%), radial-gradient(circle at 50% 60%, #d4ae45, #1a1509 75%); background-blend-mode:screen;}
   .bg-6{background:linear-gradient(145deg, #6e2f3a 0%, #1f0f13 60%), radial-gradient(circle at 35% 35%, #b85a6c, #170b0e 75%); background-blend-mode:screen;}
-  .bg-7{background:radial-gradient(circle at 55% 45%, #7c8591, #191c20 70%);}
-  .bg-8{background:radial-gradient(circle at 45% 55%, #b56a4a, #201410 70%);}
 
-  /* Huge ghost index number behind each panel - makes the sliding motion unmistakable */
+  /* Huge ghost index number behind each panel, makes the sliding motion unmistakable */
   .slide-num{
     position:absolute; top:50%; left:6%; transform:translateY(-50%);
     font-family:'Playfair Display'; font-weight:600; font-size:clamp(160px, 26vw, 380px);
@@ -223,11 +246,6 @@
     100%{ transform:scale(1.18); }
   }
   .slide-blur{ animation:kenburns 14s ease-in-out infinite alternate; }
-
-  /* Reveal micro-transition - the panel briefly dips and settles each time the
-     active slide changes, layered on top of the horizontal glide */
-  .hero-slide.settling .slide-center{ opacity:0.5; transform:translateX(-50%) scale(0.95); }
-  .hero-slide.settling .slide-label{ opacity:0; }
 
   /* ---------- SECTION TRANSITION BANNER (style like reference "Blog"/"Referanslar" pages) ---------- */
   .banner{
@@ -443,9 +461,9 @@
 </div>
 
 
-<div class="hero-wrap" id="heroWrap">
-  <div class="hero-sticky">
-    <div class="slide-track" id="slideTrack">
+<div class="hero-spacer" id="heroSpacer"></div>
+<div class="hero-fixed" id="heroFixed">
+  <div class="slide-track" id="slideTrack">
     <section class="hero-slide" data-idx="0">
       <div class="slide-blur bg-1"></div>
       <div class="slide-num">01</div>
@@ -506,10 +524,9 @@
         <div class="slide-rule"></div>
       </div>
     </section>
-    </div>
-    <div class="scroll-hint" id="scrollHint"><div class="line"></div>SCROLL</div>
-    <div class="hero-dots" id="heroDots"></div>
   </div>
+  <div class="scroll-hint" id="scrollHint"><div class="line"></div>SCROLL</div>
+  <div class="hero-dots" id="heroDots"></div>
 </div>
 
 
@@ -618,51 +635,125 @@
   revealEls.forEach(el=> revealObserver.observe(el));
 
 
-  // Hero - horizontal filmstrip, pinned via position:sticky, sliding sideways
-  // in direct proportion to scroll position (updated every scroll event, so
-  // it can never freeze: there is no JS-driven scrollTo, no preventDefault,
-  // nothing fighting the browser's own scrolling).
-  const heroSlideEls = document.querySelectorAll('.hero-slide');
-  const dotsWrap = document.getElementById('heroDots');
-  const heroWrap = document.getElementById('heroWrap');
+  // Hero - locked carousel. While active, the hero sits fixed over the viewport
+  // and owns the wheel: one tick = one full slide, animated purely by a CSS
+  // transition (no per-frame JS, no scroll-position math while cycling).
+  // The page's real scroll position is only touched ONCE, at the exact moment
+  // the visitor exits the hero (forward past the last slide, or backward past
+  // the first) - a single deterministic jump, not a competing animation.
+  const heroSlides = document.querySelectorAll('.hero-slide');
+  const heroSpacer = document.getElementById('heroSpacer');
+  const heroFixed = document.getElementById('heroFixed');
   const slideTrack = document.getElementById('slideTrack');
-  const n = heroSlideEls.length;
+  const dotsWrap = document.getElementById('heroDots');
+  const n = heroSlides.length;
 
-  heroSlideEls.forEach((s,i)=>{
+  heroSpacer.style.height = '100vh';
+
+  heroSlides.forEach((s,i)=>{
     const d = document.createElement('div');
     d.className = 'dot' + (i===0 ? ' active' : '');
     dotsWrap.appendChild(d);
   });
   const dots = document.querySelectorAll('.dot');
-  heroWrap.style.height = (n * 100) + 'vh';
 
-  let current = 0;
-  function setActiveDot(i){
-    if (i === current) return;
-    dots[current].classList.remove('active');
-    current = i;
-    dots[current].classList.add('active');
-    // Brief settle-dip on the panel that's becoming active, for a bit of extra polish
-    const el = heroSlideEls[i];
-    el.classList.add('settling');
-    requestAnimationFrame(()=> requestAnimationFrame(()=> el.classList.remove('settling')));
+  let idx = 0;
+  let heroActive = true;
+  let animBusy = false;
+
+  function render(){
+    slideTrack.style.transform = `translateX(-${idx * 100}%)`;
+    dots.forEach(d=>d.classList.remove('active'));
+    dots[idx].classList.add('active');
+  }
+  render();
+
+  function lockScroll(){ document.documentElement.style.overflow = 'hidden'; }
+  function unlockScroll(){ document.documentElement.style.overflow = ''; }
+  lockScroll();
+
+  function enterHero(atEnd){
+    heroActive = true;
+    idx = atEnd ? n - 1 : 0;
+    render();
+    heroFixed.classList.remove('exited');
+    lockScroll();
   }
 
-  function onScroll(){
-    const rect = heroWrap.getBoundingClientRect();
-    const total = heroWrap.offsetHeight - window.innerHeight;
-    const scrolled = Math.min(Math.max(-rect.top, 0), total);
-    const progress = total > 0 ? scrolled / total : 0;
-
-    const maxShift = (n - 1) * 100;
-    slideTrack.style.transform = `translateX(-${progress * maxShift}vw)`;
-
-    let idx = Math.round(progress * (n - 1));
-    idx = Math.min(n - 1, Math.max(0, idx));
-    setActiveDot(idx);
+  function exitHero(forward){
+    heroActive = false;
+    heroFixed.classList.add('exited');
+    unlockScroll();
+    const rect = heroSpacer.getBoundingClientRect();
+    const targetY = forward
+      ? window.scrollY + rect.bottom + 2
+      : window.scrollY + rect.top - 2;
+    window.scrollTo(0, Math.max(targetY, 0));
   }
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
+
+  // One tick = one full slide. The 'sliding' class makes every panel dip
+  // together for the first part of the glide, then settle back in just
+  // before the horizontal motion finishes - the shared-element feel.
+  function advance(newIdx){
+    idx = newIdx;
+    slideTrack.classList.add('sliding');
+    render();
+    animBusy = true;
+    setTimeout(()=> slideTrack.classList.remove('sliding'), 480);
+    setTimeout(()=>{ animBusy = false; }, 900);
+  }
+
+  window.addEventListener('wheel', function(e){
+    if (document.getElementById('fullMenu').classList.contains('open')) return;
+
+    if (!heroActive){
+      // Re-enter the hero if the visitor scrolls back up into the spacer region
+      const rect = heroSpacer.getBoundingClientRect();
+      const nearHeroFromBelow = e.deltaY < 0 && rect.bottom > 0 && rect.bottom <= window.innerHeight + 60;
+      if (nearHeroFromBelow){
+        e.preventDefault();
+        enterHero(true);
+      }
+      return;
+    }
+
+    e.preventDefault();
+    if (animBusy) return;
+    const dir = e.deltaY > 0 ? 1 : -1;
+
+    if (dir === 1){
+      if (idx < n - 1) advance(idx + 1);
+      else exitHero(true);
+    } else {
+      if (idx > 0) advance(idx - 1);
+      // already at slide 0 going up further: nothing above the hero, ignore
+    }
+  }, { passive: false });
+
+  // Touch swipe support (mobile): treat a vertical swipe like one wheel tick
+  let touchStartY = null;
+  window.addEventListener('touchstart', function(e){
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+  window.addEventListener('touchend', function(e){
+    if (touchStartY === null) return;
+    const dy = touchStartY - e.changedTouches[0].clientY;
+    touchStartY = null;
+    if (Math.abs(dy) < 40) return;
+    if (!heroActive){
+      const rect = heroSpacer.getBoundingClientRect();
+      if (dy < 0 && rect.bottom > 0 && rect.bottom <= window.innerHeight + 60) enterHero(true);
+      return;
+    }
+    if (animBusy) return;
+    const dir = dy > 0 ? 1 : -1;
+    if (dir === 1){
+      if (idx < n - 1) advance(idx + 1);
+      else exitHero(true);
+    } else {
+      if (idx > 0) advance(idx - 1);
+    }
+  }, { passive: true });
 
 </script>
 </body>
