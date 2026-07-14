@@ -79,7 +79,7 @@
   .topbar{
     position:fixed; top:0; left:0; right:0; z-index:85;
     display:flex; justify-content:space-between; align-items:center;
-    padding:30px 60px; mix-blend-mode:normal; pointer-events:none;
+    padding:34px 80px; mix-blend-mode:normal; pointer-events:none;
   }
   .topbar .logo{pointer-events:auto;}
   .topbar .menu-btn{pointer-events:auto;}
@@ -159,7 +159,7 @@
   .stage{ position:absolute; inset:0; }
   .layer{
     position:absolute; top:0; height:100%; background-size:cover; background-position:center;
-    transition:opacity .6s ease, transform .7s cubic-bezier(.65,0,.35,1), filter .6s ease;
+    transition:opacity .45s cubic-bezier(.4,0,.2,1), transform .45s cubic-bezier(.4,0,.2,1), filter .45s cubic-bezier(.4,0,.2,1);
   }
   .layer.side{
     width:33%; filter:blur(7px) brightness(0.55) saturate(1.05); transform:scale(1.06);
@@ -185,7 +185,7 @@
   .slide-label{
     position:absolute; left:0; right:0; bottom:64px; z-index:6; text-align:center;
     pointer-events:none; opacity:1; transform:translateY(0);
-    transition:opacity .5s ease .35s, transform .5s cubic-bezier(.22,.61,.36,1) .35s;
+    transition:opacity .4s cubic-bezier(.4,0,.2,1), transform .4s cubic-bezier(.22,.61,.36,1);
   }
   .slide-eyebrow{
     font-family:'Poppins'; font-size:11px; letter-spacing:0.25em; text-transform:uppercase;
@@ -424,7 +424,7 @@
 
   @media (max-width:860px){
     .wrap{padding:0 24px;}
-    .topbar{padding:24px 24px;}
+    .topbar{padding:24px 28px;}
     .fullmenu{padding:0 24px;}
     .menu-social{right:24px;}
     .banner-content{padding:0 24px 34px;}
@@ -774,7 +774,7 @@
     setTimeout(()=>{
       paint(idx);
       stage.classList.remove('sliding');
-    }, 420);
+    }, 450);
     setTimeout(()=>{ animBusy = false; }, 900);
   }
 
