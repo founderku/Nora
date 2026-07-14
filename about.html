@@ -6,15 +6,15 @@
 <title>About Us | Nora Paslanmaz ve Demir Celik</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#14141E;
-    --ink2:#1B1B2B;
-    --ink3:#20202F;
-    --coral:#EB5D45;
-    --lavender:#B7AEDB;
-    --gray:#9AA0AC;
+    --ink:#0D0D0D;
+    --ink2:#171717;
+    --ink3:#1F1F1F;
+    --coral:#BA0000;
+    --lavender:#9A9A9A;
+    --gray:#9A9A9A;
     --white:#FFFFFF;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
@@ -25,8 +25,8 @@
     overflow-x:hidden;
   }
   a, button{cursor:none;}
-  .serif{font-family:'Playfair Display', serif;}
-  h1,h2,h3{font-family:'Playfair Display', serif; font-weight:600; line-height:1.05;}
+  .serif{font-family:'Jost', sans-serif;}
+  h1,h2,h3{font-family:'Jost', sans-serif; font-weight:600; line-height:1.05; text-transform:uppercase; letter-spacing:0.01em;}
   a{color:inherit; text-decoration:none;}
   .wrap{max-width:1300px; margin:0 auto; padding:0 60px;}
 
@@ -65,10 +65,11 @@
     font-size:18px; color:var(--white); box-shadow:0 4px 14px rgba(0,0,0,0.35);
   }
   .social-rail a svg{width:17px; height:17px;}
-  .social-rail a.phone{background:#3B7DD8;}
-  .social-rail a.telegram{background:#29A9EA;}
-  .social-rail a.whatsapp{background:#25D366;}
-  .social-rail a.instagram{background:#E1306C;}
+  .social-rail a.phone{background:#3a3a3a;}
+  .social-rail a.telegram{background:#444444;}
+  .social-rail a.whatsapp{background:#3a3a3a;}
+  .social-rail a.instagram{background:#444444;}
+  .social-rail a:hover{background:var(--coral);}
 
   /* ---------- TOP BAR ---------- */
   .topbar{
@@ -79,6 +80,7 @@
   .topbar .logo{pointer-events:auto;}
   .topbar .menu-btn{pointer-events:auto;}
   .logo{display:flex; align-items:center; gap:12px;}
+  .logo-img{height:34px; width:auto; display:block;}
   .logo .mark{width:34px; height:34px; flex-shrink:0;}
   .logo .word{
     font-family:'Poppins'; font-weight:800; font-size:22px; letter-spacing:0.01em; color:var(--white);
@@ -118,7 +120,7 @@
   .menu-list{list-style:none;}
   .menu-list > li{margin-bottom:6px;}
   .menu-item{
-    font-family:'Playfair Display'; font-size:clamp(28px,4vw,52px); font-weight:600;
+    font-family:'Jost'; font-size:clamp(28px,4vw,52px); font-weight:600;
     color:var(--gray); display:flex; align-items:center; gap:16px; padding:5px 0;
     transition:color .2s; cursor:none;
   }
@@ -132,7 +134,7 @@
   .submenu.open{max-height:600px;}
   .submenu li{padding:6px 0;}
   .submenu a{
-    font-family:'Playfair Display'; font-size:16px; font-weight:600; color:var(--lavender);
+    font-family:'Jost'; font-size:16px; font-weight:600; color:var(--lavender);
   }
   .submenu a:hover, .submenu a.active{color:var(--white);}
   .menu-social{
@@ -200,7 +202,7 @@
   }
   .slide-rule{width:40px; height:3px; background:var(--coral); margin:0 auto;}
   .hero-dots{
-    position:absolute; bottom:24px; right:36px; z-index:70; display:flex; flex-direction:column; gap:10px;
+    position:absolute; bottom:24px; right:36px; z-index:70; display:flex; flex-direction:row; gap:10px;
   }
   .dot{
     width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.3);
@@ -216,28 +218,28 @@
     font-family:'Poppins'; font-size:11px; letter-spacing:0.15em; text-transform:uppercase;
     color:rgba(255,255,255,0.6); display:flex; align-items:center; gap:10px;
   }
-  .scroll-hint .line{width:1px; height:30px; background:rgba(255,255,255,0.4); position:relative; overflow:hidden;}
+  .scroll-hint .line{width:30px; height:1px; background:rgba(255,255,255,0.4); position:relative; overflow:hidden;}
   .scroll-hint .line::after{
-    content:''; position:absolute; top:-30px; left:0; width:100%; height:30px; background:var(--coral);
-    animation:scrolldown 1.8s ease-in-out infinite;
+    content:''; position:absolute; top:0; left:-30px; width:30px; height:100%; background:var(--coral);
+    animation:scrollacross 1.8s ease-in-out infinite;
   }
-  @keyframes scrolldown{ 0%{top:-30px;} 100%{top:30px;} }
+  @keyframes scrollacross{ 0%{left:-30px;} 100%{left:30px;} }
 
   /* Slide imagery - pure CSS gradients (zero network dependency, always renders instantly).
      Each slide gets a clearly distinct hue so the sliding motion is obvious.
      Swap these for the client's real product/facility photos later:
      just change background to url('photo.jpg') center/cover no-repeat on each .bg-N class. */
-  .bg-1{background:linear-gradient(145deg, #2d4a63 0%, #17222c 60%), radial-gradient(circle at 30% 25%, #4a7ba6, #14171c 75%); background-blend-mode:screen;}
-  .bg-2{background:linear-gradient(145deg, #8a4a22 0%, #2a1810 60%), radial-gradient(circle at 70% 30%, #e08a45, #1c120b 75%); background-blend-mode:screen;}
-  .bg-3{background:linear-gradient(145deg, #1f5c5a 0%, #0f1f1f 60%), radial-gradient(circle at 40% 70%, #3aa19c, #0d1817 75%); background-blend-mode:screen;}
-  .bg-4{background:linear-gradient(145deg, #4f4468 0%, #1a1723 60%), radial-gradient(circle at 60% 40%, #8a77b8, #141019 75%); background-blend-mode:screen;}
-  .bg-5{background:linear-gradient(145deg, #8a6d22 0%, #241d0c 60%), radial-gradient(circle at 50% 60%, #d4ae45, #1a1509 75%); background-blend-mode:screen;}
-  .bg-6{background:linear-gradient(145deg, #6e2f3a 0%, #1f0f13 60%), radial-gradient(circle at 35% 35%, #b85a6c, #170b0e 75%); background-blend-mode:screen;}
+  .bg-1{background:linear-gradient(145deg, #3a3a3a 0%, #141414 60%), radial-gradient(circle at 30% 25%, #5c5c5c, #0d0d0d 75%); background-blend-mode:screen;}
+  .bg-2{background:linear-gradient(145deg, #2e2e2e 0%, #101010 60%), radial-gradient(circle at 70% 30%, #4a4a4a, #0d0d0d 75%); background-blend-mode:screen;}
+  .bg-3{background:linear-gradient(145deg, #444444 0%, #171717 60%), radial-gradient(circle at 40% 70%, #666666, #0d0d0d 75%); background-blend-mode:screen;}
+  .bg-4{background:linear-gradient(145deg, #262626 0%, #0f0f0f 60%), radial-gradient(circle at 60% 40%, #404040, #0d0d0d 75%); background-blend-mode:screen;}
+  .bg-5{background:linear-gradient(145deg, #4a4a4a 0%, #1a1a1a 60%), radial-gradient(circle at 50% 60%, #6e6e6e, #0d0d0d 75%); background-blend-mode:screen;}
+  .bg-6{background:linear-gradient(145deg, #333333 0%, #131313 60%), radial-gradient(circle at 35% 35%, #565656, #0d0d0d 75%); background-blend-mode:screen;}
 
   /* Huge ghost index number behind each panel, makes the sliding motion unmistakable */
   .slide-num{
     position:absolute; top:50%; left:6%; transform:translateY(-50%);
-    font-family:'Playfair Display'; font-weight:600; font-size:clamp(160px, 26vw, 380px);
+    font-family:'Jost'; font-weight:600; font-size:clamp(160px, 26vw, 380px);
     color:rgba(255,255,255,0.06); line-height:1; z-index:1; pointer-events:none;
     user-select:none;
   }
@@ -251,7 +253,7 @@
   /* ---------- SECTION TRANSITION BANNER (style like reference "Blog"/"Referanslar" pages) ---------- */
   .banner{
     position:relative; height:46vh; min-height:320px; display:flex; align-items:flex-end;
-    background:radial-gradient(circle at 60% 30%, #2b2b3d, #14141E 70%);
+    background:radial-gradient(circle at 60% 30%, #2b2b2b, #0D0D0D 70%);
     overflow:hidden;
   }
   .banner::after{
@@ -279,7 +281,7 @@
   .service-card .idx{
     font-family:'Poppins'; font-size:12px; color:var(--coral); letter-spacing:0.1em; margin-bottom:18px; display:block;
   }
-  .service-card h3{font-family:'Playfair Display'; font-size:24px; color:var(--white); margin-bottom:14px; font-weight:600;}
+  .service-card h3{font-family:'Jost'; font-size:24px; color:var(--white); margin-bottom:14px; font-weight:600;}
   .service-card p{font-family:'Poppins'; font-size:14px; color:var(--gray); line-height:1.7;}
   .service-card .more{
     display:inline-block; margin-top:20px; font-family:'Poppins'; font-size:11px;
@@ -298,8 +300,8 @@
   .product-panel::after{
     content:''; position:absolute; inset:0; background:linear-gradient(0deg, rgba(10,10,16,0.9), rgba(10,10,16,0.25));
   }
-  .product-panel.pp1{background:radial-gradient(circle at 40% 30%, #3a3a52, #14141E 70%);}
-  .product-panel.pp2{background:radial-gradient(circle at 60% 30%, #2f3d46, #14141E 70%);}
+  .product-panel.pp1{background:radial-gradient(circle at 40% 30%, #3a3a3a, #0D0D0D 70%);}
+  .product-panel.pp2{background:radial-gradient(circle at 60% 30%, #333333, #0D0D0D 70%);}
   .product-content{position:relative; z-index:2; padding:36px;}
   .product-content h3{font-size:30px; color:var(--white); margin-bottom:12px;}
   .product-content p{font-family:'Poppins'; font-size:14px; color:rgba(255,255,255,0.7); max-width:340px; margin-bottom:16px;}
@@ -311,7 +313,7 @@
   /* ---------- ABOUT ---------- */
   .about-grid{display:grid; grid-template-columns:1fr 1fr; gap:70px; align-items:center;}
   .about-visual{
-    aspect-ratio:4/5; background:radial-gradient(circle at 50% 30%, #33323f, #14141E 75%);
+    aspect-ratio:4/5; background:radial-gradient(circle at 50% 30%, #383838, #0D0D0D 75%);
     position:relative;
   }
   .about p{font-family:'Poppins'; font-size:15px; color:var(--gray); margin-bottom:18px; max-width:480px; line-height:1.8;}
@@ -320,7 +322,7 @@
     padding-left:12px; margin-top:22px; letter-spacing:0.03em;
   }
   .about-stats{display:flex; gap:36px; margin-top:32px; flex-wrap:wrap;}
-  .stat b{font-family:'Playfair Display'; font-size:32px; display:block; color:var(--white);}
+  .stat b{font-family:'Jost'; font-size:32px; display:block; color:var(--white);}
   .stat span{font-family:'Poppins'; font-size:11px; color:var(--gray); text-transform:uppercase; letter-spacing:0.05em;}
 
   /* ---------- PARTNERS / CERT GRID (style like reference logo grid) ---------- */
@@ -425,14 +427,7 @@
 
 <div class="topbar">
   <a href="index.html" class="logo">
-    <svg class="mark" viewBox="0 0 34 34">
-      <circle cx="17" cy="17" r="17" fill="#EB5D45"/>
-      <path d="M10 23 L17 10 L17 15.5 L24 10 L17 24 L17 18.5 Z" fill="#14141E"/>
-    </svg>
-    <div>
-      <div class="word">NORA</div>
-      <span class="tag">Stainless &amp; Steel</span>
-    </div>
+    <img class="logo-img" src="assets/nora-logo.png" alt="Nora Paslanmaz ve Demir Celik">
   </a>
   <button class="menu-btn" id="menuBtn"><span class="bar"></span></button>
 </div>
