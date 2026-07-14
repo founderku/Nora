@@ -57,13 +57,14 @@
 
   /* ---------- SOCIAL RAIL ---------- */
   .social-rail{
-    position:fixed; left:14px; top:50%; transform:translateY(-50%); z-index:95;
-    display:flex; flex-direction:column; gap:10px;
+    position:fixed; left:14px; bottom:14px; z-index:95;
+    display:flex; flex-direction:column-reverse; gap:8px;
   }
   .social-rail a{
-    width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center;
-    font-size:20px; color:var(--white); box-shadow:0 4px 14px rgba(0,0,0,0.35);
+    width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:18px; color:var(--white); box-shadow:0 4px 14px rgba(0,0,0,0.35);
   }
+  .social-rail a svg{width:17px; height:17px;}
   .social-rail a.phone{background:#3B7DD8;}
   .social-rail a.telegram{background:#29A9EA;}
   .social-rail a.whatsapp{background:#25D366;}
@@ -142,35 +143,52 @@
   }
   .menu-social a:hover{color:var(--white);}
 
-  /* ---------- HERO SLIDER (center-panel + blurred sides, scroll-driven) ---------- */
-  .hero-wrap{ position:relative; }
-  .hero-sticky{
-    position:sticky; top:0; height:100vh; overflow:hidden; background:var(--ink);
+  /* ---------- HERO SLIDER (locked carousel: fixed overlay, one wheel tick = one slide) ---------- */
+  .hero-spacer{ height:100vh; }
+  .hero-fixed{
+    position:fixed; inset:0; z-index:50; overflow:hidden; background:var(--ink);
+    opacity:1; visibility:visible; transition:opacity .3s ease;
   }
+  .hero-fixed.exited{ opacity:0; visibility:hidden; pointer-events:none; }
   .slide-track{
-    display:flex; height:100%; width:100%; will-change:transform;
-    transition:transform .18s cubic-bezier(.22,.61,.36,1);
+    display:flex; height:100%; width:100%;
+    transition:transform .9s cubic-bezier(.65,0,.35,1);
   }
-  .slide{
-    position:relative; flex:0 0 100%; width:100%; height:100%; overflow:hidden;
+  .hero-slide{
+    position:relative; flex:0 0 100%; width:100%; height:100%; overflow:hidden; background:var(--ink);
   }
   .slide-blur{
     position:absolute; top:0; left:0; width:100%; height:100%; background-size:cover; background-position:center;
     filter:blur(9px) brightness(0.78) saturate(1.05); transform:scale(1.08);
+    transition:filter .9s ease;
   }
   .slide-center{
-    position:absolute; top:0; bottom:0; left:50%; transform:translateX(-50%);
+    position:absolute; top:0; bottom:0; left:50%; transform:translateX(-50%) scale(1);
     width:46%; min-width:340px; background-size:cover; background-position:center;
     box-shadow:0 40px 100px rgba(0,0,0,0.55); display:block;
-    transition:transform .4s ease;
+    transition:transform .9s cubic-bezier(.65,0,.35,1), box-shadow .9s ease;
   }
   .slide-center::after{
     content:''; position:absolute; inset:0;
-    background:linear-gradient(0deg, rgba(10,10,16,0.55) 0%, transparent 40%);
+    background:linear-gradient(0deg, rgba(10,10,16,0.5) 0%, transparent 40%);
+  }
+  /* Shared-element feel: every panel breathes together while the track is
+     mid-glide, so the motion reads as one continuous element transforming
+     rather than static images sliding past each other */
+  .slide-track.sliding .slide-center{
+    transform:translateX(-50%) scale(0.88);
+    box-shadow:0 20px 50px rgba(0,0,0,0.35);
+  }
+  .slide-track.sliding .slide-blur{
+    filter:blur(14px) brightness(0.6) saturate(1.05);
+  }
+  .slide-track.sliding .slide-label{
+    opacity:0; transform:translateY(14px);
   }
   .slide-label{
     position:absolute; left:0; right:0; bottom:64px; z-index:6; text-align:center;
-    pointer-events:none;
+    pointer-events:none; opacity:1; transform:translateY(0);
+    transition:opacity .5s ease .35s, transform .5s cubic-bezier(.22,.61,.36,1) .35s;
   }
   .slide-eyebrow{
     font-family:'Poppins'; font-size:11px; letter-spacing:0.25em; text-transform:uppercase;
@@ -182,12 +200,19 @@
   }
   .slide-rule{width:40px; height:3px; background:var(--coral); margin:0 auto;}
   .hero-dots{
-    position:absolute; bottom:24px; right:36px; z-index:7; display:flex; flex-direction:column; gap:10px;
+    position:absolute; bottom:24px; right:36px; z-index:70; display:flex; flex-direction:column; gap:10px;
   }
-  .dot{width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.3); transition:background .2s;}
-  .dot.active{background:var(--coral);}
+  .dot{
+    width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.3);
+    position:relative; transition:background .3s ease;
+  }
+  .dot.active{ background:var(--coral); }
+  .dot.active::after{
+    content:''; position:absolute; inset:-4px; border-radius:50%;
+    border:1.5px solid var(--coral);
+  }
   .scroll-hint{
-    position:absolute; left:36px; bottom:24px; z-index:7;
+    position:absolute; left:76px; bottom:24px; z-index:60;
     font-family:'Poppins'; font-size:11px; letter-spacing:0.15em; text-transform:uppercase;
     color:rgba(255,255,255,0.6); display:flex; align-items:center; gap:10px;
   }
@@ -198,15 +223,30 @@
   }
   @keyframes scrolldown{ 0%{top:-30px;} 100%{top:30px;} }
 
-  /* Slide imagery - dummy placeholder photography (swap these URLs for the client's real photos later) */
-  .bg-1{background:url('https://picsum.photos/id/1076/1200/1600') center/cover no-repeat;}
-  .bg-2{background:url('https://picsum.photos/id/1078/1200/1600') center/cover no-repeat;}
-  .bg-3{background:url('https://picsum.photos/id/1081/1200/1600') center/cover no-repeat;}
-  .bg-4{background:url('https://picsum.photos/id/1082/1200/1600') center/cover no-repeat;}
-  .bg-5{background:url('https://picsum.photos/id/1084/1200/1600') center/cover no-repeat;}
-  .bg-6{background:url('https://picsum.photos/id/1050/1200/1600') center/cover no-repeat;}
-  .bg-7{background:url('https://picsum.photos/id/1025/1200/1600') center/cover no-repeat;}
-  .bg-8{background:url('https://picsum.photos/id/1069/1200/1600') center/cover no-repeat;}
+  /* Slide imagery - pure CSS gradients (zero network dependency, always renders instantly).
+     Each slide gets a clearly distinct hue so the sliding motion is obvious.
+     Swap these for the client's real product/facility photos later:
+     just change background to url('photo.jpg') center/cover no-repeat on each .bg-N class. */
+  .bg-1{background:linear-gradient(145deg, #2d4a63 0%, #17222c 60%), radial-gradient(circle at 30% 25%, #4a7ba6, #14171c 75%); background-blend-mode:screen;}
+  .bg-2{background:linear-gradient(145deg, #8a4a22 0%, #2a1810 60%), radial-gradient(circle at 70% 30%, #e08a45, #1c120b 75%); background-blend-mode:screen;}
+  .bg-3{background:linear-gradient(145deg, #1f5c5a 0%, #0f1f1f 60%), radial-gradient(circle at 40% 70%, #3aa19c, #0d1817 75%); background-blend-mode:screen;}
+  .bg-4{background:linear-gradient(145deg, #4f4468 0%, #1a1723 60%), radial-gradient(circle at 60% 40%, #8a77b8, #141019 75%); background-blend-mode:screen;}
+  .bg-5{background:linear-gradient(145deg, #8a6d22 0%, #241d0c 60%), radial-gradient(circle at 50% 60%, #d4ae45, #1a1509 75%); background-blend-mode:screen;}
+  .bg-6{background:linear-gradient(145deg, #6e2f3a 0%, #1f0f13 60%), radial-gradient(circle at 35% 35%, #b85a6c, #170b0e 75%); background-blend-mode:screen;}
+
+  /* Huge ghost index number behind each panel, makes the sliding motion unmistakable */
+  .slide-num{
+    position:absolute; top:50%; left:6%; transform:translateY(-50%);
+    font-family:'Playfair Display'; font-weight:600; font-size:clamp(160px, 26vw, 380px);
+    color:rgba(255,255,255,0.06); line-height:1; z-index:1; pointer-events:none;
+    user-select:none;
+  }
+
+  @keyframes kenburns{
+    0%{ transform:scale(1.08); }
+    100%{ transform:scale(1.18); }
+  }
+  .slide-blur{ animation:kenburns 14s ease-in-out infinite alternate; }
 
   /* ---------- SECTION TRANSITION BANNER (style like reference "Blog"/"Referanslar" pages) ---------- */
   .banner{
@@ -359,7 +399,10 @@
     .contact-grid{grid-template-columns:1fr;}
     .partner-grid{grid-template-columns:repeat(2,1fr);}
     .blog-grid{grid-template-columns:1fr;}
-    .social-rail a{width:42px; height:42px; font-size:16px;}
+    .social-rail{left:10px; bottom:10px; gap:6px;}
+    .social-rail a{width:36px; height:36px; font-size:15px;}
+    .social-rail a svg{width:15px; height:15px;}
+    .scroll-hint{left:56px;}
   }
 </style>
 </head>

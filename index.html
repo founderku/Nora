@@ -57,13 +57,14 @@
 
   /* ---------- SOCIAL RAIL ---------- */
   .social-rail{
-    position:fixed; left:14px; top:50%; transform:translateY(-50%); z-index:95;
-    display:flex; flex-direction:column; gap:10px;
+    position:fixed; left:14px; bottom:14px; z-index:95;
+    display:flex; flex-direction:column-reverse; gap:8px;
   }
   .social-rail a{
-    width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center;
-    font-size:20px; color:var(--white); box-shadow:0 4px 14px rgba(0,0,0,0.35);
+    width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:18px; color:var(--white); box-shadow:0 4px 14px rgba(0,0,0,0.35);
   }
+  .social-rail a svg{width:17px; height:17px;}
   .social-rail a.phone{background:#3B7DD8;}
   .social-rail a.telegram{background:#29A9EA;}
   .social-rail a.whatsapp{background:#25D366;}
@@ -211,7 +212,7 @@
     border:1.5px solid var(--coral);
   }
   .scroll-hint{
-    position:absolute; left:36px; bottom:24px; z-index:70;
+    position:absolute; left:76px; bottom:24px; z-index:60;
     font-family:'Poppins'; font-size:11px; letter-spacing:0.15em; text-transform:uppercase;
     color:rgba(255,255,255,0.6); display:flex; align-items:center; gap:10px;
   }
@@ -398,7 +399,10 @@
     .contact-grid{grid-template-columns:1fr;}
     .partner-grid{grid-template-columns:repeat(2,1fr);}
     .blog-grid{grid-template-columns:1fr;}
-    .social-rail a{width:42px; height:42px; font-size:16px;}
+    .social-rail{left:10px; bottom:10px; gap:6px;}
+    .social-rail a{width:36px; height:36px; font-size:15px;}
+    .social-rail a svg{width:15px; height:15px;}
+    .scroll-hint{left:56px;}
   }
 </style>
 </head>
