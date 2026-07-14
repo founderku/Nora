@@ -140,44 +140,45 @@
   }
   .menu-social a:hover{color:var(--white);}
 
-  /* ---------- HERO SLIDER (locked carousel: real prev/current/next photos, like a physical stack) ---------- */
+  /* ---------- HERO SLIDER (smooth horizontal slide, filmstrip-style) ---------- */
   .hero-spacer{ height:100vh; }
   .hero-fixed{
     position:fixed; inset:0; z-index:50; overflow:hidden; background:var(--ink);
     opacity:1; visibility:visible; transition:opacity .3s ease;
   }
   .hero-fixed.exited{ opacity:0; visibility:hidden; pointer-events:none; }
-  .stage{ position:absolute; inset:0; }
-  .layer{
-    position:absolute; top:0; height:100%; background-size:cover; background-position:center;
-    transition:opacity .45s cubic-bezier(.4,0,.2,1), transform .45s cubic-bezier(.4,0,.2,1), filter .45s cubic-bezier(.4,0,.2,1);
+  .hero-viewport{ position:absolute; inset:0; overflow:hidden; }
+  .hero-track{
+    position:absolute; top:0; left:0; height:100%; display:flex; align-items:stretch;
+    transition: transform .68s cubic-bezier(.65,0,.35,1);
+    will-change: transform;
   }
-  .layer.side{
-    width:33%; filter:blur(7px) brightness(0.55) saturate(1.05); transform:scale(1.06);
+  .hero-slide{
+    position:relative; height:100%; flex:0 0 auto;
+    background-size:cover; background-position:center;
+    filter:blur(9px) brightness(0.45) saturate(1.05);
+    transform:scale(1.05);
+    transition: filter .68s cubic-bezier(.65,0,.35,1), transform .68s cubic-bezier(.65,0,.35,1), box-shadow .68s ease;
+    cursor:none; pointer-events:none;
   }
-  .layer.prev{ left:0; }
-  .layer.next{ right:0; }
-  .layer.current{
-    left:50%; width:46%; min-width:340px; transform:translateX(-50%) scale(1);
-    box-shadow:0 40px 100px rgba(0,0,0,0.55); z-index:2; cursor:none;
+  .hero-slide.active{
+    filter:blur(0) brightness(1) saturate(1);
+    transform:scale(1);
+    box-shadow:0 40px 100px rgba(0,0,0,0.55);
+    z-index:2; pointer-events:auto;
   }
-  .layer.current::after{
+  .hero-slide::after{
     content:''; position:absolute; inset:0;
     background:linear-gradient(0deg, rgba(10,10,16,0.5) 0%, transparent 40%);
+    opacity:0; transition:opacity .68s ease;
   }
-  /* Shared-element feel: everything dips together mid-transition, so the
-     motion reads as one continuous element transforming */
-  .stage.sliding .layer.current{
-    transform:translateX(-50%) scale(0.88); opacity:0.6;
-    box-shadow:0 20px 50px rgba(0,0,0,0.35);
-  }
-  .stage.sliding .layer.side{ filter:blur(11px) brightness(0.4) saturate(1.05); }
-  .stage.sliding ~ .slide-label{ opacity:0; transform:translateY(14px); }
+  .hero-slide.active::after{ opacity:1; }
   .slide-label{
     position:absolute; left:0; right:0; bottom:64px; z-index:6; text-align:center;
     pointer-events:none; opacity:1; transform:translateY(0);
     transition:opacity .4s cubic-bezier(.4,0,.2,1), transform .4s cubic-bezier(.22,.61,.36,1);
   }
+  .hero-fixed.label-hidden .slide-label{ opacity:0; transform:translateY(14px); }
   .slide-eyebrow{
     font-family:'Poppins'; font-size:11px; letter-spacing:0.25em; text-transform:uppercase;
     color:var(--coral); margin-bottom:10px; font-weight:600;
@@ -215,7 +216,7 @@
     0%{ transform:scale(1.08); }
     100%{ transform:scale(1.18); }
   }
-  .layer.side{ animation:kenburns 14s ease-in-out infinite alternate; }
+  .hero-slide{ animation:kenburns 14s ease-in-out infinite alternate; }
 
   /* ---------- SECTION TRANSITION BANNER (style like reference "Blog"/"Referanslar" pages) ---------- */
   .banner{

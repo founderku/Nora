@@ -189,44 +189,45 @@ STYLE = """
   }
   .menu-social a:hover{color:var(--white);}
 
-  /* ---------- HERO SLIDER (locked carousel: real prev/current/next photos, like a physical stack) ---------- */
+  /* ---------- HERO SLIDER (smooth horizontal slide, filmstrip-style) ---------- */
   .hero-spacer{ height:100vh; }
   .hero-fixed{
     position:fixed; inset:0; z-index:50; overflow:hidden; background:var(--ink);
     opacity:1; visibility:visible; transition:opacity .3s ease;
   }
   .hero-fixed.exited{ opacity:0; visibility:hidden; pointer-events:none; }
-  .stage{ position:absolute; inset:0; }
-  .layer{
-    position:absolute; top:0; height:100%; background-size:cover; background-position:center;
-    transition:opacity .45s cubic-bezier(.4,0,.2,1), transform .45s cubic-bezier(.4,0,.2,1), filter .45s cubic-bezier(.4,0,.2,1);
+  .hero-viewport{ position:absolute; inset:0; overflow:hidden; }
+  .hero-track{
+    position:absolute; top:0; left:0; height:100%; display:flex; align-items:stretch;
+    transition: transform .68s cubic-bezier(.65,0,.35,1);
+    will-change: transform;
   }
-  .layer.side{
-    width:33%; filter:blur(7px) brightness(0.55) saturate(1.05); transform:scale(1.06);
+  .hero-slide{
+    position:relative; height:100%; flex:0 0 auto;
+    background-size:cover; background-position:center;
+    filter:blur(9px) brightness(0.45) saturate(1.05);
+    transform:scale(1.05);
+    transition: filter .68s cubic-bezier(.65,0,.35,1), transform .68s cubic-bezier(.65,0,.35,1), box-shadow .68s ease;
+    cursor:none; pointer-events:none;
   }
-  .layer.prev{ left:0; }
-  .layer.next{ right:0; }
-  .layer.current{
-    left:50%; width:46%; min-width:340px; transform:translateX(-50%) scale(1);
-    box-shadow:0 40px 100px rgba(0,0,0,0.55); z-index:2; cursor:none;
+  .hero-slide.active{
+    filter:blur(0) brightness(1) saturate(1);
+    transform:scale(1);
+    box-shadow:0 40px 100px rgba(0,0,0,0.55);
+    z-index:2; pointer-events:auto;
   }
-  .layer.current::after{
+  .hero-slide::after{
     content:''; position:absolute; inset:0;
     background:linear-gradient(0deg, rgba(10,10,16,0.5) 0%, transparent 40%);
+    opacity:0; transition:opacity .68s ease;
   }
-  /* Shared-element feel: everything dips together mid-transition, so the
-     motion reads as one continuous element transforming */
-  .stage.sliding .layer.current{
-    transform:translateX(-50%) scale(0.88); opacity:0.6;
-    box-shadow:0 20px 50px rgba(0,0,0,0.35);
-  }
-  .stage.sliding .layer.side{ filter:blur(11px) brightness(0.4) saturate(1.05); }
-  .stage.sliding ~ .slide-label{ opacity:0; transform:translateY(14px); }
+  .hero-slide.active::after{ opacity:1; }
   .slide-label{
     position:absolute; left:0; right:0; bottom:64px; z-index:6; text-align:center;
     pointer-events:none; opacity:1; transform:translateY(0);
     transition:opacity .4s cubic-bezier(.4,0,.2,1), transform .4s cubic-bezier(.22,.61,.36,1);
   }
+  .hero-fixed.label-hidden .slide-label{ opacity:0; transform:translateY(14px); }
   .slide-eyebrow{
     font-family:'Poppins'; font-size:11px; letter-spacing:0.25em; text-transform:uppercase;
     color:var(--coral); margin-bottom:10px; font-weight:600;
@@ -264,7 +265,7 @@ STYLE = """
     0%{ transform:scale(1.08); }
     100%{ transform:scale(1.18); }
   }
-  .layer.side{ animation:kenburns 14s ease-in-out infinite alternate; }
+  .hero-slide{ animation:kenburns 14s ease-in-out infinite alternate; }
 
   /* ---------- SECTION TRANSITION BANNER (style like reference "Blog"/"Referanslar" pages) ---------- */
   .banner{
@@ -725,10 +726,12 @@ SHARED_SCRIPT_BASE = """
 """
 
 HERO_SCRIPT = f"""
-  // Hero - locked carousel showing real prev/current/next photos side by side,
-  // like a physical stack of prints. One wheel tick = one full slide, animated
-  // purely by CSS transition. Page scroll is only touched once, at the exact
-  // moment the visitor exits the hero forward or backward.
+  // Hero - smooth horizontal filmstrip slide. All slides sit in a row inside
+  // .hero-track; advancing moves the whole track left/right by exactly one
+  // slide's pitch (width + gap) using a single CSS transform transition, so
+  // the motion reads as one continuous, physical slide, no shrink/dip, no
+  // mid-animation content swap. The active slide also crossfades into focus
+  // (blur/scale) over the same duration, driven purely by the .active class.
   const heroSlidesData = [
     {{ eyebrow: 'Service / 01', title: 'Laser Cutting', img: 'data:image/jpeg;base64,{IMG_B64['laser']}', link: 'services.html' }},
     {{ eyebrow: 'Service / 02', title: 'Plasma Cutting', img: 'data:image/jpeg;base64,{IMG_B64['plasma']}', link: 'services.html' }},
@@ -740,19 +743,27 @@ HERO_SCRIPT = f"""
   const n = heroSlidesData.length;
   const heroSpacer = document.getElementById('heroSpacer');
   const heroFixed = document.getElementById('heroFixed');
-  const stage = document.getElementById('stage');
-  const prevLayer = document.getElementById('prevLayer');
-  const nextLayer = document.getElementById('nextLayer');
-  const currentLayer = document.getElementById('currentLayer');
+  const heroTrack = document.getElementById('heroTrack');
   const labelEyebrow = document.getElementById('labelEyebrow');
   const labelTitle = document.getElementById('labelTitle');
   const dotsWrap = document.getElementById('heroDots');
 
   heroSpacer.style.height = '100vh';
 
-  heroSlidesData.forEach((s,i)=>{{
+  // Build the slide elements once
+  const slideEls = heroSlidesData.map((s, i) => {{
+    const a = document.createElement('a');
+    a.className = 'hero-slide';
+    a.style.backgroundImage = `url(${{s.img}})`;
+    a.href = s.link;
+    a.setAttribute('aria-label', s.title);
+    heroTrack.appendChild(a);
+    return a;
+  }});
+
+  heroSlidesData.forEach((s, i) => {{
     const d = document.createElement('div');
-    d.className = 'dot' + (i===0 ? ' active' : '');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
     dotsWrap.appendChild(d);
   }});
   const dots = document.querySelectorAll('.dot');
@@ -760,21 +771,46 @@ HERO_SCRIPT = f"""
   let idx = 0;
   let heroActive = true;
   let animBusy = false;
+  let metrics = {{ slideW: 0, gap: 0, pitch: 0 }};
 
-  function paint(i){{
-    const prev = heroSlidesData[(i - 1 + n) % n];
-    const cur = heroSlidesData[i];
-    const next = heroSlidesData[(i + 1) % n];
-    prevLayer.style.backgroundImage = `url(${{prev.img}})`;
-    nextLayer.style.backgroundImage = `url(${{next.img}})`;
-    currentLayer.style.backgroundImage = `url(${{cur.img}})`;
-    currentLayer.href = cur.link;
-    labelEyebrow.innerHTML = cur.eyebrow;
-    labelTitle.innerHTML = cur.title;
-    dots.forEach(d=>d.classList.remove('active'));
-    dots[i].classList.add('active');
+  function computeMetrics(){{
+    const vw = window.innerWidth;
+    const mobile = vw <= 760;
+    const slideW = mobile ? vw * 0.86 : Math.max(360, vw * 0.62);
+    const gap = mobile ? vw * 0.03 : vw * 0.02;
+    return {{ slideW, gap, pitch: slideW + gap }};
   }}
-  paint(0);
+
+  function layout(instant){{
+    metrics = computeMetrics();
+    const sidePad = Math.max(0, (window.innerWidth - metrics.slideW) / 2);
+    heroTrack.style.paddingLeft = sidePad + 'px';
+    heroTrack.style.paddingRight = sidePad + 'px';
+    slideEls.forEach((el, i) => {{
+      el.style.width = metrics.slideW + 'px';
+      el.style.marginRight = (i < n - 1 ? metrics.gap : 0) + 'px';
+    }});
+    if (instant) heroTrack.style.transition = 'none';
+    heroTrack.style.transform = `translateX(${{-idx * metrics.pitch}}px)`;
+    if (instant){{
+      // force reflow so the transition:none actually applies before we restore it
+      void heroTrack.offsetHeight;
+      heroTrack.style.transition = '';
+    }}
+  }}
+
+  function paintState(){{
+    slideEls.forEach((el, i) => el.classList.toggle('active', i === idx));
+    labelEyebrow.innerHTML = heroSlidesData[idx].eyebrow;
+    labelTitle.innerHTML = heroSlidesData[idx].title;
+    dots.forEach(d => d.classList.remove('active'));
+    dots[idx].classList.add('active');
+  }}
+
+  layout(true);
+  paintState();
+
+  window.addEventListener('resize', () => layout(true));
 
   function lockScroll(){{ document.documentElement.style.overflow = 'hidden'; }}
   function unlockScroll(){{ document.documentElement.style.overflow = ''; }}
@@ -783,7 +819,8 @@ HERO_SCRIPT = f"""
   function enterHero(atEnd){{
     heroActive = true;
     idx = atEnd ? n - 1 : 0;
-    paint(idx);
+    layout(true);
+    paintState();
     heroFixed.classList.remove('exited');
     lockScroll();
   }}
@@ -799,18 +836,14 @@ HERO_SCRIPT = f"""
     window.scrollTo(0, Math.max(targetY, 0));
   }}
 
-  // One tick = one full slide. The 'sliding' class makes the stage dip
-  // together for the first part of the glide, then paint() swaps the real
-  // photos and it settles back in - the shared-element feel.
+  // One tick = one full slide, moved by a single continuous transform
+  // transition. The active slide's focus crossfade runs on the same clock.
   function advance(newIdx){{
     idx = newIdx;
-    stage.classList.add('sliding');
     animBusy = true;
-    setTimeout(()=>{{
-      paint(idx);
-      stage.classList.remove('sliding');
-    }}, 450);
-    setTimeout(()=>{{ animBusy = false; }}, 900);
+    heroTrack.style.transform = `translateX(${{-idx * metrics.pitch}}px)`;
+    paintState();
+    setTimeout(()=>{{ animBusy = false; }}, 700);
   }}
 
   window.addEventListener('wheel', function(e){{
@@ -890,10 +923,8 @@ def page(title, current, body, extra_script=""):
 home_body = """
 <div class="hero-spacer" id="heroSpacer"></div>
 <div class="hero-fixed" id="heroFixed">
-  <div class="stage" id="stage">
-    <div class="layer side prev" id="prevLayer"></div>
-    <div class="layer side next" id="nextLayer"></div>
-    <a class="layer current" id="currentLayer" href="services.html"></a>
+  <div class="hero-viewport">
+    <div class="hero-track" id="heroTrack"></div>
   </div>
   <div class="slide-label" id="slideLabel">
     <div class="slide-eyebrow" id="labelEyebrow">Service / 01</div>
