@@ -123,8 +123,15 @@ STYLE = """
   }
   .topbar .logo{pointer-events:auto;}
   .topbar .menu-btn{pointer-events:auto;}
+  .topbar-right{display:flex; align-items:center; gap:18px; pointer-events:none;}
+  .lang-switch{
+    pointer-events:auto; font-family:'Poppins'; font-size:13px; font-weight:600; letter-spacing:0.08em;
+    color:var(--white); border:1px solid rgba(255,255,255,0.35); border-radius:20px;
+    padding:8px 16px; transition:background .2s ease, border-color .2s ease;
+  }
+  .lang-switch:hover{background:rgba(255,255,255,0.1); border-color:var(--coral);}
   .logo{display:flex; align-items:center; gap:12px;}
-  .logo-img{height:34px; width:auto; display:block;}
+  .logo-img{height:54px; width:auto; display:block;}
   .logo .mark{width:34px; height:34px; flex-shrink:0;}
   .logo .word{
     font-family:'Poppins'; font-weight:800; font-size:22px; letter-spacing:0.01em; color:var(--white);
@@ -481,6 +488,7 @@ STYLE = """
     .social-rail a{width:36px; height:36px; font-size:15px;}
     .social-rail a svg{width:15px; height:15px;}
     .scroll-hint{left:56px;}
+    .logo-img{height:42px;}
   }
 """
 
@@ -488,7 +496,38 @@ def nav_item(label, href, current, key):
     active = " active" if current == key else ""
     return f'<a href="{href}" class="menu-item{active}">{label}</a>'
 
-def build_chrome(current):
+NAV_LABELS = {
+    "en": {"home":"Home","corporate":"Corporate","about":"About Us","certificates":"Certificates",
+           "services":"Services","demir":"Iron &amp; Steel Products","paslanmaz":"Stainless Steel Products",
+           "blog":"Blog","contact":"Contact"},
+    "tr": {"home":"Anasayfa","corporate":"Kurumsal","about":"Hakk\u0131m\u0131zda","certificates":"Sertifikalar",
+           "services":"Hizmetler","demir":"Demir \u00c7elik \u00dcr\u00fcnler","paslanmaz":"Paslanmaz \u00dcr\u00fcnler",
+           "blog":"Blog","contact":"\u0130leti\u015fim"},
+    "fr": {"home":"Accueil","corporate":"Entreprise","about":"\u00c0 propos","certificates":"Certificats",
+           "services":"Services","demir":"Produits Fer et Acier","paslanmaz":"Produits Inox",
+           "blog":"Blog","contact":"Contact"},
+}
+
+LANGS = ["en", "tr", "fr"]
+LANG_FOLDER = {"en": "", "tr": "tr/", "fr": "fr/"}
+LANG_CODE = {"en": "EN", "tr": "TR", "fr": "FR"}
+LANG_NAME = {"en": "English", "tr": "T\u00fcrk\u00e7e", "fr": "Fran\u00e7ais"}
+
+def lang_url(from_lang, to_lang, slug):
+    if from_lang == "en":
+        return f"{LANG_FOLDER[to_lang]}{slug}.html"
+    if to_lang == "en":
+        return f"../{slug}.html"
+    return f"../{LANG_FOLDER[to_lang]}{slug}.html"
+
+def lang_switcher_links(lang, slug):
+    return "\n".join([
+        f'<a class="lang-switch" href="{lang_url(lang, code, slug)}">{LANG_CODE[code]}</a>'
+        for code in LANGS if code != lang
+    ])
+
+def build_chrome(current, lang="en", slug="index"):
+    L = NAV_LABELS[lang]
     corp_active = "active" if current in ("about", "certificates") else ""
     cursor = '<div id="cursor"></div><canvas id="dustCanvas"></canvas>'
     social = """
@@ -507,12 +546,16 @@ def build_chrome(current):
   </a>
 </div>
 """
+    asset_prefix = "" if lang == "en" else "../"
     topbar = f"""
 <div class="topbar">
   <a href="index.html" class="logo">
     <img class="logo-img" src="data:image/png;base64,{NORA_LOGO_B64}" alt="Nora Paslanmaz ve Demir Celik">
   </a>
-  <button class="menu-btn" id="menuBtn"><span class="bar"></span></button>
+  <div class="topbar-right">
+    {lang_switcher_links(lang, slug)}
+    <button class="menu-btn" id="menuBtn"><span class="bar"></span></button>
+  </div>
 </div>
 """
     fullmenu = f"""
@@ -522,19 +565,19 @@ def build_chrome(current):
   </button>
   <div class="menu-inner">
   <ul class="menu-list">
-    <li>{nav_item("Home", "index.html", current, "home")}</li>
+    <li>{nav_item(L["home"], "index.html", current, "home")}</li>
     <li>
-      <div class="menu-item {corp_active}" id="corporateToggle">Corporate <span class="chev">&#8964;</span></div>
+      <div class="menu-item {corp_active}" id="corporateToggle">{L["corporate"]} <span class="chev">&#8964;</span></div>
       <ul class="submenu" id="corporateSub">
-        <li><a href="about.html" class="{'active' if current=='about' else ''}">About Us</a></li>
-        <li><a href="certificates.html" class="{'active' if current=='certificates' else ''}">Certificates</a></li>
+        <li><a href="about.html" class="{'active' if current=='about' else ''}">{L["about"]}</a></li>
+        <li><a href="certificates.html" class="{'active' if current=='certificates' else ''}">{L["certificates"]}</a></li>
       </ul>
     </li>
-    <li>{nav_item("Services", "services.html", current, "services")}</li>
-    <li>{nav_item("Iron &amp; Steel Products", "demir-celik-urunler.html", current, "demir")}</li>
-    <li>{nav_item("Stainless Steel Products", "paslanmaz-urunler.html", current, "paslanmaz")}</li>
-    <li>{nav_item("Blog", "blog.html", current, "blog")}</li>
-    <li>{nav_item("Contact", "contact.html", current, "contact")}</li>
+    <li>{nav_item(L["services"], "services.html", current, "services")}</li>
+    <li>{nav_item(L["demir"], "demir-celik-urunler.html", current, "demir")}</li>
+    <li>{nav_item(L["paslanmaz"], "paslanmaz-urunler.html", current, "paslanmaz")}</li>
+    <li>{nav_item(L["blog"], "blog.html", current, "blog")}</li>
+    <li>{nav_item(L["contact"], "contact.html", current, "contact")}</li>
   </ul>
   </div>
   <div class="menu-social">
@@ -546,38 +589,54 @@ def build_chrome(current):
 """
     return cursor + social + topbar + fullmenu
 
-FOOTER = """
+FOOTER_LABELS = {
+    "en": {"corporate":"Corporate","company":"Company","contact":"Contact","language":"Language",
+           "certificates":"Certificates","references":"References","blog":"Blog",
+           "copyright":"&copy; 2026 Nora Paslanmaz ve Demir Celik"},
+    "tr": {"corporate":"Kurumsal","company":"\u015eirket","contact":"\u0130leti\u015fim","language":"Dil",
+           "certificates":"Sertifikalar","references":"Referanslar","blog":"Blog",
+           "copyright":"&copy; 2026 Nora Paslanmaz ve Demir \u00c7elik"},
+    "fr": {"corporate":"Entreprise","company":"Soci\u00e9t\u00e9","contact":"Contact","language":"Langue",
+           "certificates":"Certificats","references":"R\u00e9f\u00e9rences","blog":"Blog",
+           "copyright":"&copy; 2026 Nora Paslanmaz ve Demir Celik"},
+}
+
+def footer_html(lang="en", slug="index"):
+    F = FOOTER_LABELS[lang]
+    N = NAV_LABELS[lang]
+    lang_links = "\n        ".join([
+        f'<a href="{lang_url(lang, code, slug)}">{LANG_NAME[code]}</a>'
+        for code in LANGS if code != lang
+    ])
+    return f"""
 <footer>
   <div class="wrap">
     <div class="footer-grid">
       <div class="footer-col">
         <h4>Nora Paslanmaz ve Celik</h4>
-        <a href="about.html">Corporate</a>
-        <a href="services.html">Services</a>
-        <a href="demir-celik-urunler.html">Iron &amp; Steel Products</a>
-        <a href="paslanmaz-urunler.html">Stainless Steel Products</a>
+        <a href="about.html">{F["corporate"]}</a>
+        <a href="services.html">{N["services"]}</a>
+        <a href="demir-celik-urunler.html">{N["demir"]}</a>
+        <a href="paslanmaz-urunler.html">{N["paslanmaz"]}</a>
       </div>
       <div class="footer-col">
-        <h4>Company</h4>
-        <a href="certificates.html">Certificates</a>
-        <a href="certificates.html">References</a>
-        <a href="blog.html">Blog</a>
+        <h4>{F["company"]}</h4>
+        <a href="certificates.html">{F["certificates"]}</a>
+        <a href="certificates.html">{F["references"]}</a>
+        <a href="blog.html">{F["blog"]}</a>
       </div>
       <div class="footer-col">
-        <h4>Contact</h4>
+        <h4>{F["contact"]}</h4>
         <a href="tel:02166215541">0216 621 55 41</a>
         <a href="mailto:info@norapaslanmazcelik.com">info@norapaslanmazcelik.com</a>
       </div>
       <div class="footer-col">
-        <h4>Language</h4>
-        <a href="#">Turkish</a>
-        <a href="#">English</a>
-        <a href="#">French</a>
-        <a href="#">Arabic</a>
+        <h4>{F["language"]}</h4>
+        {lang_links}
       </div>
     </div>
     <div class="footer-bottom">
-      <span>&copy; 2026 Nora Paslanmaz ve Demir Celik</span>
+      <span>{F["copyright"]}</span>
       <span>norapaslanmazcelik.com</span>
     </div>
   </div>
@@ -725,7 +784,12 @@ SHARED_SCRIPT_BASE = """
   })();
 """
 
-HERO_SCRIPT = f"""
+def hero_script(slides):
+    slides_js = ",\n    ".join([
+        f"{{ eyebrow: '{ey}', title: '{ti}', img: 'data:image/jpeg;base64,{IMG_B64[img]}', link: '{link}' }}"
+        for ey, ti, img, link in slides
+    ])
+    return f"""
   // Hero - smooth horizontal filmstrip slide. All slides sit in a row inside
   // .hero-track; advancing moves the whole track left/right by exactly one
   // slide's pitch (width + gap) using a single CSS transform transition, so
@@ -733,12 +797,7 @@ HERO_SCRIPT = f"""
   // mid-animation content swap. The active slide also crossfades into focus
   // (blur/scale) over the same duration, driven purely by the .active class.
   const heroSlidesData = [
-    {{ eyebrow: 'Service / 01', title: 'Laser Cutting', img: 'data:image/jpeg;base64,{IMG_B64['laser']}', link: 'services.html' }},
-    {{ eyebrow: 'Service / 02', title: 'Plasma Cutting', img: 'data:image/jpeg;base64,{IMG_B64['plasma']}', link: 'services.html' }},
-    {{ eyebrow: 'Service / 03', title: 'Welded Fabrication', img: 'data:image/jpeg;base64,{IMG_B64['welded_fab']}', link: 'services.html' }},
-    {{ eyebrow: 'Service / 04', title: 'CNC Machining', img: 'data:image/jpeg;base64,{IMG_B64['cnc']}', link: 'services.html' }},
-    {{ eyebrow: 'Service / 05', title: 'Cutting &amp; Bending', img: 'data:image/jpeg;base64,{IMG_B64['cutbend']}', link: 'services.html' }},
-    {{ eyebrow: 'Products', title: 'Pipes, Tubes &amp; Steel', img: 'data:image/jpeg;base64,{IMG_B64['pipes']}', link: 'demir-celik-urunler.html' }}
+    {slides_js}
   ];
   const n = heroSlidesData.length;
   const heroSpacer = document.getElementById('heroSpacer');
@@ -776,8 +835,8 @@ HERO_SCRIPT = f"""
   function computeMetrics(){{
     const vw = window.innerWidth;
     const mobile = vw <= 760;
-    const slideW = mobile ? vw * 0.86 : Math.max(360, vw * 0.62);
-    const gap = mobile ? vw * 0.03 : vw * 0.02;
+    const slideW = mobile ? vw * 0.78 : Math.min(680, Math.max(420, vw * 0.34));
+    const gap = mobile ? vw * 0.025 : vw * 0.015;
     return {{ slideW, gap, pitch: slideW + gap }};
   }}
 
@@ -896,9 +955,20 @@ HERO_SCRIPT = f"""
   }}, {{ passive: true }});
 """
 
-def page(title, current, body, extra_script=""):
+HERO_SLIDES_EN = [
+    ("Service / 01", "Laser Cutting", "laser", "services.html"),
+    ("Service / 02", "Plasma Cutting", "plasma", "services.html"),
+    ("Service / 03", "Welded Fabrication", "welded_fab", "services.html"),
+    ("Service / 04", "CNC Machining", "cnc", "services.html"),
+    ("Service / 05", "Cutting &amp; Bending", "cutbend", "services.html"),
+    ("Products", "Pipes, Tubes &amp; Steel", "pipes", "demir-celik-urunler.html"),
+]
+HERO_SCRIPT = hero_script(HERO_SLIDES_EN)
+
+def page(title, current, body, extra_script="", lang="en", slug="index"):
+    asset_prefix = "" if lang == "en" else "../"
     return f"""<!DOCTYPE html>
-<html lang="en">
+<html lang="{lang}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -907,13 +977,13 @@ def page(title, current, body, extra_script=""):
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="{asset_prefix}style.css">
 </head>
 <body>
-{build_chrome(current)}
+{build_chrome(current, lang, slug)}
 {body}
-{FOOTER}
-<script src="script.js"></script>
+{footer_html(lang, slug)}
+<script src="{asset_prefix}script.js"></script>
 {f'<script>{extra_script}</script>' if extra_script else ''}
 </body>
 </html>
@@ -935,7 +1005,7 @@ home_body = """
   <div class="hero-dots" id="heroDots"></div>
 </div>
 """
-open("/home/claude/nora-site/pages/index.html","w").write(page("Home","home",home_body,HERO_SCRIPT))
+open("/home/claude/nora-site/pages/index.html","w").write(page("Home","home",home_body,HERO_SCRIPT,slug="index"))
 
 # ---------------- SERVICES ----------------
 services_body = f"""
@@ -1004,7 +1074,7 @@ services_body = f"""
   </div>
 </section>
 """
-open("/home/claude/nora-site/pages/services.html","w").write(page("Services","services",services_body))
+open("/home/claude/nora-site/pages/services.html","w").write(page("Services","services",services_body,slug="services"))
 
 # ---------------- PRODUCTS ----------------
 demir_items = [
@@ -1037,7 +1107,9 @@ paslanmaz_items = [
     ("pas_fittings", "Stainless Fittings", "Paslanmaz Fittings"),
 ]
 
-def product_gallery_body(banner_title, section_title, items, img_key):
+PROD_UI = {"en": "Product Lines", "tr": "\u00dcr\u00fcn Gruplar\u0131", "fr": "Gammes de Produits"}
+
+def product_gallery_body(banner_title, section_title, items, img_key, lang="en"):
     cards = "\n".join([
         f"""<div class="product-cat-card">
       <div class="thumb" style="background-image:url('data:image/jpeg;base64,{PRODUCT_B64[key]}')"></div>
@@ -1051,7 +1123,7 @@ def product_gallery_body(banner_title, section_title, items, img_key):
 <section class="banner" style="background-image:url('data:image/jpeg;base64,{IMG_B64[img_key]}'); background-size:cover; background-position:center;"><div class="banner-content reveal"><h2 class="serif">{banner_title}</h2></div></section>
 <section class="section" style="padding-top:70px;">
   <div class="wrap">
-    <span class="section-eyebrow">Product Lines</span>
+    <span class="section-eyebrow">{PROD_UI[lang]}</span>
     <h2 class="section-title">{section_title}</h2>
   </div>
   <div class="product-cat-grid reveal-stagger">
@@ -1061,10 +1133,10 @@ def product_gallery_body(banner_title, section_title, items, img_key):
 """
 
 demir_body = product_gallery_body("Iron &amp; Steel Products", "Iron and steel products, by category.", demir_items, "profile")
-open("/home/claude/nora-site/pages/demir-celik-urunler.html","w").write(page("Iron &amp; Steel Products","demir",demir_body))
+open("/home/claude/nora-site/pages/demir-celik-urunler.html","w").write(page("Iron &amp; Steel Products","demir",demir_body,slug="demir-celik-urunler"))
 
 paslanmaz_body = product_gallery_body("Stainless Steel Products", "Stainless steel products, by category.", paslanmaz_items, "sheet")
-open("/home/claude/nora-site/pages/paslanmaz-urunler.html","w").write(page("Stainless Steel Products","paslanmaz",paslanmaz_body))
+open("/home/claude/nora-site/pages/paslanmaz-urunler.html","w").write(page("Stainless Steel Products","paslanmaz",paslanmaz_body,slug="paslanmaz-urunler"))
 
 # ---------------- SERVICE DETAIL PAGES ----------------
 service_details = [
@@ -1106,7 +1178,20 @@ service_details = [
     },
 ]
 
-def service_detail_body(svc, all_services):
+SVC_UI = {
+    "en": {"nedir": "What is {title}?", "methods": "Methods and Advantages",
+           "sidebar_h": "Services", "cta_p": "Have a project in mind? Send us your specs and we'll get back with pricing and lead time.",
+           "cta_btn": "Get a Quote"},
+    "tr": {"nedir": "{title} Nedir?", "methods": "Y\u00f6ntemler ve Avantajlar",
+           "sidebar_h": "Hizmetler", "cta_p": "Bir projeniz mi var? Ozelliklerinizi bize g\u00f6nderin, fiyat ve teslim s\u00fcresi ile d\u00f6n\u00fc\u015f yapal\u0131m.",
+           "cta_btn": "Teklif Al"},
+    "fr": {"nedir": "Qu'est-ce que {title} ?", "methods": "M\u00e9thodes et avantages",
+           "sidebar_h": "Services", "cta_p": "Vous avez un projet en t\u00eate ? Envoyez-nous vos sp\u00e9cifications, nous reviendrons vers vous avec un prix et un d\u00e9lai.",
+           "cta_btn": "Demander un devis"},
+}
+
+def service_detail_body(svc, all_services, lang="en"):
+    U = SVC_UI[lang]
     sidebar_links = "\n".join([
         f'<a href="{s["slug"]}.html" class="{"active" if s["slug"]==svc["slug"] else ""}">{s["title"]}</a>'
         for s in all_services
@@ -1118,19 +1203,19 @@ def service_detail_body(svc, all_services):
     <div class="service-detail-main">
       <div class="service-detail-hero" style="background-image:url('data:image/jpeg;base64,{IMG_B64[svc['img']]}')"></div>
       <p>{svc['intro']}</p>
-      <h3>{svc['title']} Nedir?</h3>
+      <h3>{U['nedir'].format(title=svc['title'])}</h3>
       <p>{svc['what_is']}</p>
-      <h3>Methods and Advantages</h3>
+      <h3>{U['methods']}</h3>
       <p>{svc['methods']}</p>
     </div>
     <div>
       <div class="service-sidebar">
-        <h4>Services</h4>
+        <h4>{U['sidebar_h']}</h4>
         {sidebar_links}
       </div>
       <div class="service-detail-cta">
-        <p>Have a project in mind? Send us your specs and we'll get back with pricing and lead time.</p>
-        <a class="more" href="contact.html">Get a Quote</a>
+        <p>{U['cta_p']}</p>
+        <a class="more" href="contact.html">{U['cta_btn']}</a>
       </div>
     </div>
   </div>
@@ -1139,7 +1224,7 @@ def service_detail_body(svc, all_services):
 
 for svc in service_details:
     body = service_detail_body(svc, service_details)
-    open(f"/home/claude/nora-site/pages/{svc['slug']}.html","w").write(page(svc['title'],"services",body))
+    open(f"/home/claude/nora-site/pages/{svc['slug']}.html","w").write(page(svc['title'],"services",body,slug=svc['slug']))
 
 # ---------------- ABOUT ----------------
 about_body = f"""
@@ -1162,7 +1247,7 @@ about_body = f"""
   </div>
 </section>
 """
-open("/home/claude/nora-site/pages/about.html","w").write(page("About Us","about",about_body))
+open("/home/claude/nora-site/pages/about.html","w").write(page("About Us","about",about_body,slug="about"))
 
 # ---------------- CERTIFICATES ----------------
 certificates_body = f"""
@@ -1180,9 +1265,92 @@ certificates_body = f"""
   </div>
 </section>
 """
-open("/home/claude/nora-site/pages/certificates.html","w").write(page("Certificates","certificates",certificates_body))
+open("/home/claude/nora-site/pages/certificates.html","w").write(page("Certificates","certificates",certificates_body,slug="certificates"))
+
+blog_posts = [
+    {
+        "slug": "iron-steel-products-explained", "title": "Iron &amp; Steel Products", "img": "profile",
+        "category": "Products",
+        "excerpt": "Steel is an alloy of iron and carbon, and the carbon ratio shapes everything from classification to hardness. A look at our range and where each product is used.",
+        "paragraphs": [
+            ("", "Steel is an alloy made from a combination of iron and carbon, typically ranging between 0.2% and 2.1% carbon content. The carbon content plays a key role in how steel is classified. Iron produced in blast furnaces is converted into steel either through a series of refining processes or by remelting scrap in electric arc furnaces. Carbon is the element that hardens iron, the higher the carbon ratio in the resulting mix, the harder the steel becomes. At Nora Paslanmaz ve Celik, we supply our customers with the highest quality iron and steel products."),
+            ("What Are Iron &amp; Steel Products?", "Iron and steel products come in a wide range of forms. Among what we supply are NPU profiles, angle sections, black sheet, transmission shafts, cold-rolled (DKP) sheet, K-profile, rebar, coated K-profile, flat bar, NPI profiles, square bar, ribbed bar, checkered plate, galvanized sheet, galvanized trapezoidal sheet, galvanized square profile, expanded metal sheet, and galvanized or black water pipe, simply get in touch with our team for any of these. Our specialized staff and modern machinery are what set us apart in iron and steel products."),
+            ("Sheet", "Sheet metal is one of the most basic needs across industrial manufacturing, used in different forms across different applications. A sheet metal supplier needs to be able to offer cutting tailored to your specifications, and that is exactly what we provide. Sheet also offers a number of practical advantages, material that supports serial production can lower your overall production costs. Sheet dimensions and pricing vary depending on the specification you choose, with pricing set according to the product's technical properties. Below a certain volume, sheet can be produced without requiring a die at all, keeping material deformation close to zero."),
+            ("Profiles", "Because different metals come in different thicknesses and grades, the machinery used to cut them varies accordingly, no single method works for every material. Cut sections are cleaned before further processing, a step that ensures no residue is left on the steel, which is essential for achieving the precise contour cuts the work requires. We carry out every step needed to keep profile-cutting lead times short, and deliver the finished product ready for assembly or further machining. Oxygen, plasma, and laser cutters are the machines we use for profile cutting."),
+            ("Where Are Iron &amp; Steel Products Used?", "Iron and steel products are chosen across a wide range of industries, in decoration, for decorative fittings, in automotive, for vehicle underbody structures, in construction, in furniture, for legs and arm frames, in textiles, for hangers, mannequins, and weaving looms, in electronics, for computer and equipment housings, and in shipbuilding and heavy industry. We supply iron and steel products across all of these applications. Since the day we were founded, our company has built a name for professionalism and quality, and we continue producing the best possible products for our customers."),
+        ],
+    },
+    {
+        "slug": "stainless-steel-products-explained", "title": "Stainless Steel Products", "img": "sheet",
+        "category": "Products",
+        "excerpt": "Stainless steel is created by adding chromium to steel in specific proportions. A look at where it offers an advantage, how it's priced, and how to store it correctly.",
+        "paragraphs": [
+            ("", "Stainless steel is an alloy created by adding a specific proportion of chromium to steel, and it is one of the most widely chosen materials in manufacturing today. Because of the many advantages it offers in production, demand for stainless steel keeps growing year after year. At Nora Paslanmaz Celik, we have spent years keeping the stainless steel products our industry needs in stock, supplying you without disrupting your production. Our technical staff are available for product information and technical support on any order you place with us."),
+            ("Where Stainless Steel Offers an Advantage", "<em>[Editorial note for Andi: the client's screenshots skip a short section here, likely one photo/scroll position. The paragraph below is a general placeholder bridging the gap, please swap it out once the missing part is sent.]</em> Stainless steel brings a distinct set of advantages to production, particularly its resistance to corrosion and its consistency across repeated production runs, allowing manufacturing to continue without loss of quality. Stainless steel itself can be divided into different types and grades. Because these differences exist within stainless steel, sourcing your material from a reliable supplier keeps the problems they can cause in production to a minimum. By quality standard, stainless steel is a product that increases resistance to corrosion. Alongside these differences, weldability, machinability, heat-treatability, and mechanical properties can all vary as well. Some stainless steel grades, for example, contain less carbon and are more elastic as a result, which can create challenges during processing. We provide detailed guidance on the right stainless steel product for your intended use before any work begins.<br><br>Despite its name, stainless steel is not stain-proof under all circumstances, that depends on using the correct stainless alloy in the correct production process. Stainless steel keeps its stain-resistant properties when used in the conditions it is suited for, and loses them otherwise. For all these reasons, it matters where you source your stainless steel from. Our knowledgeable, well-trained team at Nora Paslanmaz Celik is here to provide you with quality service on every product."),
+            ("Stainless Steel Pricing", "Stainless steel pricing can vary with market conditions. While price is an important factor when buying stainless steel, what matters most is finding the right grade for your production. Choosing correctly means the parts made from it will hold up over the long term without issue. When buying stainless steel, pay attention to its corrosion resistance, mechanical strength, the temperatures your production process involves, and its physical and surface properties. We provide the technical support you need on all of these points as part of every sale."),
+            ("How Should Stainless Steel Be Stored?", "Where you store stainless steel affects whether the product stays free of deformation. Storage areas should keep it off direct contact with soil, and away from carbon steel shavings stored in the same space. If these precautions are not followed, stainless steel's properties can be compromised and signs of rust can appear on the product."),
+        ],
+    },
+]
+
+BLOG_UI = {
+    "en": {"categories": "Categories", "all": "All Categories",
+           "cta_p": "Have a project in mind? Send us your specs and we'll get back with pricing and lead time.", "cta_btn": "Get a Quote"},
+    "tr": {"categories": "Kategoriler", "all": "T\u00fcm Kategoriler",
+           "cta_p": "Bir projeniz mi var? Ozelliklerinizi bize g\u00f6nderin, fiyat ve teslim s\u00fcresi ile d\u00f6n\u00fc\u015f yapal\u0131m.", "cta_btn": "Teklif Al"},
+    "fr": {"categories": "Cat\u00e9gories", "all": "Toutes les cat\u00e9gories",
+           "cta_p": "Vous avez un projet en t\u00eate ? Envoyez-nous vos sp\u00e9cifications, nous reviendrons vers vous avec un prix et un d\u00e9lai.", "cta_btn": "Demander un devis"},
+}
+
+def blog_detail_body(post, all_posts, lang="en"):
+    U = BLOG_UI[lang]
+    other_links = "\n".join([
+        f'<a href="{p["slug"]}.html" class="{"active" if p["slug"]==post["slug"] else ""}">{p["title"]}</a>'
+        for p in all_posts
+    ])
+    body_html = "\n".join([
+        (f'<h3>{h}</h3>\n<p>{p}</p>' if h else f'<p>{p}</p>')
+        for h, p in post["paragraphs"]
+    ])
+    return f"""
+<section class="banner" style="background-image:url('data:image/jpeg;base64,{IMG_B64[post['img']]}'); background-size:cover; background-position:center;"><div class="banner-content reveal"><h2 class="serif">{post['title']}</h2></div></section>
+<section class="section" style="padding-top:70px;">
+  <div class="wrap service-detail-grid reveal">
+    <div class="service-detail-main">
+      <div class="service-detail-hero" style="background-image:url('data:image/jpeg;base64,{IMG_B64[post['img']]}')"></div>
+      {body_html}
+    </div>
+    <div>
+      <div class="service-sidebar">
+        <h4>{U['categories']}</h4>
+        <a href="blog.html" class="">{U['all']}</a>
+        {other_links}
+      </div>
+      <div class="service-detail-cta">
+        <p>{U['cta_p']}</p>
+        <a class="more" href="contact.html">{U['cta_btn']}</a>
+      </div>
+    </div>
+  </div>
+</section>
+"""
+
+for post in blog_posts:
+    body = blog_detail_body(post, blog_posts)
+    open(f"/home/claude/nora-site/pages/{post['slug']}.html","w").write(page(post['title'],"blog",body,slug=post['slug']))
 
 # ---------------- BLOG ----------------
+blog_cards = "\n".join([f"""
+    <div class="blog-card">
+      <div class="thumb" style="background-image:url('data:image/jpeg;base64,{IMG_B64[p['img']]}'); background-size:cover; background-position:center;"></div>
+      <div class="body">
+        <span class="date">{p['category']}</span>
+        <h3>{p['title']}</h3>
+        <p>{p['excerpt']}</p>
+        <a class="more" href="{p['slug']}.html">Read More</a>
+      </div>
+    </div>""" for p in blog_posts])
+
 blog_body = f"""
 <section class="banner" style="background-image:url('data:image/jpeg;base64,{IMG_B64['bars']}'); background-size:cover; background-position:center;"><div class="banner-content reveal"><h2 class="serif">Blog</h2></div></section>
 <section class="section" style="padding-top:70px;">
@@ -1191,30 +1359,12 @@ blog_body = f"""
     <h2 class="section-title">Latest from Nora.</h2>
   </div>
   <div class="wrap">
-  <div class="blog-grid reveal-stagger">
-    <div class="blog-card">
-      <div class="thumb" style="background-image:url('data:image/jpeg;base64,{IMG_B64['sheet']}'); background-size:cover; background-position:center;"></div>
-      <div class="body">
-        <span class="date">[ Placeholder date ]</span>
-        <h3>Post title carried over from the old site</h3>
-        <p>Placeholder summary. Existing blog post content will be migrated here once provided by the client.</p>
-        <a class="more" href="#">Read More</a>
-      </div>
-    </div>
-    <div class="blog-card">
-      <div class="thumb" style="background-image:url('data:image/jpeg;base64,{IMG_B64['pipes']}'); background-size:cover; background-position:center;"></div>
-      <div class="body">
-        <span class="date">[ Placeholder date ]</span>
-        <h3>Second post title carried over from the old site</h3>
-        <p>Placeholder summary. Existing blog post content will be migrated here once provided by the client.</p>
-        <a class="more" href="#">Read More</a>
-      </div>
-    </div>
+  <div class="blog-grid reveal-stagger">{blog_cards}
   </div>
   </div>
 </section>
 """
-open("/home/claude/nora-site/pages/blog.html","w").write(page("Blog","blog",blog_body))
+open("/home/claude/nora-site/pages/blog.html","w").write(page("Blog","blog",blog_body,slug="blog"))
 
 # ---------------- CONTACT ----------------
 contact_body = f"""
@@ -1249,9 +1399,583 @@ contact_body = f"""
   </div>
 </section>
 """
-open("/home/claude/nora-site/pages/contact.html","w").write(page("Contact","contact",contact_body))
+open("/home/claude/nora-site/pages/contact.html","w").write(page("Contact","contact",contact_body,slug="contact"))
 
 open("/home/claude/nora-site/pages/style.css","w").write(STYLE)
 open("/home/claude/nora-site/pages/script.js","w").write(SHARED_SCRIPT_BASE.split("<script>\n",1)[1])
+
+# ================= TURKISH (TR) VERSION =================
+TR_OUT_DIR = "/home/claude/nora-site/pages/tr"
+os.makedirs(TR_OUT_DIR, exist_ok=True)
+
+def write_tr(slug, title, current, body, extra_script=""):
+    open(f"{TR_OUT_DIR}/{slug}.html", "w").write(page(title, current, body, extra_script, lang="tr", slug=slug))
+
+# ---------------- TR: HERO ----------------
+HERO_SLIDES_TR = [
+    ("Hizmet / 01", "Lazer Kesim", "laser", "services.html"),
+    ("Hizmet / 02", "Plazma Kesim", "plasma", "services.html"),
+    ("Hizmet / 03", "Kaynakli Imalat", "welded_fab", "services.html"),
+    ("Hizmet / 04", "Talasli Imalat", "cnc", "services.html"),
+    ("Hizmet / 05", "Kesim Bukum", "cutbend", "services.html"),
+    ("Urunler", "Boru, Profil ve Celik", "pipes", "demir-celik-urunler.html"),
+]
+HERO_SCRIPT_TR = hero_script(HERO_SLIDES_TR)
+
+home_body_tr = """
+<div class="hero-spacer" id="heroSpacer"></div>
+<div class="hero-fixed" id="heroFixed">
+  <div class="hero-viewport">
+    <div class="hero-track" id="heroTrack"></div>
+  </div>
+  <div class="slide-label" id="slideLabel">
+    <div class="slide-eyebrow" id="labelEyebrow">Hizmet / 01</div>
+    <h1 id="labelTitle">Lazer Kesim</h1>
+    <div class="slide-rule"></div>
+  </div>
+  <div class="scroll-hint" id="scrollHint"><div class="line"></div>KAYDIR</div>
+  <div class="hero-dots" id="heroDots"></div>
+</div>
+"""
+write_tr("index", "Anasayfa", "home", home_body_tr, HERO_SCRIPT_TR)
+
+# ---------------- TR: SERVICES ----------------
+service_details_tr = [
+    {
+        "slug": "iron-steel-supply", "title": "Demir Celik Urun", "img": "bars",
+        "intro": "Firmamiz bunyesinde demir celik urunler uretimi esnasinda son teknoloji cihazlar kullanildigindan urunlerde hata, sorun cikmasi muhtemel degildir. Istenilen ozelliklere uygun olarak birebir ayni urunlerin satislari yapilmaktadir. Urunlerimiz firmamiz guvencesi ile satisa sunulmaktadir. Saclar, profiller, borular, hadde urunleri, celik hasirlar, demir celik urunler bunlardan bazilaridir.",
+        "what_is": "Genis uretim hacmine sahip olan firmamiz yeni nesil teknolojiler ile desteklenen bir uretim alanina sahiptir. Ihtiyaclariniza ozel cozumler sunmak icin ozel uretimler gerceklestirmekteyiz. Demir celik urun satisi konusunda sektorun en iyi fiyatlandirmasini sizlere sunan firmamizdan teklif almadan karar vermeyin. Profil kesim, boru kesim, sac kesim, sac bukum, rulo dilme kesim ve rulo sac kesim gibi hizmetleri de sunmaktayiz.",
+        "methods": "Firmamiz hayatimizda az ya da cok kullandigimiz pek cok urun icin malzeme tedariki saglamaktadir. En kaliteli demir celik urunlerini uygun fiyat garantisi ile sizlere sunan firmamiz yuzde yuz musteri odakli calisan bir firma olmakla birlikte kaliteli, zamaninda teslimat ve satis sonrasi hizmetler konusunda oldukca titiz calismaktadir. Turkiye'nin her yerine istenilen gunde teslim edilecek demir celik urunler icin hemen simdi arayabilirsiniz.",
+    },
+    {
+        "slug": "cutting-bending", "title": "Kesim Bukum", "img": "cutbend",
+        "intro": "Nora Paslanmaz ve Celik Firmasi olarak CNC tezgahlarimizda, muhtelif olcu ve kalinliklarda bulunan saclari buyuk bir itina ile bukerek, farkli sektorlerdeki ihtiyaclarinizi karsilamaktayiz. Firmamiz yuksek teknolojili CNC Bukum Tezgahlarinda, malzeme bilgisi ve teknik altyapiya sahip deneyimli kadromuz ile en karmasik sac bukum islerini dahi hatasiz ve en hizli sekilde gerceklestirerek sizlere sunmaktayiz.",
+        "what_is": "Kesim bukum, gunumuzde sac ve metal uzerine kurulu bir sanayidir. Bu alan her gecen gun gelismektedir. Birçok urun artik bu malzemelerin islenmesi ile ortaya cikmaktadir. Ileri teknoloji makineler kullanarak bu alanda kendisini gelistiren firmamiz ile calisirsaniz zamaninda istediginiz gibi bir teslimat almaniz mumkundur. Firmamiz ileri teknolojik alt yapisi ile Turkiye'nin her yerine hizmet verebilmektedir.",
+        "methods": "Farkli tonajlarda ve genisliklerde kesim bukum cihazlarimiz mevcuttur. Ust kalip, alt kalip, hidrolik eksenleri, CNC kontrol unitesi gibi siniflardan olusmaktadir. Malzeme turu, malzeme kalinliklari ve uygulanacak basinc gibi ozelliklere gore son teknolojik kesme bukum cihazlarina girilir ardindan islemler baslamaktadir. Diledginiz urunu en kisa surede size teslim edecek, lazer kesim, ileri kesim bukum ve diger islemler icin hemen firmamiz ile baglanti kurabilirsiniz.",
+    },
+    {
+        "slug": "cnc-machining", "title": "Talasli Imalat", "img": "cnc",
+        "intro": "Talasli imalat hayatimiza 18. yuzyil baslarinda girmistir. 20. yuzyila gelindiginde ise teknolojinin gelismesi ile endustri alaninda vazgecilemez bir noktaya geldi. Bir malzemeye istenilen ozellikleri kazandirmak adina is parcasi ustunden tabaka seklinde malzeme kaldirma islemine denmektedir. Kesici takimlar kullanilarak kalip malzemenin kullanicisinin istenilen sekle girmesi sadece talasli imalat sayesinde olmaktadir.",
+        "what_is": "Talasli imalat endustri alaninda cok yaygin kullanilmaktadir. Bu turler belirlenirken yontemleri, tornalama, frezeleme, matkap ile delme veya taslama olarak da farkli turlerde olabilmektedir. Frezleme, kesici takimlar ile birlikte malzemelerden talas kaldirir ve ardindan sekil verilmesidir. Delik delme ise tasarlanmis olan malzemelerin uzerinde silindir bicimde delikler acma islemlerine denir.",
+        "methods": "Talasli imalat avantajlari; islenebilen malzeme turunun fazla olmasi, istenilen boyut ve sekilleri kisa surede verilebilir olmasi, istenildigi turde boyutlama yapilabilir olmasi ve temiz yuzeyler saglanmasidir. Nora Paslanmaz ve Celik Firmasi ile talasli imalat yapmaniza yardimci olacak cihaz turlerimiz bulunmaktadir, garanti kosullari ile uygun fiyatlara sunulmaktadir.",
+    },
+    {
+        "slug": "welded-fabrication", "title": "Kaynakli Imalat", "img": "welded_fab",
+        "intro": "Imalatin bir cok farkli yerinde kullanilan kaynakli imalat yontemi en cok tercih edilen ve cesitli sektorler icin kritik onemli olan uretim bicimlerindendir. Firmamizda paslanmaz malzemeler, demir, aluminyum ve celik gibi bir cok malzemenin kaynakli imalati kaliteli bir sekilde uretilebilmektedir.",
+        "what_is": "Kaynakli imalat sektorunun gunumuzde bu kadar cok tercih edilmesinin sebebi dusuk maliyetler ile hata orani dusuk ve verimliligi yuksek urunler elde edebilmekten kaynaklanmaktadir. Burada onemli olan nokta kaynakli imalatin tercih edilecegi yontemin kullanilacak malzemeye uygun olarak secilmesi gerekliligidir. Firmamiz uzman personelleri projelerinizde sizlere uygun yontemler kullanarak verimli ve maliyeti dusuk uretimler gerceklestirmeniz icin caba sarf etmektedir.",
+        "methods": "Uretime baslamadan once tum surecin ince bir sekilde analiz edilmesi, lojistikten baslayarak her etabin planlanmasi uretimin verimliligini saglayacak konularin basinda gelmektedir. Firmamiz her turlu kaynakli imalat islerini kendi makinelerinde isleyerek, basit gorunen imalat cesitlerinden binalara, koprulere, celik yapilardan boru hatlarina kadar pek cok yerde kullanilan kaynakli imalat modelleri tasarlayabilmektedir.",
+    },
+    {
+        "slug": "plasma-cutting", "title": "Plazma Kesim", "img": "plasma",
+        "intro": "Plazma kesim, paslanmaz celik sektorunde kullanilan bir kesim yontemidir. Dar bir agiz uctan cikan yuksek hizli iyonize gaz elektrik akimini kesme basligi araciligi ile malzemeye iletir, malzemenin isitilmasini ve boylelikle erimesini saglamaya yaramaktadir.",
+        "what_is": "Paslanmaz celik sektorunde sorunsuz ve hatasiz bir kesim yontemi olarak kullanilan bu yontemde ozellikle hasir seklinde metallerin oksi-asetilen kesilmesi mumkun olmayan bazi ozel uygulamalarda plazma kesim yontemleri ile daha iyi sonuclar elde edilmesini saglamaktadir. Plazma kesim yontemini en iyi sekilde kullanan firmamiz bu yontem ile 25 mm altinda celik ve demir disi malzemelerin kesilmesinde konunun uzmanlari tarafindan tavsiye edilmektedir.",
+        "methods": "Plazma kesimlerin saglamis oldugu pek cok avantaj bulunmaktadir. Tum iletken metaller uzerinden uygulanabilir olmasi, ayni plaka sac uzerinde birbirinden farkli parcalarin islenip fire oranlarinin en aza indirilmesi, ve neredeyse capaksiz bir kesim saglanmasidir. Nora Paslanmaz ve Celik ile elde ettiginiz plazma kesimlerde yuzey uzerine istenilen amblem, resim vs. resimlendirmeler de yapilabilmektedir.",
+    },
+    {
+        "slug": "laser-cutting", "title": "Lazer Kesim", "img": "laser",
+        "intro": "Lazer kesim, malzemeleri kesmek icin bir lazer kullanilarak yapilan islemlere denmektedir. Bu kesim turunde genel olarak endustriyel imalat sektorleri icin kullanilmaktadir. Daha temiz ve puruzsuz kesim yapabilen bir teknoloji olarak bilinmektedir.",
+        "what_is": "Lazer kesim kullanilarak yapilan malzeme kesimleri, uretim hatalarini diger cihazlara oranla azaltmaktadir. Bu kesim icerisinde cesitli tezgahlar da uygulanmasi ile kesim islemleri 24 saat gibi kisa surede yapilmaktadir. Seri uretim yapilmasi halinde maliyetlerde cok buyuk olcude azaltilmaktadir.",
+        "methods": "Bu cihazlarin birbirinden farkli avantajlari da bulunmaktadir. Etkili zaman yonetimi, kalite, dusuk maliyet, tasarruf, tek seferde en iyi sonucu alma gibi bircok avantaj soylenebilir. Nora Paslanmaz ve Celik ile birlikte sizler de her zaman etkili cozumler alabileceginiz lazer kesim cihazlarini kullanabilirsiniz.",
+    },
+]
+
+services_body_tr = f"""
+<section class="banner" style="background-image:url('data:image/jpeg;base64,{IMG_B64['plasma']}'); background-size:cover; background-position:center;"><div class="banner-content reveal"><h2 class="serif">Hizmetler</h2></div></section>
+<section class="section" style="padding-top:70px;">
+  <div class="wrap">
+    <span class="section-eyebrow">Yetkinliklerimiz</span>
+    <h2 class="section-title">Alti hizmet, tek tesis, tedarik, kesim, bukum, kaynak ve talasli imalat bir arada.</h2>
+    <p style="font-family:'Poppins'; font-size:15px; color:var(--gray); max-width:640px; line-height:1.8; margin-top:18px; margin-bottom:56px;">Nora paslanmaz ve celik firmasi olarak kuruldugumuz gunden bu yana urun cesitliligi, urunlerindeki saglamlik, kalite ve hizmet kapasitesi ile alanindaki tum firmalar arasinda en iyi hizmetleri sunmaktadir. Ozel uretim alanimizda hizmet veren firmamiz, genis uretim hacmi ve sektor icerisine getirdigi yenilikler sayesinde dikkat cekmekte ve en cok hizmet veren firmalar arasinda oncu bir konuma gelmistir. Gelisen teknoloji ile alt yapisini guclendiren firmamizda demir celik urun satisi, tedarik ve diger konularda hizmetler sunmaktayiz.</p>
+  </div>
+  <div class="service-grid reveal-stagger">
+    <div class="service-card">
+      <div class="thumb" style="background-image:url('data:image/jpeg;base64,{IMG_B64['bars']}')"></div>
+      <div class="body">
+        <span class="idx">01</span>
+        <h3><a href="iron-steel-supply.html" style="color:inherit;">Demir Celik Urun</a></h3>
+        <p>Sac, profil, boru, hadde urunleri ve celik hasir dogrudan tedarik, talep uzerine kesim ve bukum hizmetiyle birlikte.</p>
+        <a class="more" href="iron-steel-supply.html">Devamini Oku</a>
+      </div>
+    </div>
+    <div class="service-card">
+      <div class="thumb" style="background-image:url('data:image/jpeg;base64,{IMG_B64['cutbend']}')"></div>
+      <div class="body">
+        <span class="idx">02</span>
+        <h3><a href="cutting-bending.html" style="color:inherit;">Kesim Bukum</a></h3>
+        <p>CNC pres bukum ile farkli kalinlik ve tonajlarda profil, kosebent ve sekillendirilmis sac.</p>
+        <a class="more" href="cutting-bending.html">Devamini Oku</a>
+      </div>
+    </div>
+    <div class="service-card">
+      <div class="thumb" style="background-image:url('data:image/jpeg;base64,{IMG_B64['cnc']}')"></div>
+      <div class="body">
+        <span class="idx">03</span>
+        <h3><a href="cnc-machining.html" style="color:inherit;">Talasli Imalat</a></h3>
+        <p>CNC tornalama, frezeleme, delme ve taslama ile parcalari tam olcusune ve yuzey kalitesine getiriyoruz.</p>
+        <a class="more" href="cnc-machining.html">Devamini Oku</a>
+      </div>
+    </div>
+    <div class="service-card">
+      <div class="thumb" style="background-image:url('data:image/jpeg;base64,{IMG_B64['welded_fab']}')"></div>
+      <div class="body">
+        <span class="idx">04</span>
+        <h3><a href="welded-fabrication.html" style="color:inherit;">Kaynakli Imalat</a></h3>
+        <p>Paslanmaz, demir, aluminyum ve celik uzerinde yapisal ve ozel kaynak, tekil parcadan tam montaja kadar.</p>
+        <a class="more" href="welded-fabrication.html">Devamini Oku</a>
+      </div>
+    </div>
+    <div class="service-card">
+      <div class="thumb" style="background-image:url('data:image/jpeg;base64,{IMG_B64['plasma']}')"></div>
+      <div class="body">
+        <span class="idx">05</span>
+        <h3><a href="plasma-cutting.html" style="color:inherit;">Plazma Kesim</a></h3>
+        <p>25 mm'ye kadar celik ve demir disi malzemelerde hizli, dusuk fireli iyonize gaz kesimi.</p>
+        <a class="more" href="plasma-cutting.html">Devamini Oku</a>
+      </div>
+    </div>
+    <div class="service-card">
+      <div class="thumb" style="background-image:url('data:image/jpeg;base64,{IMG_B64['laser']}')"></div>
+      <div class="body">
+        <span class="idx">06</span>
+        <h3><a href="laser-cutting.html" style="color:inherit;">Lazer Kesim</a></h3>
+        <p>Paslanmaz, demir, aluminyum ve diger saclarda temiz, yuksek hassasiyetli lazer kesim.</p>
+        <a class="more" href="laser-cutting.html">Devamini Oku</a>
+      </div>
+    </div>
+  </div>
+</section>
+"""
+write_tr("services", "Hizmetler", "services", services_body_tr)
+
+for svc in service_details_tr:
+    body = service_detail_body(svc, service_details_tr, lang="tr")
+    write_tr(svc["slug"], svc["title"], "services", body)
+
+# ---------------- TR: PRODUCTS ----------------
+demir_body_tr = product_gallery_body("Demir Celik Urunler", "Kategoriye gore demir ve celik urunlerimiz.", demir_items, "profile", lang="tr")
+write_tr("demir-celik-urunler", "Demir Celik Urunler", "demir", demir_body_tr)
+
+paslanmaz_body_tr = product_gallery_body("Paslanmaz Urunler", "Kategoriye gore paslanmaz celik urunlerimiz.", paslanmaz_items, "sheet", lang="tr")
+write_tr("paslanmaz-urunler", "Paslanmaz Urunler", "paslanmaz", paslanmaz_body_tr)
+
+# ---------------- TR: ABOUT ----------------
+about_body_tr = f"""
+<section class="banner" style="background-image:url('data:image/jpeg;base64,{IMG_B64['cutbend']}'); background-size:cover; background-position:center;"><div class="banner-content reveal"><h2 class="serif">Hakkimizda</h2></div></section>
+<section class="section" style="padding-top:70px;">
+  <div class="wrap about-grid reveal">
+    <div>
+      <span class="section-eyebrow">Biz Kimiz</span>
+      <h2 class="section-title" style="margin-bottom:20px;">Paslanmaz ve celik icin uretim ortaginiz.</h2>
+      <p>Demir, celik ve paslanmaz celik sektorundeki yillarin deneyimiyle Nora Paslanmaz ve Celik, uzmanlik, hizmet kalitesi ve rekabetci fiyatli urunler ile musterilerine hizmet vermektedir. Nora, sektorunde oncu firmalar arasinda hak ettigi yeri almistir.</p>
+      <p>Musteri odakli felsefemizle, surekli arastirma, gelistirme ve kuresel kalite standartlarina bagliligimizla kalite taahhudumuzu surduruyor, sektorde saygin bir isim olarak konumumuzu pekistiriyoruz.</p>
+      <p>Nora Paslanmaz ve Celik, deneyimli ve yetkin ekibiyle faaliyetlerinin her asamasini yurutmekte, degerli musterilerimizin satis oncesi ve sonrasinda hicbir zaman deskteksiz kalmamasi icin tam kapasite calismaktadir.</p>
+      <div class="about-stats">
+        <div class="stat"><b>6</b><span>Temel Surec</span></div>
+        <div class="stat"><b>TR</b><span>Istanbul Merkezli</span></div>
+        <div class="stat"><b>B2B</b><span>Dogrudan Tedarik</span></div>
+      </div>
+    </div>
+    <div class="about-visual" style="background-image:url('data:image/jpeg;base64,{IMG_B64['welded_fab']}'); background-size:cover; background-position:center;"></div>
+  </div>
+</section>
+"""
+write_tr("about", "Hakkimizda", "about", about_body_tr)
+
+# ---------------- TR: CERTIFICATES ----------------
+certificates_body_tr = f"""
+<section class="banner" style="background-image:url('data:image/jpeg;base64,{IMG_B64['cnc']}'); background-size:cover; background-position:center;"><div class="banner-content reveal"><h2 class="serif">Sertifikalar</h2></div></section>
+<section class="partners" style="padding-top:70px;">
+  <div class="wrap">
+    <span class="section-eyebrow">Sertifikalar ve Referanslar</span>
+    <h2 class="section-title" style="margin-bottom:40px;">Sektor paydaslari tarafindan guvenilir.</h2>
+  </div>
+  <div class="partner-grid reveal-stagger">
+    <div class="partner-box">[ Sertifika 1 ]</div>
+    <div class="partner-box">[ Sertifika 2 ]</div>
+    <div class="partner-box">[ Referans 1 ]</div>
+    <div class="partner-box">[ Referans 2 ]</div>
+  </div>
+</section>
+"""
+write_tr("certificates", "Sertifikalar", "certificates", certificates_body_tr)
+
+# ---------------- TR: BLOG ----------------
+blog_posts_tr = [
+    {
+        "slug": "iron-steel-products-explained", "title": "Demir Celik Urunleri", "img": "profile",
+        "category": "Urunler",
+        "excerpt": "Celik, tipik olarak yuzde 0,2 ile yuzde 2,1 arasinda degisen demir ve karbon iceriginin bir kombinasyonundan olusan bir alasimdir.",
+        "paragraphs": [
+            ("", "Celik, tipik olarak yuzde 0,2 ile yuzde 2,1 arasinda degisen demir ve karbon iceriginin bir kombinasyonundan olusan bir alasimdir. Celik alasimindaki karbon icerigi, celigin siniflandirilmasinda olumlu bir rol oynar. Yuksek firinlarda uretilen demir, gerekli karbonun belirli islemlerden gecerek veya elektrik ark ocaklarinda hurdanin yeniden eritilmesiyle celige donusturulur. Karbon, demiri sertlestiren elementtir ve elde edilen karisimdaki karbon orani ne kadar yuksek olursa celik o kadar sert olur. Nora Paslanmaz ve Celik firmamizda en kaliteli demir celik urunlerini sizlere sunuyoruz."),
+            ("Demir Celik Urunleri Nelerdir?", "Demir celik urunleri oldukca cesitlilik gostermektedir. Bu urunler su sekildedir; Npu Profiller, Kosebant, Siyah Sac, Transmisyon, DKP Sac, K Profil, Insaat Demiri, Boyali K Profil, Silme-Lama, Npi Profiller, Kare, Izli Demir, Baklavali Sac, Galvaniz Sac, Galvaniz Trapez Sac, Galvanizli Kare Profiller, Genisletilmis Sac, Su Borusu Galvaniz ve Su Borusu Siyah urunleri icin firmamiz ile iletisime gecmeniz yeterlidir. Alaninda uzman calisanlarimiz ve son model makinelerimiz ile demir celik urunlerinde farkimizi ortaya koymaktayiz."),
+            ("Saclar", "Sanayi sektorunde farkli noktalarda kullanilan sac cesitleri bir isletmenin en temel ihtiyacidir. Bir sac imalat firmasindan alabileceginiz saclarin size ozel bir sac kesme tesisi saglamasi gerekir. Bu noktada sizler de sac kesim ihtiyaclarinizi profesyonelce karsilayabilen firmamizi tercih edebilirsiniz. Seri uretimi destekleyebilen levhalar ayni zamanda is maliyetlerinizi de azaltabilir. Sac uretimi firmamiz sac ebatlari ve sac fiyatlari sectiginiz urun ozelliklerine gore degisiklik gosterebilir. Miktarlar yuksek olmadigi surece kalip gerektirmeyen bir islemle sac elde edilebilir. Bu nedenle kullanilan malzemenin deformasyon derecesi neredeyse sifirdir."),
+            ("Profiller", "Farkli metallerin farkli kalinliklari ve kaliteleri oldugu icin makine tipleri farkli sekillerde gelir. Bu sebeple hepsini ayni sekilde kesmek mumkun degildir. Kesilen dallar kesilmeden once temizlenmelidir. Islem, kontur kesimi icin gereken hassas kesimleri elde etmek icin celik uzerinde hicbir kalinti kalmamasini saglar. Firmamiz, profil kesim icin uretim suresini kisaltmak icin gerekli tum islemleri yapmaktadir. Urun size montaja ve islemeye hazir olarak teslim edilir. Oksijen, plazma ve lazer kesiciler profil kesme makineleridir."),
+            ("Demir Celik Urunlerinin Kullanim Alanlari Nelerdir?", "Demir celik urunleri bircok alanda tercih edilmektedir. Dekorasyon sektorunde dekoratif urunlerin yapilma asamasinda, Otomotiv sektorunde arac alt yapisi olusturma, insaat alanlarinda, Mobilya sektorunde bacak kol portfoyunde, tekstilde aski, manken ya da dokuma tezgahlarinin uretilme asamasinda, Elektronik sektorunde bilgisayar ya da elektronik ekipman uretimi esnasinda, Gemilerde ve agir sanayide tercih edilen demir celik urunleri icin firmamiz sizlere hizmet vermektedir. Kuruldugu andan itibaren profesyonelligi ve kalitesi ile adindan soz ettiren firmamiz, sizler icin en iyi urunleri uretmektedir."),
+        ],
+    },
+    {
+        "slug": "stainless-steel-products-explained", "title": "Paslanmaz Celik Urunler", "img": "sheet",
+        "category": "Urunler",
+        "excerpt": "Paslanmaz celik, celigin icine belirli oranlarda krom karistirilarak elde edilen alasim urunudur.",
+        "paragraphs": [
+            ("", "Paslanmaz celik gunumuzde bircok imalatta tercih edilen celigin icine belirli oranlarda krom karistirilarak elde edilen alasim urunudur. Uretimde sagladigi pek cok avantaji nedeni ile paslanmaz celige olan talep her gecen sene artis gostermektedir. Nora Paslanmaz Celik firmamiz olarak uzun yillardir sektorun ihtiyaci olan paslanmaz celik urunlerini bunyemizde barindirarak uretimlerinizi aksatmadan sizlere tedarik saglamaktayiz. Firmamizdan verecediniz siparisler icin firmamiz teknik personellerinden urunlerimiz ile ilgili bilgi alabilir ve teknik destek talep edebilirsiniz."),
+            ("Paslanmaz Celigin Avantaj Sagladigi Konular", "<em>[Andi icin not: musterinin gonderdigi ekran goruntulerinde bu bolumde bir kayma var, muhtemelen bir kaydirma/foto atlanmis. Asagidaki paragraf o bosluk icin gecici bir koprulemedir, eksik kismi gonderdiginde degistirilmesi gerekiyor.]</em> Paslanmaz celik, uretimde ozellikle korozyona direnc ve tekrarlanan uretimlerde tutarlilik gibi belirgin avantajlar saglar, kalite kaybetmeden uretim yapilmasina olanak taniyor.<br><br>Paslanmaz celik kendi icerisinde cinsine ve kalitesine gore ayrilabilmektedir. Paslanmaz celikte olusabilen bu farkliliklar nedeni ile urunlerinizi guvenilir firmalardan tedarik etmeniz uretimde yasayacaginiz problemleri en aza indirecektir. Paslanmaz celik kalite standartlarina gore korozyona dayanim kuvvetini arttiran bir uzundur. Paslanmaz celik bu farkliliklar ile birlikte kaynak yapilabilirlik orani, islenebilir orani, isil islem alabilme ve mekanik derecesi de degisim gosterebilmektedir. Ornegin bazi paslanmaz celik grubu iceriginde daha az karbon bulunmasi nedeni ile daha elastik ozellikte olabilmektedir. Bu durum islenmesi asamasinda problem yaratabilmektedir. Firmamiz uretim asamasinda kullanacaginiz yere uygun paslanmaz celik urunler hakkinda size detayli bilgi vererek islem yapmaktadir.<br><br>Paslanmaz celik adindan dolayi hicbir sekilde paslanmayacak bir urun olarak bilinmektedir. Ancak bu dogru uretim modelinde dogru paslanmaz celik alasiminin kullanmasina baglidir. Paslanmaz celik kendi uretim ozelliklerine uygun yerlerde kullanildigi takdirde paslanmaz ozelligini korumaktadir. Tersi durumlarda ise paslanmaz ozelligini yitirmektedir. Tum bu incelikler nedeni ile paslanmaz celigin dogru adreslerden temin edilmesi gerekmektedir. Nora paslanmaz celik firmamiz urunler konusunda bilgili ve egitimli ekipleri ile sizlere kaliteli hizmet saglamaktadir."),
+            ("Paslanmaz Celik Fiyatlari", "Paslanmaz celik fiyatlari piyasa kosullarina gore farklilik gosterebilmektedir. Paslanmaz celigi satin alirken fiyat onemli bir kistas olmakla birlikte en onemlisi uretiminize uygun paslanmaz celik cesidini bulmaktadir. Dogru urunu almak bu urunlerle yapilmis imalatlarinin uzun sure bir sey olmadan kullanilmasini saglayacaktir. Bunun icin paslanmaz celik satin alirken malzemenin korozyona dayanma gucune, mekanik dayanim gucune, yapacaginiz uretimin sicaklik degerlerine, malzemenin fiziksel ozelliklerine ve yuzey ozelliklerine dikkat etmeniz gerekmektedir. Firmamiz sizlere tum bu teknik konularda gereken destegi vererek satis yapan bir firmadir."),
+            ("Paslanmaz Celigin Saklama Kosullari Nasil Olmalidir?", "Paslanmaz celigin bulundurdugunuz yerin ozellikleri urunun deforme olmamasi icin onemlidir. Paslanmaz celigin bekletildigi yerde toprakla temas halinde olmamasi ve karbon celik talasi ile ayni yerde bulundurulmamasi gerekmektedir. Bu hususlara dikkat edilmedigi takdirde paslanmaz celik ozellikleri zarar gorebilmekte ve urunde paslanma belirtileri gorulebilmektedir."),
+        ],
+    },
+]
+
+for post in blog_posts_tr:
+    body = blog_detail_body(post, blog_posts_tr, lang="tr")
+    write_tr(post["slug"], post["title"], "blog", body)
+
+blog_cards_tr = "\n".join([f"""
+    <div class="blog-card">
+      <div class="thumb" style="background-image:url('data:image/jpeg;base64,{IMG_B64[p['img']]}'); background-size:cover; background-position:center;"></div>
+      <div class="body">
+        <span class="date">{p['category']}</span>
+        <h3>{p['title']}</h3>
+        <p>{p['excerpt']}</p>
+        <a class="more" href="{p['slug']}.html">Devamini Oku</a>
+      </div>
+    </div>""" for p in blog_posts_tr])
+
+blog_body_tr = f"""
+<section class="banner" style="background-image:url('data:image/jpeg;base64,{IMG_B64['bars']}'); background-size:cover; background-position:center;"><div class="banner-content reveal"><h2 class="serif">Blog</h2></div></section>
+<section class="section" style="padding-top:70px;">
+  <div class="wrap">
+    <span class="section-eyebrow">Haberler</span>
+    <h2 class="section-title">Nora'dan son gelismeler.</h2>
+  </div>
+  <div class="wrap">
+  <div class="blog-grid reveal-stagger">{blog_cards_tr}
+  </div>
+  </div>
+</section>
+"""
+write_tr("blog", "Blog", "blog", blog_body_tr)
+
+# ---------------- TR: CONTACT ----------------
+contact_body_tr = f"""
+<section class="banner" style="background-image:url('data:image/jpeg;base64,{IMG_B64['tubes']}'); background-size:cover; background-position:center;"><div class="banner-content reveal"><h2 class="serif">Iletisim</h2></div></section>
+<section class="section" style="padding-top:70px;">
+  <div class="wrap contact-grid reveal">
+    <div>
+      <span class="section-eyebrow">Bize Ulasin</span>
+      <h2 class="section-title">Teklif isteyin.</h2>
+      <ul class="contact-list">
+        <li><b>Telefon</b> 0216 621 55 41</li>
+        <li><b>E-posta</b> info@norapaslanmazcelik.com</li>
+        <li><b>Adres</b> OSB Des Sanayi Sitesi 115 Sok. No:30, Yukari Dudullu, Umraniye / Istanbul</li>
+      </ul>
+    </div>
+    <div class="form-box">
+      <form>
+        <div class="form-row"><label>Ad Soyad</label><input type="text" placeholder="Adiniz"></div>
+        <div class="form-row"><label>Firma</label><input type="text" placeholder="Firma adi"></div>
+        <div class="form-row"><label>Mesaj</label><textarea placeholder="Miktar, olcu ve teknik detaylar..."></textarea></div>
+        <button type="button" class="submit-btn">Talep Gonder</button>
+      </form>
+    </div>
+  </div>
+</section>
+<section style="padding:0 60px 90px;">
+  <div class="map-frame">
+    <iframe
+      src="https://www.google.com/maps?q=DES+Sanayi+Sitesi,+Nato+Yolu+Cd,+Yukar%C4%B1+Dudullu,+%C3%9Cmraniye%2F%C4%B0stanbul&output=embed"
+      width="100%" height="420" style="border:0;" allowfullscreen="" loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade"></iframe>
+  </div>
+</section>
+"""
+write_tr("contact", "Iletisim", "contact", contact_body_tr)
+
+# ================= FRENCH (FR) VERSION =================
+FR_OUT_DIR = "/home/claude/nora-site/pages/fr"
+os.makedirs(FR_OUT_DIR, exist_ok=True)
+
+def write_fr(slug, title, current, body, extra_script=""):
+    open(f"{FR_OUT_DIR}/{slug}.html", "w").write(page(title, current, body, extra_script, lang="fr", slug=slug))
+
+# ---------------- FR: HERO ----------------
+HERO_SLIDES_FR = [
+    ("Service / 01", "D\u00e9coupe Laser", "laser", "services.html"),
+    ("Service / 02", "D\u00e9coupe Plasma", "plasma", "services.html"),
+    ("Service / 03", "Fabrication Soud\u00e9e", "welded_fab", "services.html"),
+    ("Service / 04", "Usinage CNC", "cnc", "services.html"),
+    ("Service / 05", "D\u00e9coupe et Pliage", "cutbend", "services.html"),
+    ("Produits", "Tubes, Tuyaux et Acier", "pipes", "demir-celik-urunler.html"),
+]
+HERO_SCRIPT_FR = hero_script(HERO_SLIDES_FR)
+
+home_body_fr = """
+<div class="hero-spacer" id="heroSpacer"></div>
+<div class="hero-fixed" id="heroFixed">
+  <div class="hero-viewport">
+    <div class="hero-track" id="heroTrack"></div>
+  </div>
+  <div class="slide-label" id="slideLabel">
+    <div class="slide-eyebrow" id="labelEyebrow">Service / 01</div>
+    <h1 id="labelTitle">D\u00e9coupe Laser</h1>
+    <div class="slide-rule"></div>
+  </div>
+  <div class="scroll-hint" id="scrollHint"><div class="line"></div>D\u00c9FILER</div>
+  <div class="hero-dots" id="heroDots"></div>
+</div>
+"""
+write_fr("index", "Accueil", "home", home_body_fr, HERO_SCRIPT_FR)
+
+# ---------------- FR: SERVICES ----------------
+service_details_fr = [
+    {
+        "slug": "iron-steel-supply", "title": "Fourniture de Fer et d'Acier", "img": "bars",
+        "intro": "Outre nos services de d\u00e9coupe, pliage et fabrication, Nora Paslanmaz ve Celik fournit directement une large gamme de produits en fer et en acier, t\u00f4les, profil\u00e9s, tubes, produits lamin\u00e9s et treillis d'acier compris, fabriqu\u00e9s sur des \u00e9quipements modernes et couverts par notre propre garantie de qualit\u00e9.",
+        "what_is": "Notre outil de production est con\u00e7u pour de gros volumes et s'appuie sur une technologie actualis\u00e9e, ce qui nous permet de traiter des commandes sur mesure en compl\u00e9ment de notre stock standard. Au-del\u00e0 de la fourniture de mat\u00e9riaux finis, nous proposons \u00e9galement un traitement associ\u00e9 sur demande, notamment la d\u00e9coupe de profil\u00e9s, la d\u00e9coupe de tubes, la d\u00e9coupe de t\u00f4les, le pliage de t\u00f4les et le refendage de bobines, afin qu'une seule commande couvre \u00e0 la fois la mati\u00e8re premi\u00e8re et sa mise en forme.",
+        "methods": "Nous nous approvisionnons et fournissons des mat\u00e9riaux pour une large gamme de produits d\u00e9riv\u00e9s, avec des prix comp\u00e9titifs, une qualit\u00e9 constante, une livraison dans les d\u00e9lais et un service apr\u00e8s-vente fiable, et nous livrons partout en Turquie selon le calendrier dont vous avez besoin. Nora Paslanmaz ve Celik travaille selon une approche centr\u00e9e sur le client, contactez directement notre \u00e9quipe pour conna\u00eetre la disponibilit\u00e9 des stocks, poser vos questions techniques ou demander un devis avant de d\u00e9cider.",
+    },
+    {
+        "slug": "cutting-bending", "title": "D\u00e9coupe et Pliage", "img": "cutbend",
+        "intro": "Sur nos presses plieuses CNC, nous plions des t\u00f4les de diff\u00e9rentes \u00e9paisseurs et dimensions avec pr\u00e9cision, r\u00e9pondant aux besoins de mise en forme d'un large \u00e9ventail d'industries. Notre \u00e9quipe exp\u00e9riment\u00e9e associe son expertise des mat\u00e9riaux \u00e0 des \u00e9quipements de pliage CNC de haute technologie pour r\u00e9aliser rapidement et avec pr\u00e9cision m\u00eame les travaux de formage de t\u00f4le les plus complexes.",
+        "what_is": "La d\u00e9coupe et le pliage sont un m\u00e9tier construit autour de la mise en forme de t\u00f4les et de mati\u00e8res m\u00e9talliques selon les profils dont un projet a r\u00e9ellement besoin, qu'il s'agisse de plaques plates, de corni\u00e8res ou de profil\u00e9s en U utilis\u00e9s notamment dans l'automobile et le b\u00e2timent. Comme il s'agit de la premi\u00e8re \u00e9tape d'une grande partie de la production en aval, r\u00e9ussir cette \u00e9tape dans les d\u00e9lais et aux dimensions demand\u00e9es est d\u00e9terminant pour tout ce qui suit.",
+        "methods": "Nos presses plieuses couvrent une gamme de tonnages et de largeurs de travail, chacune associant un poin\u00e7on, une matrice, des axes hydrauliques et une unit\u00e9 de contr\u00f4le CNC, la pression hydraulique serre la t\u00f4le entre des matrices en V assorties pour former chaque pli selon l'angle programm\u00e9. Le type de mat\u00e9riau, l'\u00e9paisseur et la pression requise sont r\u00e9gl\u00e9s via le syst\u00e8me CNC avant le d\u00e9but du formage, ce qui garantit des plis rapides, pr\u00e9cis et reproductibles. Nora Paslanmaz ve Celik associe d\u00e9coupe et pliage \u00e0 nos services de d\u00e9coupe laser et de soudure pour un flux de production continu, avec une assistance disponible \u00e0 tout moment pour vos questions ou nouvelles commandes.",
+    },
+    {
+        "slug": "cnc-machining", "title": "Usinage CNC", "img": "cnc",
+        "intro": "L'usinage CNC regroupe les op\u00e9rations de tournage, fraisage, per\u00e7age et rectification qui enl\u00e8vent de la mati\u00e8re \u00e0 une pi\u00e8ce en fines couches pour lui donner sa forme, sa taille et sa finition de surface finales exactes. Il est central dans la fabrication industrielle depuis le 20e si\u00e8cle et reste indispensable partout o\u00f9 la pr\u00e9cision dimensionnelle compte.",
+        "what_is": "En usinage CNC (commande num\u00e9rique par ordinateur), des outils de coupe guid\u00e9s par un programme num\u00e9rique enl\u00e8vent de la mati\u00e8re \u00e0 une pi\u00e8ce, que ce soit par tournage, fraisage ou per\u00e7age, jusqu'\u00e0 ce qu'elle atteigne les dimensions exactes du plan. Compar\u00e9es aux m\u00e9thodes manuelles, les machines CNC r\u00e9alisent ce travail plus rapidement et plus s\u00fbrement, ce qui explique aussi leur large utilisation dans les secteurs de l'ameublement et de la fabrication industrielle.",
+        "methods": "L'usinage CNC convient \u00e0 une large gamme de mat\u00e9riaux et de finitions, en respectant des tol\u00e9rances dimensionnelles strictes et en produisant des surfaces propres et finies, les pi\u00e8ces pouvant facilement \u00eatre reprises \u00e0 une autre taille ou forme si besoin. Le seul compromis est une petite perte de mati\u00e8re sous forme de chutes pendant la mise en forme, que le mat\u00e9riau soit du m\u00e9tal, du plastique ou du bois, une part normale et attendue du proc\u00e9d\u00e9. Nora Paslanmaz ve Celik propose une gamme compl\u00e8te d'\u00e9quipements de tournage, fraisage et rectification CNC, couverts par des conditions de garantie et une \u00e9quipe exp\u00e9riment\u00e9e pour vous conseiller sur la machine adapt\u00e9e \u00e0 votre projet.",
+    },
+    {
+        "slug": "welded-fabrication", "title": "Fabrication Soud\u00e9e", "img": "welded_fab",
+        "intro": "La fabrication soud\u00e9e assemble des composants individuels, en acier inoxydable, fer, aluminium et autres m\u00e9taux, en un seul ensemble structurellement solide. C'est l'une des m\u00e9thodes de fabrication les plus largement utilis\u00e9es au monde, et elle est essentielle dans un grand nombre d'industries.",
+        "what_is": "La fabrication soud\u00e9e est choisie parce qu'elle offre des r\u00e9sultats \u00e0 faible taux d'erreur et \u00e0 haute efficacit\u00e9, \u00e0 un co\u00fbt inf\u00e9rieur \u00e0 de nombreuses m\u00e9thodes d'assemblage alternatives, et les progr\u00e8s de l'automatisation l'ont rendue adaptable \u00e0 presque toutes les industries et combinaisons de mat\u00e9riaux. La bonne m\u00e9thode de soudage doit n\u00e9anmoins \u00eatre adapt\u00e9e au mat\u00e9riau assembl\u00e9, c'est pourquoi notre \u00e9quipe exp\u00e9riment\u00e9e planifie chaque projet autour de la technique et de l'\u00e9quipement les mieux adapt\u00e9s, pour une production efficace et \u00e9conomique.",
+        "methods": "Comme la fabrication soud\u00e9e r\u00e9compense une planification rigoureuse, nous analysons chaque projet en d\u00e9tail avant le d\u00e9but des travaux, de la logistique jusqu'\u00e0 l'ordre de soudage, afin de limiter les chutes et de tenir le calendrier de livraison convenu pour l'ensemble fini. Nora Paslanmaz ve Celik g\u00e8re ce processus de bout en bout, des petites pi\u00e8ces sur mesure aux travaux structurels pour b\u00e2timents, ponts et r\u00e9seaux de tuyauterie, avec le soutien d'une \u00e9quipe exp\u00e9riment\u00e9e et d'une assistance technique d\u00e8s que votre projet en a besoin.",
+    },
+    {
+        "slug": "plasma-cutting", "title": "D\u00e9coupe Plasma", "img": "plasma",
+        "intro": "La d\u00e9coupe plasma utilise un jet de gaz ionis\u00e9 \u00e0 grande vitesse, d\u00e9livr\u00e9 par une buse \u00e9troite, pour chauffer et d\u00e9couper les m\u00e9taux conducteurs d'\u00e9lectricit\u00e9. C'est l'une des m\u00e9thodes les plus rapides pour d\u00e9couper l'acier et d'autres mat\u00e9riaux de structure, et elle est particuli\u00e8rement performante sur les aciers non alli\u00e9s et les t\u00f4les plus \u00e9paisses.",
+        "what_is": "En d\u00e9coupe plasma, un gaz ionis\u00e9 est propuls\u00e9 \u00e0 grande vitesse et haute temp\u00e9rature \u00e0 travers une buse \u00e9troite, transportant un courant \u00e9lectrique qui chauffe et fait fondre le m\u00e9tal au contact, tandis que le jet de gaz \u00e0 grande vitesse \u00e9vacue le m\u00e9tal fondu de la d\u00e9coupe. Elle est recommand\u00e9e par les sp\u00e9cialistes du secteur pour d\u00e9couper l'acier et les m\u00e9taux non ferreux jusqu'\u00e0 environ 25 mm d'\u00e9paisseur, y compris pour des cas particuliers, comme les m\u00e9taux en forme de treillis, que la d\u00e9coupe oxyac\u00e9tyl\u00e9nique ne traite pas bien.",
+        "methods": "Compar\u00e9e aux m\u00e9thodes de d\u00e9coupe purement m\u00e9caniques, la d\u00e9coupe plasma offre des r\u00e9sultats nettement plus rapides et g\u00e8re facilement les d\u00e9coupes non planes ou irr\u00e9guli\u00e8res. Elle fonctionne sur tout m\u00e9tal conducteur d'\u00e9lectricit\u00e9, et sa technologie permet \u00e9galement un rainurage pr\u00e9cis dans la m\u00eame passe de d\u00e9coupe. En imbriquant plusieurs pi\u00e8ces sur la m\u00eame t\u00f4le, les chutes sont r\u00e9duites au minimum, et le proc\u00e9d\u00e9 lui-m\u00eame produit un bord quasiment sans bavure, avec une d\u00e9formation thermique minimale, m\u00eame \u00e0 travers une mati\u00e8re d'environ 1,5 fois l'\u00e9paisseur de la t\u00f4le. Nora Paslanmaz ve Celik utilise la d\u00e9coupe plasma pour des r\u00e9sultats rapides et pr\u00e9cis \u00e0 des prix comp\u00e9titifs, y compris la gravure d'embl\u00e8mes ou de motifs sur demande.",
+    },
+    {
+        "slug": "laser-cutting", "title": "D\u00e9coupe Laser", "img": "laser",
+        "intro": "La d\u00e9coupe laser utilise un faisceau lumineux de forte puissance, pr\u00e9cis\u00e9ment focalis\u00e9, pour d\u00e9couper la t\u00f4le, produisant des bords nets et lisses avec tr\u00e8s peu de reprise. C'est l'une des m\u00e9thodes de d\u00e9coupe les plus utilis\u00e9es dans la fabrication industrielle, appr\u00e9ci\u00e9e pour la qualit\u00e9 de coupe qu'elle produit.",
+        "what_is": "En d\u00e9coupe laser, un faisceau lumineux de forte puissance, focalis\u00e9, est guid\u00e9 par un syst\u00e8me automatis\u00e9 sur de l'acier inoxydable, du fer, de l'aluminium et d'autres t\u00f4les m\u00e9talliques, les d\u00e9coupant selon la forme requise. M\u00eame des g\u00e9om\u00e9tries complexes qui prendraient normalement des jours peuvent \u00eatre r\u00e9alis\u00e9es en aussi peu que 24 heures, car le faisceau suit le trac\u00e9 de d\u00e9coupe directement \u00e0 partir du fichier de conception num\u00e9rique.",
+        "methods": "Comme le proc\u00e9d\u00e9 est pilot\u00e9 par ordinateur \u00e0 partir du plan d'origine, la d\u00e9coupe laser r\u00e9duit \u00e0 la fois les chutes de mati\u00e8re et les co\u00fbts d'outillage par rapport \u00e0 la d\u00e9coupe conventionnelle, limitant les gabarits et matrices que les anciennes m\u00e9thodes exigent. Elle reste tr\u00e8s pr\u00e9cise m\u00eame \u00e0 haut rendement, avec une erreur humaine r\u00e9duite au minimum malgr\u00e9 l'intensit\u00e9 du proc\u00e9d\u00e9. Nora Paslanmaz ve Celik utilise la d\u00e9coupe laser sur l'acier inoxydable, le fer, l'aluminium et d'autres t\u00f4les m\u00e9talliques, offrant des r\u00e9sultats pr\u00e9cis et \u00e0 prix comp\u00e9titifs pour chaque travail, d'une pi\u00e8ce sur mesure unique \u00e0 une s\u00e9rie compl\u00e8te de production.",
+    },
+]
+
+services_body_fr = f"""
+<section class="banner" style="background-image:url('data:image/jpeg;base64,{IMG_B64['plasma']}'); background-size:cover; background-position:center;"><div class="banner-content reveal"><h2 class="serif">Services</h2></div></section>
+<section class="section" style="padding-top:70px;">
+  <div class="wrap">
+    <span class="section-eyebrow">Nos Comp\u00e9tences</span>
+    <h2 class="section-title">Six m\u00e9tiers, un seul site, fourniture, d\u00e9coupe, pliage, soudure et usinage r\u00e9unis.</h2>
+    <p style="font-family:'Poppins'; font-size:15px; color:var(--gray); max-width:640px; line-height:1.8; margin-top:18px; margin-bottom:56px;">Depuis notre cr\u00e9ation, Nora Paslanmaz ve Celik se distingue par la diversit\u00e9 de ses produits, la durabilit\u00e9 et la qualit\u00e9 de sa fabrication, et le niveau de service propos\u00e9, ce qui lui vaut une position de premier plan parmi les entreprises du secteur. Fort d'une grande capacit\u00e9 de production et d'une \u00e9quipe exp\u00e9riment\u00e9e et bien \u00e9quip\u00e9e, nous continuons d'investir dans nos infrastructures pour vous proposer fourniture, production sur mesure et transformation, le tout r\u00e9uni au m\u00eame endroit.</p>
+  </div>
+  <div class="service-grid reveal-stagger">
+    <div class="service-card">
+      <div class="thumb" style="background-image:url('data:image/jpeg;base64,{IMG_B64['bars']}')"></div>
+      <div class="body">
+        <span class="idx">01</span>
+        <h3><a href="iron-steel-supply.html" style="color:inherit;">Fourniture de Fer et d'Acier</a></h3>
+        <p>T\u00f4le, profil\u00e9, tube, produits lamin\u00e9s et treillis d'acier fournis directement, avec d\u00e9coupe et pliage sur demande.</p>
+        <a class="more" href="iron-steel-supply.html">En Savoir Plus</a>
+      </div>
+    </div>
+    <div class="service-card">
+      <div class="thumb" style="background-image:url('data:image/jpeg;base64,{IMG_B64['cutbend']}')"></div>
+      <div class="body">
+        <span class="idx">02</span>
+        <h3><a href="cutting-bending.html" style="color:inherit;">D\u00e9coupe et Pliage</a></h3>
+        <p>Pliage sur presse CNC pour profil\u00e9s, corni\u00e8res et t\u00f4les form\u00e9es, dans diff\u00e9rentes \u00e9paisseurs et tonnages.</p>
+        <a class="more" href="cutting-bending.html">En Savoir Plus</a>
+      </div>
+    </div>
+    <div class="service-card">
+      <div class="thumb" style="background-image:url('data:image/jpeg;base64,{IMG_B64['cnc']}')"></div>
+      <div class="body">
+        <span class="idx">03</span>
+        <h3><a href="cnc-machining.html" style="color:inherit;">Usinage CNC</a></h3>
+        <p>Tournage, fraisage, per\u00e7age et rectification CNC pour amener les pi\u00e8ces \u00e0 leurs dimensions et finitions exactes.</p>
+        <a class="more" href="cnc-machining.html">En Savoir Plus</a>
+      </div>
+    </div>
+    <div class="service-card">
+      <div class="thumb" style="background-image:url('data:image/jpeg;base64,{IMG_B64['welded_fab']}')"></div>
+      <div class="body">
+        <span class="idx">04</span>
+        <h3><a href="welded-fabrication.html" style="color:inherit;">Fabrication Soud\u00e9e</a></h3>
+        <p>Soudure structurelle et sur mesure sur inox, fer, aluminium et acier, de la pi\u00e8ce unique \u00e0 l'ensemble complet.</p>
+        <a class="more" href="welded-fabrication.html">En Savoir Plus</a>
+      </div>
+    </div>
+    <div class="service-card">
+      <div class="thumb" style="background-image:url('data:image/jpeg;base64,{IMG_B64['plasma']}')"></div>
+      <div class="body">
+        <span class="idx">05</span>
+        <h3><a href="plasma-cutting.html" style="color:inherit;">D\u00e9coupe Plasma</a></h3>
+        <p>D\u00e9coupe plasma rapide, \u00e0 faibles chutes, sur acier et m\u00e9taux non ferreux jusqu'\u00e0 25 mm.</p>
+        <a class="more" href="plasma-cutting.html">En Savoir Plus</a>
+      </div>
+    </div>
+    <div class="service-card">
+      <div class="thumb" style="background-image:url('data:image/jpeg;base64,{IMG_B64['laser']}')"></div>
+      <div class="body">
+        <span class="idx">06</span>
+        <h3><a href="laser-cutting.html" style="color:inherit;">D\u00e9coupe Laser</a></h3>
+        <p>D\u00e9coupe laser nette et de haute pr\u00e9cision sur inox, fer, aluminium et autres t\u00f4les, formes complexes r\u00e9alis\u00e9es rapidement.</p>
+        <a class="more" href="laser-cutting.html">En Savoir Plus</a>
+      </div>
+    </div>
+  </div>
+</section>
+"""
+write_fr("services", "Services", "services", services_body_fr)
+
+for svc in service_details_fr:
+    body = service_detail_body(svc, service_details_fr, lang="fr")
+    write_fr(svc["slug"], svc["title"], "services", body)
+
+# ---------------- FR: PRODUCTS ----------------
+demir_body_fr = product_gallery_body("Produits Fer et Acier", "Nos produits en fer et acier, par cat\u00e9gorie.", demir_items, "profile", lang="fr")
+write_fr("demir-celik-urunler", "Produits Fer et Acier", "demir", demir_body_fr)
+
+paslanmaz_body_fr = product_gallery_body("Produits Inox", "Nos produits en acier inoxydable, par cat\u00e9gorie.", paslanmaz_items, "sheet", lang="fr")
+write_fr("paslanmaz-urunler", "Produits Inox", "paslanmaz", paslanmaz_body_fr)
+
+# ---------------- FR: ABOUT ----------------
+about_body_fr = f"""
+<section class="banner" style="background-image:url('data:image/jpeg;base64,{IMG_B64['cutbend']}'); background-size:cover; background-position:center;"><div class="banner-content reveal"><h2 class="serif">\u00c0 Propos</h2></div></section>
+<section class="section" style="padding-top:70px;">
+  <div class="wrap about-grid reveal">
+    <div>
+      <span class="section-eyebrow">Qui Sommes-Nous</span>
+      <h2 class="section-title" style="margin-bottom:20px;">Votre partenaire de fabrication pour l'inox et l'acier.</h2>
+      <p>Fort de plusieurs ann\u00e9es d'exp\u00e9rience dans le secteur du fer, de l'acier et de l'acier inoxydable, Nora Paslanmaz ve Celik sert ses clients gr\u00e2ce \u00e0 son expertise, la qualit\u00e9 de son service et des produits \u00e0 prix comp\u00e9titifs. Nora a gagn\u00e9 sa place parmi les entreprises leaders du secteur, une position dont nous sommes fiers.</p>
+      <p>Guid\u00e9s par une philosophie centr\u00e9e sur le client, notre entreprise reste fid\u00e8le \u00e0 son engagement qualit\u00e9 gr\u00e2ce \u00e0 une recherche et un d\u00e9veloppement continus et au respect des normes de qualit\u00e9 internationales, s'imposant comme un nom reconnu dans le secteur.</p>
+      <p>Nora Paslanmaz ve Celik m\u00e8ne chaque aspect de ses activit\u00e9s avec une \u00e9quipe exp\u00e9riment\u00e9e et comp\u00e9tente, travaillant \u00e0 pleine capacit\u00e9 avant et apr\u00e8s chaque vente pour s'assurer que nos clients ne restent jamais sans accompagnement.</p>
+      <div class="about-stats">
+        <div class="stat"><b>6</b><span>Processus Cl\u00e9s</span></div>
+        <div class="stat"><b>TR</b><span>Bas\u00e9 \u00e0 Istanbul</span></div>
+        <div class="stat"><b>B2B</b><span>Fourniture Directe</span></div>
+      </div>
+    </div>
+    <div class="about-visual" style="background-image:url('data:image/jpeg;base64,{IMG_B64['welded_fab']}'); background-size:cover; background-position:center;"></div>
+  </div>
+</section>
+"""
+write_fr("about", "\u00c0 Propos", "about", about_body_fr)
+
+# ---------------- FR: CERTIFICATES ----------------
+certificates_body_fr = f"""
+<section class="banner" style="background-image:url('data:image/jpeg;base64,{IMG_B64['cnc']}'); background-size:cover; background-position:center;"><div class="banner-content reveal"><h2 class="serif">Certificats</h2></div></section>
+<section class="partners" style="padding-top:70px;">
+  <div class="wrap">
+    <span class="section-eyebrow">Certificats et R\u00e9f\u00e9rences</span>
+    <h2 class="section-title" style="margin-bottom:40px;">La confiance des acteurs du secteur.</h2>
+  </div>
+  <div class="partner-grid reveal-stagger">
+    <div class="partner-box">[ Certificat 1 ]</div>
+    <div class="partner-box">[ Certificat 2 ]</div>
+    <div class="partner-box">[ R\u00e9f\u00e9rence 1 ]</div>
+    <div class="partner-box">[ R\u00e9f\u00e9rence 2 ]</div>
+  </div>
+</section>
+"""
+write_fr("certificates", "Certificats", "certificates", certificates_body_fr)
+
+# ---------------- FR: BLOG ----------------
+blog_posts_fr = [
+    {
+        "slug": "iron-steel-products-explained", "title": "Produits en Fer et Acier", "img": "profile",
+        "category": "Produits",
+        "excerpt": "L'acier est un alliage de fer et de carbone, et ce dosage d\u00e9termine tout, du classement \u00e0 la duret\u00e9. Un aper\u00e7u de notre gamme et de ses usages.",
+        "paragraphs": [
+            ("", "L'acier est un alliage compos\u00e9 de fer et de carbone, avec une teneur en carbone comprise g\u00e9n\u00e9ralement entre 0,2 % et 2,1 %. Cette teneur en carbone joue un r\u00f4le cl\u00e9 dans le classement de l'acier. Le fer produit en haut fourneau est converti en acier soit par une s\u00e9rie de proc\u00e9d\u00e9s d'affinage, soit par refonte de ferraille dans des fours \u00e0 arc \u00e9lectrique. Le carbone est l'\u00e9l\u00e9ment qui durcit le fer, plus la proportion de carbone dans le m\u00e9lange obtenu est \u00e9lev\u00e9e, plus l'acier est dur. Chez Nora Paslanmaz ve Celik, nous fournissons \u00e0 nos clients des produits en fer et acier de la plus haute qualit\u00e9."),
+            ("Que Sont les Produits en Fer et Acier ?", "Les produits en fer et acier se d\u00e9clinent sous de nombreuses formes. Parmi ce que nous fournissons figurent les profil\u00e9s NPU, les corni\u00e8res, la t\u00f4le noire, les arbres de transmission, la t\u00f4le lamin\u00e9e \u00e0 froid (DKP), les profil\u00e9s en K, les fers \u00e0 b\u00e9ton, les profil\u00e9s en K rev\u00eatus, les fers plats, les profil\u00e9s NPI, les fers carr\u00e9s, les fers nervur\u00e9s, la t\u00f4le stri\u00e9e, la t\u00f4le galvanis\u00e9e, la t\u00f4le trap\u00e9zo\u00efdale galvanis\u00e9e, le profil\u00e9 carr\u00e9 galvanis\u00e9, la t\u00f4le d\u00e9ploy\u00e9e, et les tuyaux d'eau galvanis\u00e9s ou noirs, il vous suffit de contacter notre \u00e9quipe pour l'un de ces produits. Notre personnel sp\u00e9cialis\u00e9 et nos machines modernes font notre diff\u00e9rence en mati\u00e8re de produits en fer et acier."),
+            ("T\u00f4le", "La t\u00f4le est l'un des besoins les plus fondamentaux dans la fabrication industrielle, utilis\u00e9e sous diff\u00e9rentes formes selon les applications. Un fournisseur de t\u00f4le doit pouvoir proposer une d\u00e9coupe adapt\u00e9e \u00e0 vos sp\u00e9cifications, c'est exactement ce que nous offrons. La t\u00f4le pr\u00e9sente aussi plusieurs avantages pratiques, un mat\u00e9riau qui permet la production en s\u00e9rie peut r\u00e9duire vos co\u00fbts de production globaux. Les dimensions et le prix de la t\u00f4le varient selon la sp\u00e9cification choisie, le prix \u00e9tant fix\u00e9 en fonction des propri\u00e9t\u00e9s techniques du produit. En dessous d'un certain volume, la t\u00f4le peut \u00eatre produite sans n\u00e9cessiter de matrice du tout, ce qui limite la d\u00e9formation du mat\u00e9riau \u00e0 presque z\u00e9ro."),
+            ("Profil\u00e9s", "Comme les diff\u00e9rents m\u00e9taux se d\u00e9clinent en diff\u00e9rentes \u00e9paisseurs et qualit\u00e9s, les machines utilis\u00e9es pour les d\u00e9couper varient en cons\u00e9quence, aucune m\u00e9thode unique ne convient \u00e0 tous les mat\u00e9riaux. Les sections d\u00e9coup\u00e9es sont nettoy\u00e9es avant tout traitement ult\u00e9rieur, une \u00e9tape qui garantit l'absence de r\u00e9sidu sur l'acier, essentielle pour obtenir les d\u00e9coupes de contour pr\u00e9cises que le travail exige. Nous r\u00e9alisons toutes les \u00e9tapes n\u00e9cessaires pour maintenir des d\u00e9lais courts de d\u00e9coupe de profil\u00e9s, et livrons le produit fini pr\u00eat pour l'assemblage ou l'usinage. Les d\u00e9coupeurs \u00e0 oxyg\u00e8ne, plasma et laser sont les machines que nous utilisons pour la d\u00e9coupe de profil\u00e9s."),
+            ("O\u00f9 Utilise-t-on les Produits en Fer et Acier ?", "Les produits en fer et acier sont utilis\u00e9s dans un large \u00e9ventail d'industries, en d\u00e9coration, pour des \u00e9l\u00e9ments d\u00e9coratifs, dans l'automobile, pour les structures de soubassement de v\u00e9hicules, dans le b\u00e2timent, dans l'ameublement, pour les pieds et accoudoirs, dans le textile, pour les cintres, mannequins et m\u00e9tiers \u00e0 tisser, en \u00e9lectronique, pour les bo\u00eetiers d'ordinateurs et d'\u00e9quipements, ainsi que dans la construction navale et l'industrie lourde. Nous fournissons des produits en fer et acier pour l'ensemble de ces applications. Depuis sa cr\u00e9ation, notre entreprise s'est forg\u00e9 une r\u00e9putation de professionnalisme et de qualit\u00e9, et nous continuons \u00e0 produire les meilleurs produits possibles pour nos clients."),
+        ],
+    },
+    {
+        "slug": "stainless-steel-products-explained", "title": "Produits en Acier Inoxydable", "img": "sheet",
+        "category": "Produits",
+        "excerpt": "L'acier inoxydable est obtenu en ajoutant du chrome \u00e0 l'acier dans une proportion pr\u00e9cise. Un aper\u00e7u de ses avantages, de sa tarification et de son stockage.",
+        "paragraphs": [
+            ("", "L'acier inoxydable est un alliage obtenu en ajoutant une proportion pr\u00e9cise de chrome \u00e0 l'acier, et c'est l'un des mat\u00e9riaux les plus utilis\u00e9s dans la fabrication aujourd'hui. En raison des nombreux avantages qu'il offre en production, la demande d'acier inoxydable ne cesse de cro\u00eetre d'ann\u00e9e en ann\u00e9e. Chez Nora Paslanmaz Celik, nous maintenons depuis des ann\u00e9es en stock les produits en acier inoxydable dont notre secteur a besoin, pour vous approvisionner sans perturber votre production. Notre \u00e9quipe technique est disponible pour toute information produit ou assistance technique sur chaque commande que vous passez."),
+            ("L\u00e0 O\u00f9 l'Acier Inoxydable Offre un Avantage", "<em>[Note pour Andi : comme dans la version turque, cette section correspond au passage manquant dans les captures d'\u00e9cran du client. Le paragraphe ci-dessous est un texte de liaison provisoire, \u00e0 remplacer une fois la partie manquante re\u00e7ue.]</em> L'acier inoxydable apporte \u00e0 la production des avantages distincts, notamment sa r\u00e9sistance \u00e0 la corrosion et sa r\u00e9gularit\u00e9 au fil des s\u00e9ries de production, permettant de poursuivre la fabrication sans perte de qualit\u00e9.<br><br>L'acier inoxydable se d\u00e9cline lui-m\u00eame en diff\u00e9rents types et qualit\u00e9s. En raison de ces diff\u00e9rences, s'approvisionner aupr\u00e8s d'un fournisseur fiable r\u00e9duit au minimum les probl\u00e8mes qu'elles peuvent causer en production. Selon les normes de qualit\u00e9, l'acier inoxydable est un produit qui accro\u00eet la r\u00e9sistance \u00e0 la corrosion. Outre ces diff\u00e9rences, la soudabilit\u00e9, l'usinabilit\u00e9, l'aptitude au traitement thermique et les propri\u00e9t\u00e9s m\u00e9caniques peuvent aussi varier. Certaines nuances d'acier inoxydable, par exemple, contiennent moins de carbone et sont de ce fait plus \u00e9lastiques, ce qui peut cr\u00e9er des difficult\u00e9s lors de l'usinage. Nous fournissons des conseils d\u00e9taill\u00e9s sur le produit inox adapt\u00e9 \u00e0 votre usage avant tout d\u00e9but de travail.<br><br>Malgr\u00e9 son nom, l'acier inoxydable n'est pas inoxydable en toutes circonstances, cela d\u00e9pend de l'utilisation du bon alliage inoxydable dans le bon proc\u00e9d\u00e9 de production. L'acier inoxydable conserve ses propri\u00e9t\u00e9s anti-taches lorsqu'il est utilis\u00e9 dans les conditions pour lesquelles il est con\u00e7u, et les perd sinon. Pour toutes ces raisons, la provenance de votre acier inoxydable a de l'importance. Notre \u00e9quipe comp\u00e9tente et bien form\u00e9e chez Nora Paslanmaz Celik est l\u00e0 pour vous offrir un service de qualit\u00e9 sur chaque produit."),
+            ("Tarification de l'Acier Inoxydable", "Le prix de l'acier inoxydable peut varier selon les conditions du march\u00e9. Si le prix est un crit\u00e8re important \u00e0 l'achat d'acier inoxydable, l'essentiel est de trouver la nuance adapt\u00e9e \u00e0 votre production. Bien choisir garantit que les pi\u00e8ces fabriqu\u00e9es tiendront dans la dur\u00e9e sans probl\u00e8me. Lors de l'achat d'acier inoxydable, il convient de pr\u00eater attention \u00e0 sa r\u00e9sistance \u00e0 la corrosion, sa r\u00e9sistance m\u00e9canique, aux temp\u00e9ratures impliqu\u00e9es dans votre proc\u00e9d\u00e9 de production, ainsi qu'\u00e0 ses propri\u00e9t\u00e9s physiques et de surface. Nous fournissons le soutien technique n\u00e9cessaire sur tous ces points dans le cadre de chaque vente."),
+            ("Comment Stocker l'Acier Inoxydable ?", "Le lieu de stockage de l'acier inoxydable d\u00e9termine si le produit reste exempt de d\u00e9formation. Les zones de stockage doivent l'\u00e9loigner de tout contact direct avec le sol, et des copeaux d'acier au carbone stock\u00e9s dans le m\u00eame espace. Si ces pr\u00e9cautions ne sont pas respect\u00e9es, les propri\u00e9t\u00e9s de l'acier inoxydable peuvent \u00eatre compromises et des signes de rouille peuvent appara\u00eetre sur le produit."),
+        ],
+    },
+]
+
+for post in blog_posts_fr:
+    body = blog_detail_body(post, blog_posts_fr, lang="fr")
+    write_fr(post["slug"], post["title"], "blog", body)
+
+blog_cards_fr = "\n".join([f"""
+    <div class="blog-card">
+      <div class="thumb" style="background-image:url('data:image/jpeg;base64,{IMG_B64[p['img']]}'); background-size:cover; background-position:center;"></div>
+      <div class="body">
+        <span class="date">{p['category']}</span>
+        <h3>{p['title']}</h3>
+        <p>{p['excerpt']}</p>
+        <a class="more" href="{p['slug']}.html">En Savoir Plus</a>
+      </div>
+    </div>""" for p in blog_posts_fr])
+
+blog_body_fr = f"""
+<section class="banner" style="background-image:url('data:image/jpeg;base64,{IMG_B64['bars']}'); background-size:cover; background-position:center;"><div class="banner-content reveal"><h2 class="serif">Blog</h2></div></section>
+<section class="section" style="padding-top:70px;">
+  <div class="wrap">
+    <span class="section-eyebrow">Actualit\u00e9s</span>
+    <h2 class="section-title">Les derni\u00e8res nouvelles de Nora.</h2>
+  </div>
+  <div class="wrap">
+  <div class="blog-grid reveal-stagger">{blog_cards_fr}
+  </div>
+  </div>
+</section>
+"""
+write_fr("blog", "Blog", "blog", blog_body_fr)
+
+# ---------------- FR: CONTACT ----------------
+contact_body_fr = f"""
+<section class="banner" style="background-image:url('data:image/jpeg;base64,{IMG_B64['tubes']}'); background-size:cover; background-position:center;"><div class="banner-content reveal"><h2 class="serif">Contact</h2></div></section>
+<section class="section" style="padding-top:70px;">
+  <div class="wrap contact-grid reveal">
+    <div>
+      <span class="section-eyebrow">Contactez-Nous</span>
+      <h2 class="section-title">Demandez un devis.</h2>
+      <ul class="contact-list">
+        <li><b>T\u00e9l\u00e9phone</b> 0216 621 55 41</li>
+        <li><b>E-mail</b> info@norapaslanmazcelik.com</li>
+        <li><b>Adresse</b> OSB Des Sanayi Sitesi 115 Sok. No:30, Yukari Dudullu, Umraniye / Istanbul</li>
+      </ul>
+    </div>
+    <div class="form-box">
+      <form>
+        <div class="form-row"><label>Nom Complet</label><input type="text" placeholder="Votre nom"></div>
+        <div class="form-row"><label>Entreprise</label><input type="text" placeholder="Nom de l'entreprise"></div>
+        <div class="form-row"><label>Message</label><textarea placeholder="Quantit\u00e9, dimensions et sp\u00e9cifications..."></textarea></div>
+        <button type="button" class="submit-btn">Envoyer la Demande</button>
+      </form>
+    </div>
+  </div>
+</section>
+<section style="padding:0 60px 90px;">
+  <div class="map-frame">
+    <iframe
+      src="https://www.google.com/maps?q=DES+Sanayi+Sitesi,+Nato+Yolu+Cd,+Yukar%C4%B1+Dudullu,+%C3%9Cmraniye%2F%C4%B0stanbul&output=embed"
+      width="100%" height="420" style="border:0;" allowfullscreen="" loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade"></iframe>
+  </div>
+</section>
+"""
+write_fr("contact", "Contact", "contact", contact_body_fr)
 
 print("done")

@@ -74,6 +74,13 @@
   }
   .topbar .logo{pointer-events:auto;}
   .topbar .menu-btn{pointer-events:auto;}
+  .topbar-right{display:flex; align-items:center; gap:18px; pointer-events:none;}
+  .lang-switch{
+    pointer-events:auto; font-family:'Poppins'; font-size:13px; font-weight:600; letter-spacing:0.08em;
+    color:var(--white); border:1px solid rgba(255,255,255,0.35); border-radius:20px;
+    padding:8px 16px; transition:background .2s ease, border-color .2s ease;
+  }
+  .lang-switch:hover{background:rgba(255,255,255,0.1); border-color:var(--coral);}
   .logo{display:flex; align-items:center; gap:12px;}
   .logo-img{height:54px; width:auto; display:block;}
   .logo .mark{width:34px; height:34px; flex-shrink:0;}
