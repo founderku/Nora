@@ -166,8 +166,8 @@
   function computeMetrics(){
     const vw = window.innerWidth;
     const mobile = vw <= 760;
-    const slideW = mobile ? vw * 0.86 : Math.max(360, vw * 0.62);
-    const gap = mobile ? vw * 0.03 : vw * 0.02;
+    const slideW = mobile ? vw * 0.78 : Math.min(680, Math.max(420, vw * 0.34));
+    const gap = mobile ? vw * 0.025 : vw * 0.015;
     return { slideW, gap, pitch: slideW + gap };
   }
 
