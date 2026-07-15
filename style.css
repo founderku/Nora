@@ -75,7 +75,7 @@
   .topbar .logo{pointer-events:auto;}
   .topbar .menu-btn{pointer-events:auto;}
   .logo{display:flex; align-items:center; gap:12px;}
-  .logo-img{height:34px; width:auto; display:block;}
+  .logo-img{height:46px; width:auto; display:block;}
   .logo .mark{width:34px; height:34px; flex-shrink:0;}
   .logo .word{
     font-family:'Poppins'; font-weight:800; font-size:22px; letter-spacing:0.01em; color:var(--white);
@@ -432,4 +432,5 @@
     .social-rail a{width:36px; height:36px; font-size:15px;}
     .social-rail a svg{width:15px; height:15px;}
     .scroll-hint{left:56px;}
+    .logo-img{height:36px;}
   }
