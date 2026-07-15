@@ -65,6 +65,23 @@ STYLE = """
   body{
     font-family:'Poppins', sans-serif;
     overflow-x:hidden;
+    animation:pageEnter .7s cubic-bezier(.22,.61,.36,1) both;
+  }
+  @keyframes pageEnter{
+    from{opacity:0; transform:translateY(10px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+  @keyframes pageLeave{
+    from{opacity:1; transform:translateY(0);}
+    to{opacity:0; transform:translateY(-10px);}
+  }
+  body.page-leaving{
+    animation:pageLeave .32s cubic-bezier(.4,0,.2,1) forwards;
+    pointer-events:none;
+  }
+  @media (prefers-reduced-motion: reduce){
+    body{animation:none;}
+    body.page-leaving{animation:none;}
   }
   a, button{cursor:none;}
   .serif{font-family:'Jost', sans-serif;}
@@ -313,12 +330,20 @@ STYLE = """
   }
   .service-card h3{font-family:'Jost'; font-size:24px; color:var(--white); margin-bottom:14px; font-weight:600;}
   .service-card p{font-family:'Poppins'; font-size:14px; color:var(--gray); line-height:1.7;}
+  .more{
+    display:inline-block; font-family:'Poppins'; font-size:11px;
+    letter-spacing:0.1em; text-transform:uppercase; color:var(--white);
+    border:1px solid var(--coral); padding:10px 18px;
+    transition:background .35s cubic-bezier(.4,0,.2,1), transform .35s cubic-bezier(.4,0,.2,1), border-color .35s ease;
+  }
+  .more:hover{background:var(--coral); transform:translateX(4px);}
   .service-card .more{
     display:inline-block; margin-top:20px; font-family:'Poppins'; font-size:11px;
     letter-spacing:0.1em; text-transform:uppercase; color:var(--white);
-    border:1px solid var(--coral); padding:10px 18px; transition:background .2s;
+    border:1px solid var(--coral); padding:10px 18px;
+    transition:background .35s cubic-bezier(.4,0,.2,1), transform .35s cubic-bezier(.4,0,.2,1), border-color .35s ease;
   }
-  .service-card .more:hover{background:var(--coral);}
+  .service-card .more:hover{background:var(--coral); transform:translateX(4px);}
 
   /* ---------- SERVICE DETAIL PAGE ---------- */
   .service-detail-grid{
@@ -427,9 +452,10 @@ STYLE = """
   .blog-card p{font-family:'Poppins'; font-size:13px; color:var(--gray); line-height:1.7; margin-bottom:18px;}
   .blog-card .more{
     display:inline-block; font-family:'Poppins'; font-size:11px; letter-spacing:0.1em; text-transform:uppercase;
-    color:var(--white); border:1px solid var(--coral); padding:9px 16px; transition:background .2s;
+    color:var(--white); border:1px solid var(--coral); padding:9px 16px;
+    transition:background .35s cubic-bezier(.4,0,.2,1), transform .35s cubic-bezier(.4,0,.2,1);
   }
-  .blog-card .more:hover{background:var(--coral);}
+  .blog-card .more:hover{background:var(--coral); transform:translateX(4px);}
 
   /* ---------- CONTACT ---------- */
   .contact-grid{display:grid; grid-template-columns:1fr 1fr; gap:70px;}
@@ -453,9 +479,10 @@ STYLE = """
   .form-row textarea{min-height:90px; resize:vertical;}
   .submit-btn{
     font-family:'Poppins'; font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:var(--white);
-    border:1px solid var(--coral); background:none; padding:14px 26px; transition:background .2s;
+    border:1px solid var(--coral); background:none; padding:14px 26px;
+    transition:background .35s cubic-bezier(.4,0,.2,1), transform .35s cubic-bezier(.4,0,.2,1);
   }
-  .submit-btn:hover{background:var(--coral);}
+  .submit-btn:hover{background:var(--coral); transform:translateX(4px);}
   .map-frame{
     border:1px solid rgba(255,255,255,0.1); filter:grayscale(0.3) invert(0.92) contrast(0.9);
     max-width:1300px; margin:0 auto;
@@ -648,6 +675,31 @@ def footer_html(lang="en", slug="index"):
 
 SHARED_SCRIPT_BASE = """
 <script>
+  // Elegant page-to-page transition: intercept same-site link clicks, play a
+  // short fade+lift exit animation, then navigate. Entrance animation on the
+  // next page is handled purely by CSS (see pageEnter keyframes), so this
+  // still degrades gracefully if JS is blocked, links just work instantly.
+  (function(){
+    document.addEventListener('click', function(e){
+      if (e.defaultPrevented || e.button !== 0) return;
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const a = e.target.closest('a[href]');
+      if (!a) return;
+      const href = a.getAttribute('href');
+      if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
+      if (a.target === '_blank' || a.hasAttribute('download')) return;
+      if (/^https?:\\/\\//i.test(href) && href.indexOf(location.hostname) === -1) return;
+      e.preventDefault();
+      document.body.classList.add('page-leaving');
+      setTimeout(()=>{ window.location.href = href; }, 300);
+    });
+    // Pages restored from bfcache (browser back/forward) skip the JS re-run,
+    // so make sure they're never left stuck mid-exit-animation.
+    window.addEventListener('pageshow', function(){
+      document.body.classList.remove('page-leaving');
+    });
+  })();
+
   // Custom round cursor
   const cursor = document.getElementById('cursor');
   let mx=0, my=0, cx=0, cy=0;

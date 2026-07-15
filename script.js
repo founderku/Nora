@@ -1,3 +1,28 @@
+  // Elegant page-to-page transition: intercept same-site link clicks, play a
+  // short fade+lift exit animation, then navigate. Entrance animation on the
+  // next page is handled purely by CSS (see pageEnter keyframes), so this
+  // still degrades gracefully if JS is blocked, links just work instantly.
+  (function(){
+    document.addEventListener('click', function(e){
+      if (e.defaultPrevented || e.button !== 0) return;
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const a = e.target.closest('a[href]');
+      if (!a) return;
+      const href = a.getAttribute('href');
+      if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
+      if (a.target === '_blank' || a.hasAttribute('download')) return;
+      if (/^https?:\/\//i.test(href) && href.indexOf(location.hostname) === -1) return;
+      e.preventDefault();
+      document.body.classList.add('page-leaving');
+      setTimeout(()=>{ window.location.href = href; }, 300);
+    });
+    // Pages restored from bfcache (browser back/forward) skip the JS re-run,
+    // so make sure they're never left stuck mid-exit-animation.
+    window.addEventListener('pageshow', function(){
+      document.body.classList.remove('page-leaving');
+    });
+  })();
+
   // Custom round cursor
   const cursor = document.getElementById('cursor');
   let mx=0, my=0, cx=0, cy=0;
