@@ -255,8 +255,8 @@
   @keyframes scrollacross{ 0%{left:-30px;} 100%{left:30px;} }
 
   @keyframes kenburns{
-    0%{ transform:scale(1.08); }
-    100%{ transform:scale(1.18); }
+    0%{ transform:scale(1.0); }
+    100%{ transform:scale(1.06); }
   }
   .hero-slide{ animation:kenburns 14s ease-in-out infinite alternate; }
 
@@ -324,7 +324,7 @@
     display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-top:36px;
   }
   .product-gallery-grid .thumb{
-    height:150px; background-size:cover; background-position:center; border-radius:6px;
+    height:150px; background-size:150% auto; background-position:center; border-radius:6px;
     filter:grayscale(0.1); transition:filter .3s ease, transform .3s ease;
   }
   .product-gallery-grid .thumb:hover{filter:grayscale(0); transform:scale(1.03);}
@@ -364,6 +364,7 @@
   .product-cat-card:hover{background:var(--ink3);}
   .product-cat-card .thumb{
     height:170px; background-size:cover; background-position:center; filter:grayscale(0.15);
+    transform:scale(1.22); transition:transform .3s ease;
   }
   .product-cat-card .body{padding:22px 22px 26px;}
   .product-cat-card h3{font-family:'Jost'; font-size:17px; color:var(--white); margin-bottom:8px; font-weight:600; text-transform:uppercase;}
@@ -499,7 +500,11 @@
   @media (max-width:860px){
     .wrap{padding:0 24px;}
     .topbar{padding:24px 28px;}
-    .fullmenu{padding:0 24px;}
+    .fullmenu{
+      padding:110px 24px 24px; justify-content:flex-start; overflow-y:auto;
+    }
+    .menu-list > li{margin-bottom:2px;}
+    .menu-item{font-size:clamp(22px,7vw,32px);}
     .menu-social{right:24px;}
     .banner-content{padding:0 24px 34px;}
     .service-grid{grid-template-columns:1fr;}
