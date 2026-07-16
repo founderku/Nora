@@ -23,6 +23,25 @@
     });
   })();
 
+  // Language dropdown: click the current-language pill to reveal the other
+  // languages; closes on outside click or after picking one.
+  (function(){
+    const dropdown = document.getElementById('langDropdown');
+    const btn = document.getElementById('langCurrentBtn');
+    if (!dropdown || !btn) return;
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      const isOpen = dropdown.classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+    document.addEventListener('click', function(e){
+      if (!dropdown.contains(e.target)){
+        dropdown.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+  })();
+
   // Contact form -> Web3Forms, submitted via fetch so the page never
   // reloads; shows an inline status message instead.
   document.querySelectorAll('.ajax-form').forEach(function(form){
