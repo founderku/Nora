@@ -142,13 +142,31 @@ STYLE = """
   }
   .topbar .logo{pointer-events:auto;}
   .topbar .menu-btn{pointer-events:auto;}
-  .topbar-right{display:flex; align-items:center; gap:18px; pointer-events:none;}
-  .lang-switch{
-    pointer-events:auto; font-family:'Poppins'; font-size:13px; font-weight:600; letter-spacing:0.08em;
-    color:var(--white); border:1px solid rgba(255,255,255,0.35); border-radius:20px;
-    padding:8px 16px; transition:background .2s ease, border-color .2s ease;
+  .topbar-right{display:flex; align-items:center; gap:14px; pointer-events:none;}
+  .lang-dropdown{position:relative; pointer-events:auto;}
+  .lang-current{
+    font-family:'Poppins'; font-size:13px; font-weight:600; letter-spacing:0.08em;
+    color:var(--white); background:none; border:1px solid rgba(255,255,255,0.35); border-radius:20px;
+    padding:8px 16px; cursor:none; display:flex; align-items:center; gap:6px;
+    transition:background .2s ease, border-color .2s ease;
   }
-  .lang-switch:hover{background:rgba(255,255,255,0.1); border-color:var(--coral);}
+  .lang-current::after{content:'\u25be'; font-size:10px; transition:transform .25s ease;}
+  .lang-dropdown.open .lang-current::after{transform:rotate(180deg);}
+  .lang-current:hover{background:rgba(255,255,255,0.1); border-color:var(--coral);}
+  .lang-options{
+    position:absolute; top:calc(100% + 10px); right:0; z-index:120;
+    background:var(--ink2); border:1px solid rgba(255,255,255,0.12); border-radius:14px;
+    padding:6px; display:flex; flex-direction:column; gap:2px; min-width:120px;
+    opacity:0; visibility:hidden; transform:translateY(-8px);
+    transition:opacity .25s cubic-bezier(.4,0,.2,1), transform .25s cubic-bezier(.4,0,.2,1), visibility .25s;
+    box-shadow:0 20px 40px rgba(0,0,0,0.4);
+  }
+  .lang-dropdown.open .lang-options{opacity:1; visibility:visible; transform:translateY(0);}
+  .lang-options .lang-switch{
+    display:block; font-family:'Poppins'; font-size:13px; font-weight:500; letter-spacing:0.04em;
+    color:var(--white); padding:10px 14px; border-radius:9px; transition:background .2s ease, color .2s ease;
+  }
+  .lang-options .lang-switch:hover{background:rgba(255,255,255,0.08); color:var(--coral);}
   .logo{display:flex; align-items:center; gap:12px;}
   .logo-img{height:54px; width:auto; display:block;}
   .logo .mark{width:34px; height:34px; flex-shrink:0;}
@@ -525,6 +543,9 @@ STYLE = """
     .social-rail a svg{width:15px; height:15px;}
     .scroll-hint{left:56px;}
     .logo-img{height:42px;}
+    .topbar-right{gap:10px;}
+    .lang-current{padding:7px 12px; font-size:12px;}
+    .lang-options{min-width:100px;}
   }
 
   /* ---------- RTL (Arabic) ---------- */
@@ -534,6 +555,7 @@ STYLE = """
   }
   html[dir="rtl"] .social-rail{left:auto; right:14px;}
   html[dir="rtl"] .hero-dots{right:auto; left:36px;}
+  html[dir="rtl"] .lang-options{right:auto; left:0;}
   html[dir="rtl"] .scroll-hint{left:auto; right:76px;}
   html[dir="rtl"] .scroll-hint .line::after{left:auto; right:-30px;}
   html[dir="rtl"] .service-card .more:hover,
@@ -612,7 +634,12 @@ def build_chrome(current, lang="en", slug="index"):
     <img class="logo-img" src="data:image/png;base64,{NORA_LOGO_B64}" alt="Nora Paslanmaz ve Demir Celik">
   </a>
   <div class="topbar-right">
-    {lang_switcher_links(lang, slug)}
+    <div class="lang-dropdown" id="langDropdown">
+      <button class="lang-current" id="langCurrentBtn" type="button" aria-haspopup="true" aria-expanded="false">{LANG_CODE[lang]}</button>
+      <div class="lang-options" id="langOptions">
+        {lang_switcher_links(lang, slug)}
+      </div>
+    </div>
     <button class="menu-btn" id="menuBtn"><span class="bar"></span></button>
   </div>
 </div>
@@ -729,6 +756,25 @@ SHARED_SCRIPT_BASE = """
     // so make sure they're never left stuck mid-exit-animation.
     window.addEventListener('pageshow', function(){
       document.body.classList.remove('page-leaving');
+    });
+  })();
+
+  // Language dropdown: click the current-language pill to reveal the other
+  // languages; closes on outside click or after picking one.
+  (function(){
+    const dropdown = document.getElementById('langDropdown');
+    const btn = document.getElementById('langCurrentBtn');
+    if (!dropdown || !btn) return;
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      const isOpen = dropdown.classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+    document.addEventListener('click', function(e){
+      if (!dropdown.contains(e.target)){
+        dropdown.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+      }
     });
   })();
 
