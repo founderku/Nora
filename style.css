@@ -90,6 +90,7 @@
     padding:34px 80px; mix-blend-mode:normal; pointer-events:none;
   }
   .topbar .logo{pointer-events:auto;}
+  body.menu-open .topbar .logo{opacity:0; visibility:hidden; transition:opacity .25s ease;}
   .topbar .menu-btn{pointer-events:auto;}
   .topbar-right{display:flex; align-items:center; gap:14px; pointer-events:none;}
   .lang-dropdown{position:relative; pointer-events:auto;}
@@ -177,7 +178,7 @@
   }
   .submenu a:hover, .submenu a.active{color:var(--white);}
   .menu-social{
-    position:absolute; bottom:36px; right:60px; display:flex; gap:24px;
+    margin-top:40px; align-self:flex-end; display:flex; gap:24px;
   }
   .menu-social a{
     font-family:'Poppins'; font-size:11px; letter-spacing:0.12em; color:var(--gray); text-transform:uppercase;
@@ -507,7 +508,7 @@
     }
     .menu-list > li{margin-bottom:2px;}
     .menu-item{font-size:clamp(22px,7vw,32px);}
-    .menu-social{right:24px;}
+    .menu-social{margin-top:28px;}
     .banner-content{padding:0 24px 34px;}
     .service-grid{grid-template-columns:1fr;}
     .products-grid{grid-template-columns:1fr;}
