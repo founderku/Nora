@@ -171,9 +171,9 @@
     opacity:1; visibility:visible; transition:opacity .3s ease;
   }
   .hero-fixed.exited{ opacity:0; visibility:hidden; pointer-events:none; }
-  .hero-viewport{ position:absolute; inset:0; overflow:hidden; }
+  .hero-viewport{ position:absolute; inset:0; overflow:hidden; direction:ltr; }
   .hero-track{
-    position:absolute; top:0; left:0; height:100%; display:flex; align-items:stretch;
+    position:absolute; top:0; left:0; height:100%; display:flex; align-items:stretch; direction:ltr;
     transition: transform .68s cubic-bezier(.65,0,.35,1);
     will-change: transform;
   }
