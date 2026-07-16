@@ -78,7 +78,7 @@
   }
   .social-rail a svg{width:17px; height:17px;}
   .social-rail a.phone{background:#3a3a3a;}
-  .social-rail a.telegram{background:#444444;}
+  .social-rail a.linkedin{background:#444444;}
   .social-rail a.whatsapp{background:#3a3a3a;}
   .social-rail a.instagram{background:#444444;}
   .social-rail a:hover{background:var(--coral);}
@@ -117,7 +117,7 @@
   }
   .lang-options .lang-switch:hover{background:rgba(255,255,255,0.08); color:var(--coral);}
   .logo{display:flex; align-items:center; gap:12px;}
-  .logo-img{height:54px; width:auto; display:block;}
+  .logo-img{height:72px; width:auto; display:block;}
   .logo .mark{width:34px; height:34px; flex-shrink:0;}
   .logo .word{
     font-family:'Poppins'; font-weight:800; font-size:22px; letter-spacing:0.01em; color:var(--white);
@@ -514,7 +514,7 @@
     .social-rail a{width:36px; height:36px; font-size:15px;}
     .social-rail a svg{width:15px; height:15px;}
     .scroll-hint{left:56px;}
-    .logo-img{height:42px;}
+    .logo-img{height:52px;}
     .topbar-right{gap:10px;}
     .lang-current{padding:7px 12px; font-size:12px;}
     .lang-options{min-width:100px;}
