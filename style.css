@@ -475,3 +475,22 @@
     .scroll-hint{left:56px;}
     .logo-img{height:42px;}
   }
+
+  /* ---------- RTL (Arabic) ---------- */
+  html[dir="rtl"] body{font-family:'Tajawal', sans-serif;}
+  html[dir="rtl"] h1, html[dir="rtl"] h2, html[dir="rtl"] h3, html[dir="rtl"] .serif{
+    font-family:'Tajawal', sans-serif; text-transform:none; letter-spacing:0;
+  }
+  html[dir="rtl"] .social-rail{left:auto; right:14px;}
+  html[dir="rtl"] .hero-dots{right:auto; left:36px;}
+  html[dir="rtl"] .scroll-hint{left:auto; right:76px;}
+  html[dir="rtl"] .scroll-hint .line::after{left:auto; right:-30px;}
+  html[dir="rtl"] .service-card .more:hover,
+  html[dir="rtl"] .blog-card .more:hover,
+  html[dir="rtl"] .more:hover,
+  html[dir="rtl"] .submit-btn:hover{transform:translateX(-4px);}
+  html[dir="rtl"] .menu-social{direction:ltr;}
+  @media (max-width:760px){
+    html[dir="rtl"] .social-rail{left:auto; right:10px;}
+    html[dir="rtl"] .scroll-hint{left:auto; right:56px;}
+  }

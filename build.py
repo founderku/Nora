@@ -526,6 +526,25 @@ STYLE = """
     .scroll-hint{left:56px;}
     .logo-img{height:42px;}
   }
+
+  /* ---------- RTL (Arabic) ---------- */
+  html[dir="rtl"] body{font-family:'Tajawal', sans-serif;}
+  html[dir="rtl"] h1, html[dir="rtl"] h2, html[dir="rtl"] h3, html[dir="rtl"] .serif{
+    font-family:'Tajawal', sans-serif; text-transform:none; letter-spacing:0;
+  }
+  html[dir="rtl"] .social-rail{left:auto; right:14px;}
+  html[dir="rtl"] .hero-dots{right:auto; left:36px;}
+  html[dir="rtl"] .scroll-hint{left:auto; right:76px;}
+  html[dir="rtl"] .scroll-hint .line::after{left:auto; right:-30px;}
+  html[dir="rtl"] .service-card .more:hover,
+  html[dir="rtl"] .blog-card .more:hover,
+  html[dir="rtl"] .more:hover,
+  html[dir="rtl"] .submit-btn:hover{transform:translateX(-4px);}
+  html[dir="rtl"] .menu-social{direction:ltr;}
+  @media (max-width:760px){
+    html[dir="rtl"] .social-rail{left:auto; right:10px;}
+    html[dir="rtl"] .scroll-hint{left:auto; right:56px;}
+  }
 """
 
 def nav_item(label, href, current, key):
@@ -542,12 +561,15 @@ NAV_LABELS = {
     "fr": {"home":"Accueil","corporate":"Entreprise","about":"\u00c0 propos","certificates":"Certificats",
            "services":"Services","demir":"Produits Fer et Acier","paslanmaz":"Produits Inox",
            "blog":"Blog","contact":"Contact"},
+    "ar": {"home":"\u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629","corporate":"\u0627\u0644\u0634\u0631\u0643\u0629","about":"\u0645\u0646 \u0646\u062d\u0646","certificates":"\u0627\u0644\u0634\u0647\u0627\u062f\u0627\u062a",
+           "services":"\u0627\u0644\u062e\u062f\u0645\u0627\u062a","demir":"\u0645\u0646\u062a\u062c\u0627\u062a \u0627\u0644\u062d\u062f\u064a\u062f \u0648\u0627\u0644\u0635\u0644\u0628","paslanmaz":"\u0645\u0646\u062a\u062c\u0627\u062a \u0627\u0644\u0633\u062a\u0627\u0646\u0644\u0633 \u0633\u062a\u064a\u0644",
+           "blog":"\u0627\u0644\u0645\u062f\u0648\u0646\u0629","contact":"\u0627\u062a\u0635\u0644 \u0628\u0646\u0627"},
 }
 
-LANGS = ["en", "tr", "fr"]
-LANG_FOLDER = {"tr": "", "en": "en/", "fr": "fr/"}
-LANG_CODE = {"en": "EN", "tr": "TR", "fr": "FR"}
-LANG_NAME = {"en": "English", "tr": "T\u00fcrk\u00e7e", "fr": "Fran\u00e7ais"}
+LANGS = ["en", "tr", "fr", "ar"]
+LANG_FOLDER = {"tr": "", "en": "en/", "fr": "fr/", "ar": "ar/"}
+LANG_CODE = {"en": "EN", "tr": "TR", "fr": "FR", "ar": "AR"}
+LANG_NAME = {"en": "English", "tr": "T\u00fcrk\u00e7e", "fr": "Fran\u00e7ais", "ar": "\u0627\u0644\u0639\u0631\u0628\u064a\u0629"}
 
 def lang_url(from_lang, to_lang, slug):
     from_root = LANG_FOLDER[from_lang] == ""
@@ -636,6 +658,9 @@ FOOTER_LABELS = {
     "fr": {"corporate":"Entreprise","company":"Soci\u00e9t\u00e9","contact":"Contact","language":"Langue",
            "certificates":"Certificats","references":"R\u00e9f\u00e9rences","blog":"Blog",
            "copyright":"&copy; 2026 Nora Paslanmaz ve Demir Celik"},
+    "ar": {"corporate":"الشركة","company":"الأقسام","contact":"اتصل بنا","language":"اللغة",
+           "certificates":"الشهادات","references":"المراجع","blog":"المدونة",
+           "copyright":"&copy; 2026 نورا للصلب والستانلس"},
 }
 
 def footer_html(lang="en", slug="index"):
@@ -1123,6 +1148,24 @@ META_DESC = {
         "iron-steel-products-explained": "Que sont les produits en fer et acier ? Un guide sur la tôle, les profilés, les tubes et les produits laminés, par Nora Paslanmaz ve Celik.",
         "stainless-steel-products-explained": "Qu'est-ce que l'acier inoxydable et où offre-t-il un avantage ? Un guide de Nora Paslanmaz ve Celik.",
     },
+    "ar": {
+        "index": "نورا للصلب والستانلس هي شركة مصنعة وموردة للحديد والصلب والستانلس ستيل مقرها إسطنبول، تقدم خدمات التوريد والقص والثني واللحام والتشغيل الآلي CNC.",
+        "services": "ست خدمات أساسية من نورا: توريد الحديد والصلب، القص والثني، التشغيل الآلي CNC، التصنيع باللحام، القص بالبلازما، والقص بالليزر.",
+        "iron-steel-supply": "توريد مباشر لصفائح وقطاعات وأنابيب ومنتجات درفلة وشباك صلب من نورا في إسطنبول، مع خدمات القص والثني عند الطلب.",
+        "cutting-bending": "خدمة قص وثني الصفائح المعدنية بمكابس CNC بمختلف السماكات والأوزان، من نورا للصلب والستانلس في إسطنبول.",
+        "cnc-machining": "خدمات الخراطة والتفريز والحفر والتجليخ بتقنية CNC من نورا، لتشكيل القطع بأبعاد ونهاية سطحية دقيقة.",
+        "welded-fabrication": "تصنيع باللحام الإنشائي والمخصص للستانلس ستيل والحديد والألمنيوم، من قطعة واحدة إلى تجميع كامل، من نورا للصلب والستانلس.",
+        "plasma-cutting": "قص بالبلازما عالي السرعة للصلب والمعادن غير الحديدية حتى 25 مم، سريع وبهدر منخفض، من نورا في إسطنبول.",
+        "laser-cutting": "قص بالليزر عالي الدقة على صفائح الستانلس ستيل والحديد والألمنيوم، بحواف نظيفة وتسليم سريع، من نورا للصلب والستانلس.",
+        "demir-celik-urunler": "تصفح فئات منتجات الحديد والصلب من نورا: صفائح، قطاعات، أنابيب، منتجات درفلة، وشباك صلب، توريد مباشر من إسطنبول.",
+        "paslanmaz-urunler": "تصفح فئات منتجات الستانلس ستيل من نورا: صفائح، قطاعات، أنابيب، قضبان مستديرة، ووصلات، توريد مباشر من إسطنبول.",
+        "about": "نورا للصلب والستانلس شريك تصنيع ذو خبرة في منتجات الحديد والصلب والستانلس ستيل، مقرها إسطنبول، تركيا.",
+        "certificates": "الشهادات والمراجع الصناعية لشركة نورا للصلب والستانلس، الشركة المصنعة للحديد والصلب والستانلس ستيل في إسطنبول.",
+        "blog": "أخبار ومقالات تقنية من نورا للصلب والستانلس حول منتجات الحديد والصلب والستانلس ستيل.",
+        "contact": "تواصل مع نورا للصلب والستانلس للحصول على عرض سعر لمنتجات وخدمات الحديد والصلب والستانلس ستيل في إسطنبول.",
+        "iron-steel-products-explained": "ما هي منتجات الحديد والصلب؟ دليل حول الصفائح والقطاعات والأنابيب ومنتجات الدرفلة من نورا للصلب والستانلس.",
+        "stainless-steel-products-explained": "ما هو الستانلس ستيل وأين تكمن مزاياه؟ دليل من نورا للصلب والستانلس.",
+    },
 }
 
 def schema_org(lang, slug, page_type="WebPage", svc=None):
@@ -1162,8 +1205,10 @@ def schema_org(lang, slug, page_type="WebPage", svc=None):
 def page(title, current, body, extra_script="", lang="en", slug="index", svc=None, description=None):
     asset_prefix = "" if LANG_FOLDER[lang] == "" else "../"
     desc = description or META_DESC.get(lang, {}).get(slug, META_DESC["en"]["index"])
+    dir_attr = "rtl" if lang == "ar" else "ltr"
+    ar_font = '<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">' if lang == "ar" else ""
     return f"""<!DOCTYPE html>
-<html lang="{lang}">
+<html lang="{lang}" dir="{dir_attr}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1177,6 +1222,7 @@ def page(title, current, body, extra_script="", lang="en", slug="index", svc=Non
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+{ar_font}
 <link rel="stylesheet" href="{asset_prefix}style.css">
 {schema_org(lang, slug, svc=svc)}
 </head>
@@ -1321,6 +1367,8 @@ PRODUCT_INFO = {
                "applications": "Kutu profil; yapisal iskelet, cit, kapi, mobilya iskeleti ve genel imalat islerinde, guclu ve hafif bir profil gerektiginde yaygin olarak kullanilir."},
         "fr": {"what_is": "Le profilé carré (aussi appelé section creuse carrée ou rectangulaire) est une section en acier à section fermée et creuse, formée par laminage et soudure de tôle plate en forme de tube. Sa section fermée lui confère une bonne résistance à la flexion et à la torsion par rapport à son poids.",
                "applications": "Le profilé carré est largement utilisé pour l'ossature structurelle, les clôtures, les portails, les cadres de mobilier et les travaux de fabrication générale nécessitant une section solide et légère."},
+        "ar": {"what_is": "القوطي (المعروف أيضًا بالقطاع المجوف المربع أو المستطيل) هو قطاع فولاذي ذو مقطع مغلق ومجوف، يُشكّل بلف ولحام الصلب المسطح على شكل أنبوب. يمنحه مقطعه المغلق مقاومة قوية للانحناء والالتواء بالنسبة إلى وزنه.",
+               "applications": "يُستخدم القوطي على نطاق واسع في الهياكل الإنشائية والأسوار والبوابات وهياكل الأثاث وأعمال التصنيع العامة حيث تكون هناك حاجة إلى قطاع قوي وخفيف الوزن."},
     },
     "metal_boru": {
         "en": {"what_is": "Metal pipe is a hollow cylindrical section used to carry fluids or gases, or as a structural element in its own right. It can be produced as welded pipe, formed from rolled steel with a seam, or seamless pipe, extruded without a joint.",
@@ -1329,6 +1377,8 @@ PRODUCT_INFO = {
                "applications": "Metal boru; tesisat, yapisal iskelet, iskele, korkuluk ve endustriyel boru hatti sistemlerinde kullanilir."},
         "fr": {"what_is": "Le tube métallique est une section cylindrique creuse utilisée pour transporter des fluides ou des gaz, ou comme élément structurel à part entière. Il peut être produit sous forme de tube soudé, formé à partir d'acier laminé avec une soudure, ou de tube sans soudure, extrudé sans jointure.",
                "applications": "Le tube métallique est utilisé en plomberie, ossature structurelle, échafaudage, mains courantes et réseaux de tuyauterie industrielle."},
+        "ar": {"what_is": "الأنبوب المعدني هو مقطع أسطواني مجوف يُستخدم لنقل السوائل أو الغازات، أو كعنصر إنشائي بحد ذاته. يمكن إنتاجه كأنبوب ملحوم، مُشكّل من صلب مدرفل بخط لحام، أو أنبوب سلس مُبثوق دون وصلة.",
+               "applications": "يُستخدم الأنبوب المعدني في السباكة والهياكل الإنشائية والسقالات والدرابزين وأنظمة الأنابيب الصناعية."},
     },
     "kosebent": {
         "en": {"what_is": "Angle steel is an L-shaped structural section, formed from two flat legs joined at a right angle. It's one of the most common structural shapes because of how efficiently it resists bending along two axes at once.",
@@ -1337,6 +1387,8 @@ PRODUCT_INFO = {
                "applications": "Kosebent; yapisal iskelet, braket, raf, kule ve imalat islerinde takviye veya baglanti elemani olarak kullanilir."},
         "fr": {"what_is": "La cornière est une section structurelle en forme de L, formée de deux ailes plates jointes à angle droit. C'est l'une des formes structurelles les plus courantes en raison de sa résistance efficace à la flexion selon deux axes à la fois.",
                "applications": "La cornière est utilisée pour l'ossature structurelle, les supports, les étagères, les tours, et comme élément de renfort ou de liaison dans les travaux de fabrication."},
+        "ar": {"what_is": "زاوية الحديد هي قطاع إنشائي على شكل حرف L، يتكون من ضلعين مسطحين متصلين بزاوية قائمة. وهي من أكثر الأشكال الإنشائية شيوعًا لكفاءتها في مقاومة الانحناء على محورين في آن واحد.",
+               "applications": "تُستخدم زاوية الحديد في الهياكل الإنشائية والكتائف والأرفف والأبراج، وكعنصر تقوية أو ربط في أعمال التصنيع."},
     },
     "lama_demiri": {
         "en": {"what_is": "Flat bar is a rectangular steel section, flat and rolled to a consistent thickness and width. It's one of the most versatile raw steel forms, used as a starting material for further cutting, welding, or machining.",
@@ -1345,6 +1397,8 @@ PRODUCT_INFO = {
                "applications": "Lama demiri; iskelet, braket, kapi, korkuluk ve ileri imalat icin ham malzeme olarak kullanilir."},
         "fr": {"what_is": "Le fer plat est une section en acier rectangulaire, plate et laminée à une épaisseur et une largeur constantes. C'est l'une des formes d'acier brut les plus polyvalentes, utilisée comme matière première pour la découpe, la soudure ou l'usinage.",
                "applications": "Le fer plat est utilisé pour l'ossature, les supports, les portails, les garde-corps, et comme matière première pour la fabrication."},
+        "ar": {"what_is": "حديد اللامة هو قطاع فولاذي مستطيل، مسطح ومدرفل بسماكة وعرض ثابتين. وهو من أكثر أشكال الصلب الخام تعدد استخدامًا، يُستخدم كمادة أولية للقص أو اللحام أو التشغيل الإضافي.",
+               "applications": "يُستخدم حديد اللامة في الهياكل والكتائف والبوابات والدرابزين، وكمادة خام لمزيد من التصنيع."},
     },
     "silme_demiri": {
         "en": {"what_is": "Silme bar is a narrow flat steel strip, thinner than standard flat bar, typically used for trim, edging, and light structural work.",
@@ -1353,6 +1407,8 @@ PRODUCT_INFO = {
                "applications": "Silme demiri; kenar bitirme, dekoratif metal isleri ve hafif braket uygulamalarinda yaygin olarak kullanilir."},
         "fr": {"what_is": "Le fer silme est une bande d'acier plate et étroite, plus fine que le fer plat standard, généralement utilisée pour les finitions, les bordures et les travaux structurels légers.",
                "applications": "Le fer silme est couramment utilisé pour les bordures, les finitions, les petits supports et la ferronnerie décorative."},
+        "ar": {"what_is": "حديد السلمة هو شريط فولاذي مسطح وضيق، أرفع من حديد اللامة القياسي، يُستخدم عادةً للتشطيب والحواف والأعمال الإنشائية الخفيفة.",
+               "applications": "يُستخدم حديد السلمة بشكل شائع في تشطيب الحواف والأعمال الديكورية المعدنية والكتائف الخفيفة."},
     },
     "npu_demiri": {
         "en": {"what_is": "Structural beams such as NPU, NPI, IPE, HEA, and HEB sections are hot-rolled steel profiles with a distinct cross-sectional shape (U-channel or I/H-beam), engineered to carry heavy structural loads efficiently.",
@@ -1361,6 +1417,8 @@ PRODUCT_INFO = {
                "applications": "Bu kirisler; bina, kopru ve agir endustriyel yapilarin tasiyici iskeletini olusturur, tasima gucunun oncelik oldugu her yerde kullanilir."},
         "fr": {"what_is": "Les poutrelles structurelles telles que les profilés NPU, NPI, IPE, HEA et HEB sont des profilés en acier laminé à chaud, à section distincte (en U ou en I/H), conçues pour supporter efficacement de lourdes charges structurelles.",
                "applications": "Ces poutrelles forment l'ossature structurelle des bâtiments, des ponts et des structures industrielles lourdes, partout où la résistance porteuse est l'exigence principale."},
+        "ar": {"what_is": "الكمرات الإنشائية مثل NPU وNPI وIPE وHEA وHEB هي قطاعات فولاذية مدرفلة على الساخن ذات مقطع مميز (قناة على شكل U أو كمرة I/H)، مصممة لتحمل الأحمال الإنشائية الثقيلة بكفاءة.",
+               "applications": "تُشكّل هذه الكمرات الهيكل العظمي الإنشائي للمباني والجسور والمنشآت الصناعية الثقيلة، حيثما كانت قوة التحمل هي المتطلب الأساسي."},
     },
     "kare_demir": {
         "en": {"what_is": "Square bar is solid steel stock with a square cross-section, rolled to a consistent size along its length.",
@@ -1369,6 +1427,8 @@ PRODUCT_INFO = {
                "applications": "Kare demir; imalat, korkuluk, kapi, makine parcalari ve ileri isleme icin ham stok olarak kullanilir."},
         "fr": {"what_is": "Le fer carré est une barre d'acier pleine à section carrée, laminée à une dimension constante sur toute sa longueur.",
                "applications": "Le fer carré est utilisé en fabrication, garde-corps, portails, pièces de machines, et comme matière première pour l'usinage."},
+        "ar": {"what_is": "الحديد المربع هو قضيب فولاذي صلب ذو مقطع مربع، مدرفل بمقاس ثابت على طول امتداده.",
+               "applications": "يُستخدم الحديد المربع في التصنيع والدرابزين والبوابات وأجزاء الآلات، وكمادة خام لمزيد من التشغيل."},
     },
     "t_demir": {
         "en": {"what_is": "T-bar is a structural steel section shaped like the letter T, combining a flat top flange with a vertical web.",
@@ -1377,6 +1437,8 @@ PRODUCT_INFO = {
                "applications": "T demir; iskelet, destek yapilari ve raf ile bitirme isleri gibi sertlestirici kenar gerektiren uygulamalarda kullanilir."},
         "fr": {"what_is": "Le fer en T est une section en acier structurel en forme de T, combinant une aile plate supérieure et une âme verticale.",
                "applications": "Le fer en T est utilisé pour l'ossature, les structures de support, et les applications nécessitant un bord rigidifiant, comme les étagères et les finitions."},
+        "ar": {"what_is": "حديد T هو قطاع فولاذي إنشائي على شكل الحرف T، يجمع بين جناح علوي مسطح وجذع عمودي.",
+               "applications": "يُستخدم حديد T في الهياكل وبنى الدعم والتطبيقات التي تحتاج إلى حافة تصلّب، مثل الأرفف وأعمال التشطيب."},
     },
     "transmisyon_mili": {
         "en": {"what_is": "Transmission shaft is solid round steel bar, precision-rolled or turned, designed to transmit rotational force in mechanical systems.",
@@ -1385,6 +1447,8 @@ PRODUCT_INFO = {
                "applications": "Transmisyon mili; hassas, yuk tasiyan donen bir mil gerektiren makine, aktarma organlari ve mekanik montajlarda kullanilir."},
         "fr": {"what_is": "L'arbre de transmission est une barre d'acier ronde pleine, laminée ou tournée avec précision, conçue pour transmettre une force de rotation dans les systèmes mécaniques.",
                "applications": "L'arbre de transmission est utilisé dans les machines, les transmissions et les ensembles mécaniques nécessitant un arbre rotatif précis et porteur."},
+        "ar": {"what_is": "عمود نقل الحركة هو قضيب فولاذي مستدير صلب، مدرفل أو مخروط بدقة، مصمم لنقل قوة الدوران في الأنظمة الميكانيكية.",
+               "applications": "يُستخدم عمود نقل الحركة في الآلات وأنظمة نقل الحركة والتجميعات الميكانيكية التي تتطلب عمودًا دوارًا دقيقًا وقادرًا على تحمل الأحمال."},
     },
     "sac_cesitleri": {
         "en": {"what_is": "Sheet metal is flat-rolled steel supplied in large sheets or coils, available in a range of thicknesses and finishes.",
@@ -1393,6 +1457,8 @@ PRODUCT_INFO = {
                "applications": "Sac; insaat, otomotiv ve genel imalatta lazer kesim, plazma kesim ve bukum islerinin temel malzemesidir."},
         "fr": {"what_is": "La tôle est de l'acier laminé plat fourni en grandes feuilles ou en bobines, disponible dans une gamme d'épaisseurs et de finitions.",
                "applications": "La tôle est une matière de base pour la découpe laser, la découpe plasma et le pliage dans le bâtiment, l'automobile et la fabrication générale."},
+        "ar": {"what_is": "الصاج هو صلب مدرفل مسطح يُورّد على شكل ألواح كبيرة أو لفائف، متوفر بمجموعة من السماكات والتشطيبات.",
+               "applications": "الصاج هو المادة الأساسية لأعمال القص بالليزر والبلازما والثني في قطاعات البناء والسيارات والتصنيع العام."},
     },
     "cati_panelleri": {
         "en": {"what_is": "Roof panels are pre-formed steel sheets, typically profiled with ribs or corrugations, engineered for weather-resistant roof cladding.",
@@ -1401,6 +1467,8 @@ PRODUCT_INFO = {
                "applications": "Cati panelleri; dayaniklilik ve hava kosullarina direncin onemli oldugu endustriyel, ticari ve tarimsal bina catilarinda kullanilir."},
         "fr": {"what_is": "Les panneaux de toiture sont des tôles d'acier préformées, généralement profilées avec des nervures ou des ondulations, conçues pour un bardage de toit résistant aux intempéries.",
                "applications": "Les panneaux de toiture sont utilisés pour les toits de bâtiments industriels, commerciaux et agricoles où la durabilité et la résistance aux intempéries comptent."},
+        "ar": {"what_is": "ألواح الأسقف هي صفائح فولاذية مُشكّلة مسبقًا، عادةً ما تكون مضلعة أو مموجة، مصممة لتغطية أسقف مقاومة للعوامل الجوية.",
+               "applications": "تُستخدم ألواح الأسقف لأسقف المباني الصناعية والتجارية والزراعية حيث تهم المتانة ومقاومة العوامل الجوية."},
     },
     "cephe_panelleri": {
         "en": {"what_is": "Facade panels are formed steel sheets used to clad the exterior walls of a building, combining structural cladding with an architectural finish.",
@@ -1409,6 +1477,8 @@ PRODUCT_INFO = {
                "applications": "Cephe panelleri; endustriyel ve ticari binalarin dis duvarlarinda, hava korumasi ve dus bir gorunum saglamak icin kullanilir."},
         "fr": {"what_is": "Les panneaux de façade sont des tôles d'acier formées utilisées pour habiller les murs extérieurs d'un bâtiment, associant un bardage structurel à une finition architecturale.",
                "applications": "Les panneaux de façade sont utilisés pour les murs extérieurs de bâtiments industriels et commerciaux, offrant une protection contre les intempéries et une finition soignée."},
+        "ar": {"what_is": "ألواح الواجهات هي صفائح فولاذية مُشكّلة تُستخدم لكسوة الجدران الخارجية للمبنى، تجمع بين الكسوة الإنشائية واللمسة المعمارية.",
+               "applications": "تُستخدم ألواح الواجهات للجدران الخارجية للمباني الصناعية والتجارية، توفر حماية من العوامل الجوية ومظهرًا نهائيًا متكاملًا."},
     },
     "imalat_celigi": {
         "en": {"what_is": "Manufacturing steel refers to general-purpose carbon steel supplied as raw stock for machining and fabrication, chosen for its consistent, workable properties.",
@@ -1417,6 +1487,8 @@ PRODUCT_INFO = {
                "applications": "Imalat celigi; genel isleme, imalat ve parca uretiminde temel stok malzeme olarak kullanilir."},
         "fr": {"what_is": "L'acier de construction désigne un acier au carbone à usage général, fourni comme matière première pour l'usinage et la fabrication, apprécié pour ses propriétés constantes et faciles à travailler.",
                "applications": "L'acier de construction est utilisé comme matière première dans l'usinage général, la fabrication et la production de pièces."},
+        "ar": {"what_is": "صلب التصنيع يشير إلى صلب كربوني عام الغرض يُورّد كمادة خام للتشغيل والتصنيع، يُختار لخصائصه الثابتة القابلة للتشغيل.",
+               "applications": "يُستخدم صلب التصنيع كمادة خام أساسية في التشغيل العام والتصنيع وإنتاج القطع."},
     },
     "islah_celigi": {
         "en": {"what_is": "Heat-treated steel (also called quenched and tempered steel) has undergone a controlled heating and cooling process to increase its strength and hardness beyond that of standard carbon steel.",
@@ -1425,6 +1497,8 @@ PRODUCT_INFO = {
                "applications": "Islah celigi; standart celikten daha yuksek mukavemet ve asinma direnci gerektiren makine parcalari, takim ve bilesenlerde kullanilir."},
         "fr": {"what_is": "L'acier trempé (également appelé acier trempé et revenu) a subi un processus contrôlé de chauffage et de refroidissement pour augmenter sa résistance et sa dureté au-delà de celles de l'acier au carbone standard.",
                "applications": "L'acier trempé est utilisé pour les pièces de machines, l'outillage et les composants nécessitant une résistance et une résistance à l'usure supérieures à l'acier standard."},
+        "ar": {"what_is": "الصلب المعالج حراريًا (يُعرف أيضًا بالصلب المقسّى والمُلطّف) خضع لعملية تسخين وتبريد مضبوطة لزيادة قوته وصلابته بما يتجاوز الصلب الكربوني القياسي.",
+               "applications": "يُستخدم الصلب المعالج حراريًا في أجزاء الآلات والعدد والمكونات التي تتطلب قوة ومقاومة تآكل أعلى من الصلب القياسي."},
     },
     "otomat_celigi": {
         "en": {"what_is": "Free-cutting steel (also known as free-machining steel) is a steel alloy formulated with additives such as sulfur to improve machinability, producing cleaner cuts and longer tool life.",
@@ -1433,6 +1507,8 @@ PRODUCT_INFO = {
                "applications": "Otomat celigi; hizli ve temiz islemenin onemli oldugu, yuksek hacimli ve hassas islenmis parcalarda kullanilir."},
         "fr": {"what_is": "L'acier de décolletage (aussi appelé acier de coupe facile) est un alliage d'acier formulé avec des additifs tels que le soufre pour améliorer l'usinabilité, produisant des coupes plus nettes et une durée de vie d'outil plus longue.",
                "applications": "L'acier de décolletage est utilisé pour les pièces usinées de précision à grand volume, où un usinage rapide et propre est essentiel."},
+        "ar": {"what_is": "صلب التشغيل الحر (يُعرف أيضًا بصلب التشغيل السريع) هو سبيكة صلب مُركّبة بإضافات مثل الكبريت لتحسين قابلية التشغيل، مما ينتج قطعًا أنظف وعمرًا أطول للأدوات.",
+               "applications": "يُستخدم صلب التشغيل الحر للقطع المُشغّلة بدقة وبكميات كبيرة حيث يهم التشغيل السريع والنظيف."},
     },
     "sementasyon_celigi": {
         "en": {"what_is": "Case-hardening steel is a low-carbon steel designed to be surface-hardened through a carburizing heat treatment, giving it a hard outer surface while retaining a tougher, more ductile core.",
@@ -1441,6 +1517,8 @@ PRODUCT_INFO = {
                "applications": "Sementasyon celigi; asinmaya dayanikli bir yuzey ile darbe tokluguna ihtiyac duyan disli, pim ve mekanik parcalarda kullanilir."},
         "fr": {"what_is": "L'acier de cémentation est un acier à faible teneur en carbone conçu pour être durci en surface par un traitement thermique de cémentation, lui donnant une surface externe dure tout en conservant un cœur plus résistant et ductile.",
                "applications": "L'acier de cémentation est utilisé pour les engrenages, les axes et les pièces mécaniques nécessitant une surface résistante à l'usure combinée à une bonne résilience aux chocs."},
+        "ar": {"what_is": "صلب التصليد السطحي هو صلب منخفض الكربون مصمم ليُصلّد سطحيًا من خلال معالجة حرارية بالكربنة، مما يمنحه سطحًا خارجيًا صلبًا مع الحفاظ على لُب أكثر متانة ومرونة.",
+               "applications": "يُستخدم صلب التصليد السطحي في التروس والمحاور والأجزاء الميكانيكية التي تحتاج إلى سطح مقاوم للتآكل مع متانة ضد الصدمات."},
     },
     "pas_sac_levha": {
         "en": {"what_is": "Stainless sheet plate is flat-rolled stainless steel, combining the corrosion resistance of stainless with the flat, workable form of sheet metal.",
@@ -1449,6 +1527,8 @@ PRODUCT_INFO = {
                "applications": "Paslanmaz sac levha; gida isleme, mutfak ekipmanlari, mimari ve hijyenik, korozyona dayanikli yuzey gerektiren her uygulamada kullanilir."},
         "fr": {"what_is": "La tôle inox est de l'acier inoxydable laminé plat, combinant la résistance à la corrosion de l'inox avec la forme plate et facile à travailler de la tôle.",
                "applications": "La tôle inox est utilisée dans l'agroalimentaire, les équipements de cuisine, l'architecture, et toute application nécessitant une surface hygiénique et résistante à la corrosion."},
+        "ar": {"what_is": "صاج الستانلس ستيل هو صلب مقاوم للصدأ مدرفل مسطح، يجمع بين مقاومة التآكل الخاصة بالستانلس ستيل والشكل المسطح القابل للتشغيل الخاص بالصاج.",
+               "applications": "يُستخدم صاج الستانلس ستيل في تصنيع الأغذية ومعدات المطابخ والعمارة وأي تطبيق يحتاج إلى سطح صحي مقاوم للتآكل."},
     },
     "pas_profil": {
         "en": {"what_is": "Stainless profile covers stainless steel structural sections, formed to standard profile shapes while retaining stainless steel's corrosion resistance.",
@@ -1457,6 +1537,8 @@ PRODUCT_INFO = {
                "applications": "Paslanmaz profil; mimari, gida isleme ekipmanlari ve neme veya korozif ortamlara maruz kalan yapisal uygulamalarda kullanilir."},
         "fr": {"what_is": "Le profilé inox regroupe les sections structurelles en acier inoxydable, formées selon des profils standards tout en conservant la résistance à la corrosion de l'inox.",
                "applications": "Le profilé inox est utilisé en architecture, dans les équipements agroalimentaires et les applications structurelles exposées à l'humidité ou aux environnements corrosifs."},
+        "ar": {"what_is": "بروفايل الستانلس ستيل يشمل القطاعات الإنشائية من الستانلس ستيل، مُشكّلة بأشكال بروفايل قياسية مع الحفاظ على مقاومة التآكل الخاصة بالستانلس ستيل.",
+               "applications": "يُستخدم بروفايل الستانلس ستيل في العمارة ومعدات تصنيع الأغذية والتطبيقات الإنشائية المعرضة للرطوبة أو البيئات المسببة للتآكل."},
     },
     "pas_lama": {
         "en": {"what_is": "Stainless flat bar is rectangular stainless steel stock, flat and rolled to consistent dimensions.",
@@ -1465,6 +1547,8 @@ PRODUCT_INFO = {
                "applications": "Paslanmaz lama; korozyon direnci gerektiren braket, kenar bitirme ve imalat islerinde kullanilir."},
         "fr": {"what_is": "Le fer plat inox est une barre d'acier inoxydable rectangulaire, plate et laminée à des dimensions constantes.",
                "applications": "Le fer plat inox est utilisé pour les supports, les finitions et les travaux de fabrication nécessitant une résistance à la corrosion."},
+        "ar": {"what_is": "لامة الستانلس ستيل هي مادة خام مستطيلة من الستانلس ستيل، مسطحة ومدرفلة بأبعاد ثابتة.",
+               "applications": "تُستخدم لامة الستانلس ستيل للكتائف والتشطيبات وأعمال التصنيع التي تحتاج إلى مقاومة التآكل."},
     },
     "pas_altikose": {
         "en": {"what_is": "Stainless hexagon bar is solid stainless steel stock with a hexagonal cross-section, commonly used where a flat-sided bar is needed for grip or fastening.",
@@ -1473,6 +1557,8 @@ PRODUCT_INFO = {
                "applications": "Paslanmaz altikose; korozyon direnci gerektiren baglanti elemanlari, fittings ve islenmis parcalarda kullanilir."},
         "fr": {"what_is": "La barre hexagonale inox est une barre pleine en acier inoxydable à section hexagonale, couramment utilisée lorsqu'une barre à faces plates est nécessaire pour la prise ou le serrage.",
                "applications": "La barre hexagonale inox est utilisée pour les fixations, les raccords et les pièces usinées nécessitant une résistance à la corrosion."},
+        "ar": {"what_is": "السداسي من الستانلس ستيل هو مادة خام صلبة ذات مقطع سداسي، تُستخدم عادةً حيث تكون هناك حاجة إلى قضيب ذي أوجه مسطحة للإمساك أو الربط.",
+               "applications": "يُستخدم السداسي من الستانلس ستيل في مواسير الربط والتجهيزات والقطع المُشغّلة التي تتطلب مقاومة التآكل."},
     },
     "pas_dikisli_boru": {
         "en": {"what_is": "Stainless welded pipe is stainless steel pipe formed by rolling and welding a seam along its length.",
@@ -1481,6 +1567,8 @@ PRODUCT_INFO = {
                "applications": "Paslanmaz dikisli boru; dikissiz boruya gore daha dusuk maliyetle korozyon direnci gerektiren boru hatti, korkuluk ve yapisal islerde kullanilir."},
         "fr": {"what_is": "Le tube inox soudé est un tube en acier inoxydable formé par laminage et soudure d'une jointure sur toute sa longueur.",
                "applications": "Le tube inox soudé est utilisé dans les réseaux de tuyauterie, les garde-corps et les travaux structurels nécessitant une résistance à la corrosion à moindre coût que le tube sans soudure."},
+        "ar": {"what_is": "أنبوب الستانلس ستيل الملحوم هو أنبوب من الستانلس ستيل يُشكّل بلف ولحام خط على طول امتداده.",
+               "applications": "يُستخدم أنبوب الستانلس الملحوم في أنظمة الأنابيب والدرابزين والأعمال الإنشائية التي تتطلب مقاومة التآكل بتكلفة أقل من الأنبوب السلس."},
     },
     "pas_dikissiz_boru": {
         "en": {"what_is": "Stainless seamless pipe is stainless steel pipe extruded without a weld seam, giving it consistent strength along its entire length.",
@@ -1489,6 +1577,8 @@ PRODUCT_INFO = {
                "applications": "Paslanmaz dikissiz boru; gida, kimya ve ilac isleme gibi daha yuksek basinc veya saflik gerektiren uygulamalarda kullanilir."},
         "fr": {"what_is": "Le tube inox sans soudure est un tube en acier inoxydable extrudé sans jointure soudée, lui conférant une résistance constante sur toute sa longueur.",
                "applications": "Le tube inox sans soudure est utilisé dans les applications à haute pression ou haute pureté telles que l'agroalimentaire, la chimie et le pharmaceutique."},
+        "ar": {"what_is": "أنبوب الستانلس ستيل السلس هو أنبوب من الستانلس ستيل مُبثوق دون خط لحام، مما يمنحه قوة ثابتة على طول امتداده بالكامل.",
+               "applications": "يُستخدم أنبوب الستانلس السلس في التطبيقات ذات الضغط العالي أو النقاء العالي مثل تصنيع الأغذية والكيماويات والأدوية."},
     },
     "pas_cubuk_mil": {
         "en": {"what_is": "Stainless round bar (shaft) is solid, cylindrical stainless steel stock, precision-rolled or turned for use as a shaft or machined component.",
@@ -1497,6 +1587,8 @@ PRODUCT_INFO = {
                "applications": "Paslanmaz cubuk (mil); korozyon direnci ve boyutsal hassasiyet gerektiren mil, baglanti elemani ve islenmis parcalarda kullanilir."},
         "fr": {"what_is": "La barre ronde inox (arbre) est une matière première cylindrique pleine en acier inoxydable, laminée ou tournée avec précision pour servir d'arbre ou de composant usiné.",
                "applications": "La barre ronde inox est utilisée pour les arbres, les fixations et les pièces usinées nécessitant une résistance à la corrosion et une précision dimensionnelle."},
+        "ar": {"what_is": "قضيب/عمود الستانلس المستدير هو مادة خام أسطوانية صلبة من الستانلس ستيل، مدرفلة أو مخروطة بدقة للاستخدام كعمود أو مكوّن مُشغّل.",
+               "applications": "يُستخدم قضيب الستانلس المستدير للأعمدة ومواسير الربط والقطع المُشغّلة التي تتطلب مقاومة التآكل والدقة البُعدية."},
     },
     "pas_fittings": {
         "en": {"what_is": "Stainless fittings are pre-formed stainless steel components, such as elbows, tees, and couplings, used to join and route piping systems.",
@@ -1505,6 +1597,8 @@ PRODUCT_INFO = {
                "applications": "Paslanmaz fittings; ozellikle gida, kimya ve tesisat sistemlerinde paslanmaz borunun birlestirilmesi, dallandirilmasi veya yonlendirilmesi gereken her yerde kullanilir."},
         "fr": {"what_is": "Les raccords inox sont des composants préformés en acier inoxydable, tels que coudes, tés et manchons, utilisés pour joindre et orienter les réseaux de tuyauterie.",
                "applications": "Les raccords inox sont utilisés partout où un tube inox doit être joint, dérivé ou réorienté, notamment dans l'agroalimentaire, la chimie et la plomberie."},
+        "ar": {"what_is": "وصلات الستانلس ستيل هي مكونات مُشكّلة مسبقًا من الستانلس ستيل، مثل الأكواع والتيهات والوصلات، تُستخدم لربط وتوجيه أنظمة الأنابيب.",
+               "applications": "تُستخدم وصلات الستانلس ستيل أينما احتاج أنبوب الستانلس إلى الربط أو التفرع أو إعادة التوجيه، خاصة في أنظمة الأغذية والكيماويات والسباكة."},
     },
 }
 
@@ -1518,6 +1612,9 @@ PRODUCT_DETAIL_UI = {
     "fr": {"what_is": "Qu'est-ce que {name} ?", "applications": "Applications Typiques", "back": "Tous les Produits",
            "cta_p": "Besoin de dimensions exactes, d'une nuance ou d'un prix pour {name} ? Envoyez-nous vos spécifications, nous reviendrons avec un devis.",
            "cta_btn": "Demander un devis"},
+    "ar": {"what_is": "ما هو {name}؟", "applications": "الاستخدامات الشائعة", "back": "جميع المنتجات",
+           "cta_p": "هل تحتاج إلى أبعاد أو نوع أو سعر دقيق لـ {name}؟ أرسل لنا التفاصيل وسنرد بعرض سعر.",
+           "cta_btn": "اطلب عرض سعر"},
 }
 
 def product_slug(key):
@@ -1565,7 +1662,28 @@ FR_PRODUCT_NAMES = {
     "pas_fittings": "Raccords Inox",
 }
 
-PROD_UI = {"en": "Product Lines", "tr": "\u00dcr\u00fcn Gruplar\u0131", "fr": "Gammes de Produits"}
+AR_PRODUCT_NAMES = {
+    "kutu_profil": "قوطي مربع", "metal_boru": "أنبوب معدني", "kosebent": "زاوية حديد",
+    "lama_demiri": "حديد لامة", "silme_demiri": "حديد سلمة",
+    "npu_demiri": "كمرات إنشائية (NPU/NPI/IPE/HEA/HEB)", "kare_demir": "حديد مربع", "t_demir": "حديد T",
+    "transmisyon_mili": "عمود نقل الحركة", "sac_cesitleri": "أنواع الصاج",
+    "cati_panelleri": "ألواح أسقف", "cephe_panelleri": "ألواح واجهات",
+    "imalat_celigi": "صلب التصنيع", "islah_celigi": "صلب مقسّى",
+    "otomat_celigi": "صلب سريع التشغيل", "sementasyon_celigi": "صلب مُسمّن",
+    "pas_sac_levha": "صاج ستانلس ستيل", "pas_profil": "بروفايل ستانلس ستيل", "pas_lama": "لامة ستانلس ستيل",
+    "pas_altikose": "سداسي ستانلس ستيل", "pas_dikisli_boru": "أنبوب ستانلس ملحوم",
+    "pas_dikissiz_boru": "أنبوب ستانلس سلس", "pas_cubuk_mil": "عمود ستانلس مستدير",
+    "pas_fittings": "وصلات ستانلس ستيل",
+}
+
+PROD_UI = {"en": "Product Lines", "tr": "\u00dcr\u00fcn Gruplar\u0131", "fr": "Gammes de Produits", "ar": "فئات المنتجات"}
+
+def product_display_name(key, en, native, lang):
+    if lang == "en": return en
+    if lang == "tr": return native
+    if lang == "fr": return FR_PRODUCT_NAMES[key]
+    if lang == "ar": return AR_PRODUCT_NAMES[key]
+    return en
 
 def product_gallery_body(banner_title, section_title, items, img_key, lang="en"):
     cards = "\n".join([
@@ -1573,7 +1691,7 @@ def product_gallery_body(banner_title, section_title, items, img_key, lang="en")
       <div class="thumb" style="background-image:url('data:image/jpeg;base64,{PRODUCT_B64[key]}')"></div>
       <div class="body">
         <span class="native-name">{native if lang != "tr" else en}</span>
-        <h3>{en if lang == "en" else (native if lang == "tr" else FR_PRODUCT_NAMES[key])}</h3>
+        <h3>{product_display_name(key, en, native, lang)}</h3>
       </div>
     </a>""" for key, en, native in items
     ])
@@ -1654,6 +1772,9 @@ SVC_UI = {
     "fr": {"nedir": "Qu'est-ce que {title} ?", "methods": "M\u00e9thodes et avantages",
            "sidebar_h": "Services", "cta_p": "Vous avez un projet en t\u00eate ? Envoyez-nous vos sp\u00e9cifications, nous reviendrons vers vous avec un prix et un d\u00e9lai.",
            "cta_btn": "Demander un devis"},
+    "ar": {"nedir": "ما هي {title}؟", "methods": "الطرق والمزايا",
+           "sidebar_h": "الخدمات", "cta_p": "هل لديك مشروع؟ أرسل لنا تفاصيله وسنعاود التواصل معك بعرض سعر وموعد تسليم.",
+           "cta_btn": "اطلب عرض سعر"},
 }
 
 def service_detail_body(svc, all_services, lang="en"):
@@ -1766,6 +1887,8 @@ BLOG_UI = {
            "cta_p": "Bir projeniz mi var? Ozelliklerinizi bize g\u00f6nderin, fiyat ve teslim s\u00fcresi ile d\u00f6n\u00fc\u015f yapal\u0131m.", "cta_btn": "Teklif Al"},
     "fr": {"categories": "Cat\u00e9gories", "all": "Toutes les cat\u00e9gories",
            "cta_p": "Vous avez un projet en t\u00eate ? Envoyez-nous vos sp\u00e9cifications, nous reviendrons vers vous avec un prix et un d\u00e9lai.", "cta_btn": "Demander un devis"},
+    "ar": {"categories": "الفئات", "all": "جميع الفئات",
+           "cta_p": "هل لديك مشروع؟ أرسل لنا تفاصيله وسنعاود التواصل معك بعرض سعر وموعد تسليم.", "cta_btn": "اطلب عرض سعر"},
 }
 
 def blog_detail_body(post, all_posts, lang="en"):
@@ -2475,5 +2598,306 @@ contact_body_fr = f"""
 </section>
 """
 write_fr("contact", "Contact", "contact", contact_body_fr)
+
+# ================= ARABIC (AR) VERSION =================
+AR_OUT_DIR = "/home/claude/nora-site/pages/ar"
+os.makedirs(AR_OUT_DIR, exist_ok=True)
+
+def write_ar(slug, title, current, body, extra_script="", svc=None, description=None):
+    open(f"{AR_OUT_DIR}/{slug}.html", "w").write(page(title, current, body, extra_script, lang="ar", slug=slug, svc=svc, description=description))
+
+# ---------------- AR: HERO ----------------
+HERO_SLIDES_AR = [
+    ("خدمة / 01", "القص بالليزر", "laser", "services.html"),
+    ("خدمة / 02", "القص بالبلازما", "plasma", "services.html"),
+    ("خدمة / 03", "التصنيع باللحام", "welded_fab", "services.html"),
+    ("خدمة / 04", "التشغيل الآلي CNC", "cnc", "services.html"),
+    ("خدمة / 05", "القص والثني", "cutbend", "services.html"),
+    ("منتجات", "أنابيب وبروفايل وصلب", "pipes", "demir-celik-urunler.html"),
+]
+HERO_SCRIPT_AR = hero_script(HERO_SLIDES_AR)
+
+home_body_ar = """
+<div class="hero-spacer" id="heroSpacer"></div>
+<div class="hero-fixed" id="heroFixed">
+  <div class="hero-viewport">
+    <div class="hero-track" id="heroTrack"></div>
+  </div>
+  <div class="slide-label" id="slideLabel">
+    <div class="slide-eyebrow" id="labelEyebrow">خدمة / 01</div>
+    <h1 id="labelTitle">القص بالليزر</h1>
+    <div class="slide-rule"></div>
+  </div>
+  <div class="scroll-hint" id="scrollHint"><div class="line"></div>مرر للأسفل</div>
+  <div class="hero-dots" id="heroDots"></div>
+</div>
+"""
+write_ar("index", "الرئيسية", "home", home_body_ar, HERO_SCRIPT_AR)
+
+# ---------------- AR: SERVICES ----------------
+service_details_ar = [
+    {
+        "slug": "iron-steel-supply", "title": "توريد الحديد والصلب", "img": "bars",
+        "intro": "إلى جانب خدمات القص والثني والتصنيع، توفر نورا للصلب والستانلس مجموعة واسعة من منتجات الحديد والصلب مباشرة، بما في ذلك الصاج والبروفايل والأنابيب ومنتجات الدرفلة وشباك الصلب، مُصنّعة على معدات حديثة ومدعومة بضمان الجودة الخاص بنا.",
+        "what_is": "منشأتنا الإنتاجية مصممة لأحجام إنتاج كبيرة ومدعومة بتقنية حديثة، مما يتيح لنا تلبية الطلبات المخصصة إلى جانب المخزون القياسي. إلى جانب توريد المواد الجاهزة، نقدم أيضًا معالجة إضافية عند الطلب، تشمل قص البروفايل وقص الأنابيب وقص الصاج وثني الصاج وتقطيع اللفائف، بحيث يغطي طلب واحد المادة الخام وتشكيلها معًا.",
+        "methods": "نقوم بتوريد المواد لمجموعة واسعة من المنتجات النهائية، مدعومين بأسعار تنافسية وجودة ثابتة وتسليم في الموعد ودعم موثوق بعد البيع، ونوصّل إلى أي مكان في تركيا وفق الجدول الذي تحتاجه. تعمل نورا للصلب والستانلس على أساس التركيز على العميل، تواصل مع فريقنا مباشرة للاستفسار عن توفر المخزون أو الأسئلة الفنية أو طلب عرض سعر قبل اتخاذ قرارك.",
+    },
+    {
+        "slug": "cutting-bending", "title": "القص والثني", "img": "cutbend",
+        "intro": "على مكابس الثني بتقنية CNC لدينا، نقوم بثني الصاج المعدني بمختلف السماكات والأبعاد بدقة، لتلبية احتياجات التشكيل لمجموعة واسعة من الصناعات. يجمع فريقنا ذو الخبرة بين معرفة المواد ومعدات ثني CNC عالية التقنية لإنجاز حتى أصعب أعمال تشكيل الصاج بسرعة ودقة.",
+        "what_is": "القص والثني هو مجال يقوم على تشكيل الصاج والمواد المعدنية إلى القطاعات التي يحتاجها المشروع فعليًا، سواء كانت ألواحًا مسطحة أو زوايا أو قطاعات قناة تُستخدم في صناعات مثل السيارات والبناء. ولأنها الخطوة الأولى في الكثير من الإنتاج اللاحق، فإن إنجاز هذه الخطوة بشكل صحيح، في الوقت المحدد وبالأبعاد المطلوبة، أمر مهم لكل ما يليها.",
+        "methods": "تغطي مكابسنا مجموعة من الأوزان وعروض العمل، يجمع كل منها بين قالب علوي وقالب سفلي ومحاور هيدروليكية ووحدة تحكم CNC، حيث يضغط الضغط الهيدروليكي الصاج بين قوالب متطابقة على شكل V لتشكيل كل ثنية وفق الزاوية المبرمجة. يتم ضبط نوع المادة والسماكة والضغط المطلوب عبر نظام CNC قبل بدء التشكيل، مما يضمن ثنيًا سريعًا ودقيقًا وقابلًا للتكرار. تجمع نورا للصلب والستانلس بين القص والثني وخدمات القص بالليزر واللحام لدينا في سير عمل إنتاجي متواصل، مع دعم متاح على مدار الساعة للأسئلة أو الطلبات الجديدة.",
+    },
+    {
+        "slug": "cnc-machining", "title": "التشغيل الآلي CNC", "img": "cnc",
+        "intro": "يشمل التشغيل الآلي بتقنية CNC عمليات الخراطة والتفريز والحفر والتجليخ التي تُزيل المادة من القطعة على شكل طبقات رقيقة لإعطائها الشكل والحجم والنهاية السطحية النهائية الدقيقة. كانت هذه التقنية محورية في التصنيع الصناعي منذ القرن العشرين وتبقى ضرورية أينما كانت الدقة البُعدية مهمة.",
+        "what_is": "في التشغيل الآلي بتقنية CNC (التحكم الرقمي بالحاسوب)، تقوم أدوات القص الموجهة ببرنامج رقمي بإزالة المادة من القطعة، سواء بالخراطة أو التفريز أو الحفر، حتى تصل إلى الأبعاد الدقيقة للتصميم. مقارنة بالطرق اليدوية، تنجز آلات CNC هذا العمل بشكل أسرع وأكثر أمانًا، وهذا أيضًا سبب استخدامها على نطاق واسع في قطاعي الأثاث والتصنيع الصناعي.",
+        "methods": "يناسب التشغيل الآلي بتقنية CNC مجموعة واسعة من المواد والتشطيبات، محافظًا على تفاوتات بُعدية دقيقة ومنتجًا أسطحًا نظيفة ومكتملة، مع إمكانية إعادة تشكيل القطع بسهولة إلى حجم أو شكل مختلف عند الحاجة. المقايضة الوحيدة هي فقدان كمية صغيرة من المادة كنُفايات أثناء التشكيل، سواء كانت المادة معدنًا أو بلاستيكًا أو خشبًا، وهو جزء طبيعي ومتوقع من العملية. تقدم نورا للصلب والستانلس مجموعة كاملة من معدات الخراطة والتفريز والتجليخ بتقنية CNC مدعومة بشروط ضمان وفريق ذو خبرة لتقديم المشورة بشأن الآلة المناسبة لعملك.",
+    },
+    {
+        "slug": "welded-fabrication", "title": "التصنيع باللحام", "img": "welded_fab",
+        "intro": "يجمع التصنيع باللحام بين المكونات الفردية، من الستانلس ستيل والحديد والألمنيوم ومعادن أخرى، في تجميع واحد متين إنشائيًا. إنها من أكثر طرق التصنيع اعتمادًا على نطاق واسع في العالم، وهي بالغة الأهمية في مجموعة واسعة من الصناعات.",
+        "what_is": "يُختار التصنيع باللحام لأنه يحقق نتائج ذات معدل خطأ منخفض وكفاءة عالية، بتكلفة أقل من العديد من طرق الربط البديلة، وقد جعلته التطورات في الأتمتة قابلًا للتكيف مع كل صناعة ومزيج مواد تقريبًا. ومع ذلك، لا تزال طريقة اللحام الصحيحة بحاجة إلى أن تُطابق المادة التي يتم ربطها، ولهذا يخطط فريقنا ذو الخبرة كل مشروع حول التقنية والمعدات الأنسب له، مما يحافظ على كفاءة الإنتاج وفعاليته من حيث التكلفة.",
+        "methods": "بما أن التصنيع باللحام يكافئ التخطيط الدقيق، فإننا نحلل كل مشروع بالتفصيل قبل بدء العمل، من اللوجستيات وحتى تسلسل اللحام، للحفاظ على معدلات هدر منخفضة والالتزام بجدول التسليم المتفق عليه للتجميع النهائي. تدير نورا للصلب والستانلس هذه العملية من البداية إلى النهاية، من الكتائف المخصصة الصغيرة إلى الأعمال الإنشائية للمباني والجسور وأنظمة الأنابيب، مدعومة بفريق ذو خبرة ودعم فني كلما احتاج مشروعك ذلك.",
+    },
+    {
+        "slug": "plasma-cutting", "title": "القص بالبلازما", "img": "plasma",
+        "intro": "يستخدم القص بالبلازما نفاثًا عالي السرعة من الغاز المؤيَّن، يُوجَّه عبر فوهة ضيقة، لتسخين وقص المعادن الموصلة للكهرباء. إنها من أسرع الطرق المتاحة لقص الصلب والمواد الإنشائية الأخرى، وتؤدي أداءً جيدًا بشكل خاص على الصلب غير المخلوط والصاج ذي السماكة الأكبر.",
+        "what_is": "في القص بالبلازما، يُدفع غاز مؤيَّن بسرعة ودرجة حرارة عاليتين عبر فوهة ضيقة، حاملًا تيارًا كهربائيًا يسخّن ويصهر المعدن عند التلامس، بينما يدفع نفاث الغاز عالي السرعة المعدن المنصهر بعيدًا عن منطقة القص. توصي بها الجهات المتخصصة في المجال لقص الصلب والمعادن غير الحديدية حتى سماكة 25 ملم تقريبًا، بما في ذلك حالات خاصة، مثل المعادن على شكل شباك، لا يستطيع القص بالأوكسي-أسيتيلين التعامل معها جيدًا.",
+        "methods": "مقارنة بطرق القص الميكانيكية البحتة، يوفر القص بالبلازما نتائج أسرع بشكل ملحوظ ويتعامل بسهولة مع القصات غير المستوية أو غير المنتظمة. يعمل على أي معدن موصل للكهرباء، وتتيح تقنيته أيضًا حفرًا دقيقًا للأخاديد ضمن نفس مسار القص. من خلال ترتيب عدة قطع على نفس اللوح، يتم تقليل الهدر إلى الحد الأدنى، وتنتج العملية نفسها حافة شبه خالية من الزوائد المعدنية مع تشوه حراري بسيط، حتى عبر مواد بسماكة تبلغ حوالي 1.5 ضعف سماكة الصاج. تستخدم نورا للصلب والستانلس القص بالبلازما لتحقيق نتائج سريعة ودقيقة بأسعار تنافسية، بما في ذلك حفر الشعارات أو الرسومات على السطح عند الطلب.",
+    },
+    {
+        "slug": "laser-cutting", "title": "القص بالليزر", "img": "laser",
+        "intro": "يستخدم القص بالليزر شعاع ضوء عالي القوة ومركّز بدقة لقص الصاج المعدني، منتجًا حوافًا نظيفة وناعمة مع أقل قدر من المعالجة اللاحقة. إنها من أكثر طرق القص استخدامًا في التصنيع الصناعي، وتحظى بالتقدير لجودة القص التي تنتجها.",
+        "what_is": "في القص بالليزر، يوجّه نظام آلي شعاع ضوء عالي القوة ومركّزًا عبر صاج الستانلس ستيل والحديد والألمنيوم ومعادن أخرى، ليقصها إلى الشكل المطلوب. حتى الأشكال الهندسية المعقدة التي تستغرق عادة أيامًا يمكن إنجازها في أقل من 24 ساعة، لأن الشعاع يتبع مسار القص مباشرة من ملف التصميم الرقمي.",
+        "methods": "لأن العملية موجهة بالحاسوب من التصميم الأصلي، يقلل القص بالليزر من هدر المواد وتكاليف الأدوات مقارنة بالقص التقليدي، مما يقلل من القوالب والأدوات التي تتطلبها الطرق القديمة. تبقى دقيقة جدًا حتى مع الإنتاج العالي، مع تقليل الخطأ البشري إلى الحد الأدنى رغم كثافة العملية. تستخدم نورا للصلب والستانلس القص بالليزر على صاج الستانلس ستيل والحديد والألمنيوم ومعادن أخرى، لتقديم نتائج دقيقة وبأسعار تنافسية لكل عمل، من القطعة المخصصة الواحدة إلى دفعة الإنتاج الكاملة.",
+    },
+]
+
+services_body_ar = f"""
+<section class="banner" style="background-image:url('data:image/jpeg;base64,{IMG_B64['plasma']}'); background-size:cover; background-position:center;"><div class="banner-content reveal"><h2 class="serif">الخدمات</h2></div></section>
+<section class="section" style="padding-top:70px;">
+  <div class="wrap">
+    <span class="section-eyebrow">قدراتنا</span>
+    <h2 class="section-title">ست خدمات، منشأة واحدة، التوريد والقص والثني واللحام والتشغيل الآلي مجتمعة.</h2>
+    <p style="font-family:'Poppins'; font-size:15px; color:var(--gray); max-width:640px; line-height:1.8; margin-top:18px; margin-bottom:56px;">منذ تأسيسنا، تتميز نورا للصلب والستانلس بتنوع منتجاتها ومتانة وجودة تصنيعها ومستوى الخدمة المقدمة، مما أكسبها مكانة رائدة بين شركات القطاع. بفضل قدرة إنتاجية كبيرة وفريق ذو خبرة ومجهّز جيدًا، نواصل الاستثمار في بنيتنا التحتية لنقدم لكم التوريد والإنتاج المخصص والمعالجة، كل ذلك في مكان واحد.</p>
+  </div>
+  <div class="service-grid reveal-stagger">
+    <div class="service-card">
+      <div class="thumb" style="background-image:url('data:image/jpeg;base64,{IMG_B64['bars']}')"></div>
+      <div class="body">
+        <span class="idx">01</span>
+        <h3><a href="iron-steel-supply.html" style="color:inherit;">توريد الحديد والصلب</a></h3>
+        <p>صاج وبروفايل وأنابيب ومنتجات درفلة وشباك صلب تُورَّد مباشرة، مع خدمات القص والثني عند الطلب.</p>
+        <a class="more" href="iron-steel-supply.html">اعرف المزيد</a>
+      </div>
+    </div>
+    <div class="service-card">
+      <div class="thumb" style="background-image:url('data:image/jpeg;base64,{IMG_B64['cutbend']}')"></div>
+      <div class="body">
+        <span class="idx">02</span>
+        <h3><a href="cutting-bending.html" style="color:inherit;">القص والثني</a></h3>
+        <p>ثني بمكابس CNC لبروفايل وزوايا وصاج مُشكّل، بمختلف السماكات والأوزان.</p>
+        <a class="more" href="cutting-bending.html">اعرف المزيد</a>
+      </div>
+    </div>
+    <div class="service-card">
+      <div class="thumb" style="background-image:url('data:image/jpeg;base64,{IMG_B64['cnc']}')"></div>
+      <div class="body">
+        <span class="idx">03</span>
+        <h3><a href="cnc-machining.html" style="color:inherit;">التشغيل الآلي CNC</a></h3>
+        <p>خراطة وتفريز وحفر وتجليخ بتقنية CNC لإحضار القطع إلى أبعادها ونهايتها السطحية الدقيقة.</p>
+        <a class="more" href="cnc-machining.html">اعرف المزيد</a>
+      </div>
+    </div>
+    <div class="service-card">
+      <div class="thumb" style="background-image:url('data:image/jpeg;base64,{IMG_B64['welded_fab']}')"></div>
+      <div class="body">
+        <span class="idx">04</span>
+        <h3><a href="welded-fabrication.html" style="color:inherit;">التصنيع باللحام</a></h3>
+        <p>لحام إنشائي ومخصص على الستانلس ستيل والحديد والألمنيوم والصلب، من القطعة الواحدة إلى التجميع الكامل.</p>
+        <a class="more" href="welded-fabrication.html">اعرف المزيد</a>
+      </div>
+    </div>
+    <div class="service-card">
+      <div class="thumb" style="background-image:url('data:image/jpeg;base64,{IMG_B64['plasma']}')"></div>
+      <div class="body">
+        <span class="idx">05</span>
+        <h3><a href="plasma-cutting.html" style="color:inherit;">القص بالبلازما</a></h3>
+        <p>قص بالبلازما سريع وبهدر منخفض للصلب والمعادن غير الحديدية حتى 25 ملم.</p>
+        <a class="more" href="plasma-cutting.html">اعرف المزيد</a>
+      </div>
+    </div>
+    <div class="service-card">
+      <div class="thumb" style="background-image:url('data:image/jpeg;base64,{IMG_B64['laser']}')"></div>
+      <div class="body">
+        <span class="idx">06</span>
+        <h3><a href="laser-cutting.html" style="color:inherit;">القص بالليزر</a></h3>
+        <p>قص بالليزر نظيف وعالي الدقة على الستانلس ستيل والحديد والألمنيوم وصاج آخر، أشكال معقدة تُنجز بسرعة.</p>
+        <a class="more" href="laser-cutting.html">اعرف المزيد</a>
+      </div>
+    </div>
+  </div>
+</section>
+"""
+write_ar("services", "الخدمات", "services", services_body_ar)
+
+for svc in service_details_ar:
+    body = service_detail_body(svc, service_details_ar, lang="ar")
+    write_ar(svc["slug"], svc["title"], "services", body, svc=svc)
+
+# ---------------- AR: PRODUCTS ----------------
+demir_body_ar = product_gallery_body("منتجات الحديد والصلب", "منتجات الحديد والصلب لدينا، حسب الفئة.", demir_items, "profile", lang="ar")
+write_ar("demir-celik-urunler", "منتجات الحديد والصلب", "demir", demir_body_ar)
+
+paslanmaz_body_ar = product_gallery_body("منتجات الستانلس ستيل", "منتجات الستانلس ستيل لدينا، حسب الفئة.", paslanmaz_items, "sheet", lang="ar")
+write_ar("paslanmaz-urunler", "منتجات الستانلس ستيل", "paslanmaz", paslanmaz_body_ar)
+
+for key, en_name, native in demir_items + paslanmaz_items:
+    is_demir = (key, en_name, native) in demir_items
+    cat_href = "demir-celik-urunler.html" if is_demir else "paslanmaz-urunler.html"
+    cat_label = NAV_LABELS["ar"]["demir"] if is_demir else NAV_LABELS["ar"]["paslanmaz"]
+    ar_name = AR_PRODUCT_NAMES[key]
+    body = product_detail_body(key, ar_name, native, cat_label, cat_href, "profile" if is_demir else "sheet", lang="ar")
+    desc = PRODUCT_INFO[key]["ar"]["what_is"][:160]
+    write_ar(product_slug(key), ar_name, "demir" if is_demir else "paslanmaz", body, description=desc)
+
+# ---------------- AR: ABOUT ----------------
+about_body_ar = f"""
+<section class="banner" style="background-image:url('data:image/jpeg;base64,{IMG_B64['cutbend']}'); background-size:cover; background-position:center;"><div class="banner-content reveal"><h2 class="serif">من نحن</h2></div></section>
+<section class="section" style="padding-top:70px;">
+  <div class="wrap about-grid reveal">
+    <div>
+      <span class="section-eyebrow">من نحن</span>
+      <h2 class="section-title" style="margin-bottom:20px;">شريكك في تصنيع الستانلس ستيل والصلب.</h2>
+      <p>بفضل سنوات من الخبرة في قطاع الحديد والصلب والستانلس ستيل، تخدم نورا للصلب والستانلس عملاءها من خلال الخبرة وجودة الخدمة والمنتجات ذات الأسعار التنافسية. اكتسبت نورا مكانتها بين الشركات الرائدة في القطاع، وهي مكانة نفخر بها.</p>
+      <p>بفلسفة تركز على العميل، تحافظ شركتنا على التزامها بالجودة من خلال البحث والتطوير المستمرين والالتزام بمعايير الجودة العالمية، مما يرسخ مكانتها كاسم مرموق في القطاع.</p>
+      <p>تُدير نورا للصلب والستانلس كل جانب من جوانب عملياتها بفريق ذي خبرة وكفاءة، يعمل بكامل طاقته قبل وبعد كل عملية بيع لضمان ألا يبقى عملاؤنا الكرام دون دعم أبدًا.</p>
+      <div class="about-stats">
+        <div class="stat"><b>6</b><span>عمليات أساسية</span></div>
+        <div class="stat"><b>TR</b><span>مقرها إسطنبول</span></div>
+        <div class="stat"><b>B2B</b><span>توريد مباشر</span></div>
+      </div>
+    </div>
+    <div class="about-visual" style="background-image:url('data:image/jpeg;base64,{IMG_B64['welded_fab']}'); background-size:cover; background-position:center;"></div>
+  </div>
+</section>
+"""
+write_ar("about", "من نحن", "about", about_body_ar)
+
+# ---------------- AR: CERTIFICATES ----------------
+certificates_body_ar = f"""
+<section class="banner" style="background-image:url('data:image/jpeg;base64,{IMG_B64['cnc']}'); background-size:cover; background-position:center;"><div class="banner-content reveal"><h2 class="serif">الشهادات</h2></div></section>
+<section class="partners" style="padding-top:70px;">
+  <div class="wrap">
+    <span class="section-eyebrow">الشهادات والمراجع</span>
+    <h2 class="section-title" style="margin-bottom:40px;">موثوق بها من قبل شركاء القطاع.</h2>
+  </div>
+  <div class="partner-grid reveal-stagger">
+    <div class="partner-box">[ شهادة 1 ]</div>
+    <div class="partner-box">[ شهادة 2 ]</div>
+    <div class="partner-box">[ مرجع 1 ]</div>
+    <div class="partner-box">[ مرجع 2 ]</div>
+  </div>
+</section>
+"""
+write_ar("certificates", "الشهادات", "certificates", certificates_body_ar)
+
+# ---------------- AR: BLOG ----------------
+blog_posts_ar = [
+    {
+        "slug": "iron-steel-products-explained", "title": "منتجات الحديد والصلب", "img": "profile",
+        "category": "منتجات",
+        "excerpt": "الصلب سبيكة من الحديد والكربون، وهذه النسبة تحدد كل شيء من التصنيف إلى الصلابة. نظرة على مجموعتنا واستخداماتها.",
+        "paragraphs": [
+            ("", "الصلب سبيكة تتكون من مزيج من الحديد والكربون، تتراوح نسبة الكربون فيها عادة بين 0.2% و2.1%. تلعب نسبة الكربون دورًا رئيسيًا في تصنيف الصلب. يتحول الحديد المنتج في الأفران العالية إلى صلب إما من خلال سلسلة من عمليات التكرير أو بإعادة صهر الخردة في أفران القوس الكهربائي. الكربون هو العنصر الذي يصلّب الحديد، وكلما ارتفعت نسبة الكربون في المزيج الناتج، زادت صلابة الصلب. في نورا للصلب والستانلس، نزوّد عملاءنا بأجود منتجات الحديد والصلب."),
+            ("ما هي منتجات الحديد والصلب؟", "تأتي منتجات الحديد والصلب بأشكال متعددة. من بين ما نورده بروفايل NPU، الزوايا، الصاج الأسود، أعمدة نقل الحركة، الصاج المدرفل على البارد (DKP)، بروفايل K، حديد التسليح، بروفايل K المطلي، الحديد المسطح، بروفايل NPI، الحديد المربع، الحديد المضلع، الصاج المعشّق، الصاج المجلفن، الصاج المجلفن شبه المنحرف، البروفايل المربع المجلفن، الصاج الموسّع، وأنابيب المياه المجلفنة أو السوداء، يكفي التواصل مع فريقنا لأي من هذه المنتجات. طاقمنا المتخصص وآلاتنا الحديثة هي ما يميزنا في منتجات الحديد والصلب."),
+            ("الصاج", "الصاج من أهم الاحتياجات الأساسية في التصنيع الصناعي، يُستخدم بأشكال مختلفة حسب التطبيقات. يجب أن يكون مورّد الصاج قادرًا على تقديم قص مصمم حسب مواصفاتك، وهذا بالضبط ما نقدمه. يقدم الصاج أيضًا عدة مزايا عملية، فالمادة التي تدعم الإنتاج المتسلسل يمكن أن تقلل من تكاليف الإنتاج الإجمالية لديك. تختلف أبعاد الصاج وأسعاره حسب المواصفات التي تختارها، ويُحدَّد السعر وفق الخصائص الفنية للمنتج. دون حجم معين، يمكن إنتاج الصاج دون الحاجة إلى قالب على الإطلاق، مما يبقي تشوه المادة قريبًا من الصفر."),
+            ("البروفايل", "بما أن المعادن المختلفة تأتي بسماكات ودرجات مختلفة، تختلف الآلات المستخدمة لقصها تبعًا لذلك، فلا توجد طريقة واحدة تناسب كل المواد. تُنظّف الأقسام المقطوعة قبل أي معالجة إضافية، وهي خطوة تضمن عدم بقاء أي بقايا على الصلب، وهو أمر أساسي لتحقيق قصات المحيط الدقيقة التي يتطلبها العمل. نقوم بجميع الخطوات اللازمة للحفاظ على مدة قصيرة لقص البروفايل، ونسلّم المنتج النهائي جاهزًا للتركيب أو المعالجة الإضافية. تُعد قواطع الأكسجين والبلازما والليزر الآلات التي نستخدمها لقص البروفايل."),
+            ("أين تُستخدم منتجات الحديد والصلب؟", "تُختار منتجات الحديد والصلب في مجموعة واسعة من الصناعات، في الديكور، للتجهيزات الزخرفية، في السيارات، لهياكل أسفل المركبات، في البناء، في الأثاث، للأرجل والمساند، في النسيج، للشماعات والمانيكانات وأنوال النسج، في الإلكترونيات، لهياكل أجهزة الحاسوب والمعدات، وفي بناء السفن والصناعات الثقيلة. نزوّد منتجات الحديد والصلب لجميع هذه التطبيقات. منذ يوم تأسيسها، بنت شركتنا اسمًا للاحترافية والجودة، ونواصل إنتاج أفضل المنتجات الممكنة لعملائنا."),
+        ],
+    },
+    {
+        "slug": "stainless-steel-products-explained", "title": "منتجات الستانلس ستيل", "img": "sheet",
+        "category": "منتجات",
+        "excerpt": "يُصنع الستانلس ستيل بإضافة الكروم إلى الصلب بنسبة محددة. نظرة على مزاياه وتسعيره وتخزينه.",
+        "paragraphs": [
+            ("", "الستانلس ستيل سبيكة تُصنع بإضافة نسبة محددة من الكروم إلى الصلب، وهو من أكثر المواد استخدامًا في التصنيع اليوم. بسبب المزايا العديدة التي يوفرها في الإنتاج، يستمر الطلب على الستانلس ستيل في النمو عامًا بعد عام. في نورا للصلب والستانلس، حافظنا لسنوات على توفر منتجات الستانلس ستيل التي يحتاجها قطاعنا في المخزون، لتزويدكم دون تعطيل إنتاجكم. فريقنا الفني متاح لتقديم معلومات المنتج والدعم الفني على أي طلب تقومون به."),
+            ("أين يقدم الستانلس ستيل ميزة؟", "<em>[ملاحظة لأندي: كما في النسخة التركية، هذا القسم يقابل الجزء المفقود في لقطات الشاشة التي أرسلها العميل. الفقرة أدناه نص ربط مؤقت لهذه الفجوة، يجب استبدالها بمجرد استلام الجزء الناقص.]</em> يوفر الستانلس ستيل للإنتاج مزايا مميزة، خاصة مقاومته للتآكل واتساقه عبر دورات الإنتاج المتكررة، مما يتيح استمرار التصنيع دون فقدان الجودة.<br><br>ينقسم الستانلس ستيل نفسه إلى أنواع ودرجات مختلفة. بسبب هذه الاختلافات القائمة في الستانلس ستيل، فإن توريد المواد من مورّد موثوق يقلل إلى الحد الأدنى من المشاكل التي قد تسببها في الإنتاج. وفقًا لمعايير الجودة، الستانلس ستيل منتج يزيد من مقاومة التآكل. إلى جانب هذه الاختلافات، يمكن أن تتفاوت أيضًا قابلية اللحام وقابلية التشغيل والقدرة على المعالجة الحرارية والدرجة الميكانيكية. على سبيل المثال، تحتوي بعض مجموعات الستانلس ستيل على كربون أقل مما يجعلها أكثر مرونة، وهو ما قد يخلق مشاكل أثناء التشغيل. نقدم إرشادات مفصلة حول منتج الستانلس ستيل المناسب لاستخدامكم المقصود قبل بدء أي عمل.<br><br>رغم اسمه، الستانلس ستيل ليس مقاومًا للصدأ في جميع الظروف، وهذا يعتمد على استخدام سبيكة الستانلس ستيل الصحيحة في عملية الإنتاج الصحيحة. يحافظ الستانلس ستيل على خصائصه المقاومة للتلطخ عند استخدامه في الظروف المناسبة له، ويفقدها في غير ذلك. لكل هذه الأسباب، من المهم من أين تحصلون على الستانلس ستيل الخاص بكم. فريقنا المطّلع والمدرّب جيدًا في نورا للصلب والستانلس هنا لتقديم خدمة عالية الجودة لكم على كل منتج."),
+            ("أسعار الستانلس ستيل", "يمكن أن تختلف أسعار الستانلس ستيل حسب ظروف السوق. بينما يُعد السعر معيارًا مهمًا عند شراء الستانلس ستيل، فإن الأهم هو إيجاد الدرجة المناسبة لإنتاجكم. اختيار المنتج الصحيح يضمن أن القطع المصنوعة منه ستدوم طويلاً دون مشاكل. لهذا، عند شراء الستانلس ستيل، يجب الانتباه إلى مقاومته للتآكل وقوته الميكانيكية ودرجات الحرارة التي ينطوي عليها إنتاجكم وخصائصه الفيزيائية والسطحية. نقدم لكم الدعم الفني اللازم في جميع هذه النقاط كجزء من كل عملية بيع."),
+            ("كيف يجب تخزين الستانلس ستيل؟", "يؤثر مكان تخزين الستانلس ستيل على ما إذا كان المنتج سيبقى خاليًا من التشوه. يجب أن تُبقي مناطق التخزين المنتج بعيدًا عن التلامس المباشر مع التربة، وبعيدًا عن برادة الصلب الكربوني المخزنة في نفس المساحة. إذا لم تُراعَ هذه الاحتياطات، يمكن أن تتأثر خصائص الستانلس ستيل وقد تظهر علامات صدأ على المنتج."),
+        ],
+    },
+]
+
+for post in blog_posts_ar:
+    body = blog_detail_body(post, blog_posts_ar, lang="ar")
+    write_ar(post["slug"], post["title"], "blog", body)
+
+blog_cards_ar = "\n".join([f"""
+    <div class="blog-card">
+      <div class="thumb" style="background-image:url('data:image/jpeg;base64,{IMG_B64[p['img']]}'); background-size:cover; background-position:center;"></div>
+      <div class="body">
+        <span class="date">{p['category']}</span>
+        <h3>{p['title']}</h3>
+        <p>{p['excerpt']}</p>
+        <a class="more" href="{p['slug']}.html">اقرأ المزيد</a>
+      </div>
+    </div>""" for p in blog_posts_ar])
+
+blog_body_ar = f"""
+<section class="banner" style="background-image:url('data:image/jpeg;base64,{IMG_B64['bars']}'); background-size:cover; background-position:center;"><div class="banner-content reveal"><h2 class="serif">المدونة</h2></div></section>
+<section class="section" style="padding-top:70px;">
+  <div class="wrap">
+    <span class="section-eyebrow">أخبار وتحديثات</span>
+    <h2 class="section-title">آخر مستجدات نورا.</h2>
+  </div>
+  <div class="wrap">
+  <div class="blog-grid reveal-stagger">{blog_cards_ar}
+  </div>
+  </div>
+</section>
+"""
+write_ar("blog", "المدونة", "blog", blog_body_ar)
+
+# ---------------- AR: CONTACT ----------------
+contact_body_ar = f"""
+<section class="banner" style="background-image:url('data:image/jpeg;base64,{IMG_B64['tubes']}'); background-size:cover; background-position:center;"><div class="banner-content reveal"><h2 class="serif">اتصل بنا</h2></div></section>
+<section class="section" style="padding-top:70px;">
+  <div class="wrap contact-grid reveal">
+    <div>
+      <span class="section-eyebrow">تواصل معنا</span>
+      <h2 class="section-title">اطلب عرض سعر.</h2>
+      <ul class="contact-list">
+        <li><b>الهاتف</b> 0216 621 55 41</li>
+        <li><b>البريد الإلكتروني</b> info@norapaslanmazcelik.com</li>
+        <li><b>العنوان</b> OSB Des Sanayi Sitesi 115 Sok. No:30, Yukari Dudullu, Umraniye / Istanbul</li>
+      </ul>
+    </div>
+    <div class="form-box">
+      <form class="ajax-form" data-success="شكرًا لكم، تم إرسال طلبكم. سنعاود التواصل معكم قريبًا." data-error="حدث خطأ ما. يرجى المحاولة مرة أخرى أو الاتصال بنا مباشرة.">
+        <input type="hidden" name="access_key" value="{WEB3FORMS_KEY}">
+        <input type="hidden" name="subject" value="طلب عرض سعر جديد - موقع نورا">
+        <input type="checkbox" name="botcheck" style="display:none">
+        <div class="form-row"><label>الاسم الكامل</label><input type="text" name="name" placeholder="اسمك" required></div>
+        <div class="form-row"><label>البريد الإلكتروني</label><input type="email" name="email" placeholder="you@company.com" required></div>
+        <div class="form-row"><label>الشركة</label><input type="text" name="company" placeholder="اسم الشركة"></div>
+        <div class="form-row"><label>الرسالة</label><textarea name="message" placeholder="الكمية والأبعاد وأي تفاصيل فنية..." required></textarea></div>
+        <button type="submit" class="submit-btn">إرسال الطلب</button>
+        <p class="form-status" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+</section>
+<section style="padding:0 60px 90px;">
+  <div class="map-frame">
+    <iframe
+      src="https://www.google.com/maps?q=DES+Sanayi+Sitesi,+Nato+Yolu+Cd,+Yukar%C4%B1+Dudullu,+%C3%9Cmraniye%2F%C4%B0stanbul&output=embed"
+      width="100%" height="420" style="border:0;" allowfullscreen="" loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade"></iframe>
+  </div>
+</section>
+"""
+write_ar("contact", "اتصل بنا", "contact", contact_body_ar)
 
 print("done")
