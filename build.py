@@ -383,7 +383,7 @@ STYLE = """
     display:grid; grid-template-columns:repeat(4, 1fr); gap:1px; background:rgba(255,255,255,0.08);
   }
   .product-cat-card{
-    background:var(--ink2); overflow:hidden; transition:background .3s;
+    display:block; background:var(--ink2); overflow:hidden; transition:background .3s;
   }
   .product-cat-card:hover{background:var(--ink3);}
   .product-cat-card .thumb{
@@ -483,6 +483,13 @@ STYLE = """
     transition:background .35s cubic-bezier(.4,0,.2,1), transform .35s cubic-bezier(.4,0,.2,1);
   }
   .submit-btn:hover{background:var(--coral); transform:translateX(4px);}
+  .submit-btn:disabled{opacity:0.5; pointer-events:none;}
+  .form-status{
+    font-family:'Poppins'; font-size:13px; margin-top:14px; min-height:18px;
+    opacity:0; transform:translateY(-4px); transition:opacity .3s ease, transform .3s ease;
+  }
+  .form-status.ok{opacity:1; transform:translateY(0); color:#7bd88f;}
+  .form-status.err{opacity:1; transform:translateY(0); color:#e8746b;}
   .map-frame{
     border:1px solid rgba(255,255,255,0.1); filter:grayscale(0.3) invert(0.92) contrast(0.9);
     max-width:1300px; margin:0 auto;
@@ -699,6 +706,36 @@ SHARED_SCRIPT_BASE = """
       document.body.classList.remove('page-leaving');
     });
   })();
+
+  // Contact form -> Web3Forms, submitted via fetch so the page never
+  // reloads; shows an inline status message instead.
+  document.querySelectorAll('.ajax-form').forEach(function(form){
+    const status = form.querySelector('.form-status');
+    const btn = form.querySelector('button[type="submit"]');
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      if (btn){ btn.disabled = true; }
+      if (status){ status.textContent = ''; status.className = 'form-status'; }
+      fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        body: new FormData(form)
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success){
+          if (status){ status.textContent = form.dataset.success; status.classList.add('ok'); }
+          form.reset();
+        } else {
+          if (status){ status.textContent = form.dataset.error; status.classList.add('err'); }
+        }
+      })
+      .catch(() => {
+        if (status){ status.textContent = form.dataset.error; status.classList.add('err'); }
+      })
+      .finally(() => { if (btn){ btn.disabled = false; } });
+    });
+  });
 
   // Custom round cursor
   const cursor = document.getElementById('cursor');
@@ -1020,19 +1057,128 @@ HERO_SLIDES_EN = [
 ]
 HERO_SCRIPT = hero_script(HERO_SLIDES_EN)
 
-def page(title, current, body, extra_script="", lang="en", slug="index"):
+SITE_URL = "https://norapaslanmazcelik.com"
+WEB3FORMS_KEY = "PASTE_YOUR_WEB3FORMS_ACCESS_KEY_HERE"
+NAP = {
+    "name": "Nora Paslanmaz ve Demir Celik",
+    "phone": "+90 216 621 55 41",
+    "email": "info@norapaslanmazcelik.com",
+    "street": "OSB Des Sanayi Sitesi 115 Sok. No:30, Yukari Dudullu",
+    "city": "Umraniye / Istanbul",
+    "country": "TR",
+}
+
+META_DESC = {
+    "en": {
+        "index": "Nora Paslanmaz ve Celik is an Istanbul-based manufacturer and supplier of iron, steel, and stainless steel products, offering supply, cutting, bending, welding, and CNC machining.",
+        "services": "Six core services from Nora Paslanmaz ve Celik: iron and steel supply, cutting and bending, CNC machining, welded fabrication, plasma cutting, and laser cutting.",
+        "iron-steel-supply": "Direct supply of iron and steel sheet, profile, pipe, rolled stock, and steel mesh from Nora Paslanmaz ve Celik, Istanbul, with cutting and bending on request.",
+        "cutting-bending": "CNC press-brake cutting and bending of sheet metal in a range of thicknesses and tonnages, from Nora Paslanmaz ve Celik in Istanbul.",
+        "cnc-machining": "CNC turning, milling, drilling, and grinding services from Nora Paslanmaz ve Celik, bringing parts to exact dimension and surface finish.",
+        "welded-fabrication": "Structural and custom welded fabrication in stainless steel, iron, and aluminum, from single parts to full assemblies, by Nora Paslanmaz ve Celik.",
+        "plasma-cutting": "High-speed plasma cutting for steel and non-ferrous metal up to 25mm, fast and low-waste, from Nora Paslanmaz ve Celik in Istanbul.",
+        "laser-cutting": "Precision laser cutting on stainless steel, iron, and aluminum sheet, clean edges and fast turnaround, from Nora Paslanmaz ve Celik.",
+        "demir-celik-urunler": "Browse Nora's iron and steel product categories: sheet, profile, pipe, rolled stock, and steel mesh, supplied direct from Istanbul.",
+        "paslanmaz-urunler": "Browse Nora's stainless steel product categories: sheet, profile, pipe, round bar, and fittings, supplied direct from Istanbul.",
+        "about": "Nora Paslanmaz ve Celik is an experienced manufacturing partner for iron, steel, and stainless steel products, based in Istanbul, Turkey.",
+        "certificates": "Certificates and industry references for Nora Paslanmaz ve Celik, an Istanbul-based iron, steel, and stainless steel manufacturer.",
+        "blog": "News and technical articles from Nora Paslanmaz ve Celik on iron, steel, and stainless steel products.",
+        "contact": "Get in touch with Nora Paslanmaz ve Celik for a quote on iron, steel, and stainless steel products and services in Istanbul.",
+        "iron-steel-products-explained": "What are iron and steel products? A guide to sheet, profile, pipe, and rolled stock from Nora Paslanmaz ve Celik.",
+        "stainless-steel-products-explained": "What is stainless steel and where does it offer an advantage? A guide from Nora Paslanmaz ve Celik.",
+    },
+    "tr": {
+        "index": "Nora Paslanmaz ve Celik, Istanbul merkezli demir, celik ve paslanmaz celik uretici ve tedarikcisidir. Tedarik, kesim, bukum, kaynak ve talasli imalat hizmetleri sunar.",
+        "services": "Nora Paslanmaz ve Celik'ten alti temel hizmet: demir celik urun, kesim bukum, talasli imalat, kaynakli imalat, plazma kesim ve lazer kesim.",
+        "iron-steel-supply": "Nora Paslanmaz ve Celik'ten dogrudan demir celik urun tedariki, sac, profil, boru, hadde urunleri ve celik hasir, talep uzerine kesim ve bukum ile.",
+        "cutting-bending": "Farkli kalinlik ve tonajlarda CNC pres bukum ile sac kesim ve bukum hizmeti, Istanbul merkezli Nora Paslanmaz ve Celik'ten.",
+        "cnc-machining": "Nora Paslanmaz ve Celik'ten CNC tornalama, frezeleme, delme ve taslama hizmetleri, parcalari tam olcusune getiriyoruz.",
+        "welded-fabrication": "Paslanmaz, demir ve aluminyum uzerinde yapisal ve ozel kaynakli imalat, Nora Paslanmaz ve Celik guvencesiyle.",
+        "plasma-cutting": "25 mm'ye kadar celik ve demir disi malzemelerde hizli, dusuk fireli plazma kesim, Istanbul merkezli Nora Paslanmaz ve Celik'ten.",
+        "laser-cutting": "Paslanmaz, demir ve aluminyum sac uzerinde hassas lazer kesim, temiz kenar ve hizli teslimat, Nora Paslanmaz ve Celik'ten.",
+        "demir-celik-urunler": "Nora'nin demir celik urun kategorilerini inceleyin: sac, profil, boru, hadde urunleri ve celik hasir, Istanbul'dan dogrudan tedarik.",
+        "paslanmaz-urunler": "Nora'nin paslanmaz celik urun kategorilerini inceleyin: sac, profil, boru, yuvarlak cubuk ve fittings, Istanbul'dan dogrudan tedarik.",
+        "about": "Nora Paslanmaz ve Celik, Istanbul merkezli, demir, celik ve paslanmaz celik urunlerinde deneyimli bir uretim ortagidir.",
+        "certificates": "Nora Paslanmaz ve Celik'in sertifikalari ve sektor referanslari, Istanbul merkezli demir celik ve paslanmaz celik ureticisi.",
+        "blog": "Nora Paslanmaz ve Celik'ten demir, celik ve paslanmaz celik urunleri hakkinda haberler ve teknik yazilar.",
+        "contact": "Istanbul'daki demir, celik ve paslanmaz celik urun ve hizmetleri icin Nora Paslanmaz ve Celik ile iletisime gecin.",
+        "iron-steel-products-explained": "Demir celik urunleri nedir? Nora Paslanmaz ve Celik'ten sac, profil, boru ve hadde urunleri rehberi.",
+        "stainless-steel-products-explained": "Paslanmaz celik nedir, nerede avantaj saglar? Nora Paslanmaz ve Celik'ten rehber.",
+    },
+    "fr": {
+        "index": "Nora Paslanmaz ve Celik est un fabricant et fournisseur de fer, d'acier et d'acier inoxydable basé à Istanbul, proposant fourniture, découpe, pliage, soudure et usinage CNC.",
+        "services": "Six métiers essentiels chez Nora Paslanmaz ve Celik : fourniture de fer et d'acier, découpe et pliage, usinage CNC, fabrication soudée, découpe plasma et découpe laser.",
+        "iron-steel-supply": "Fourniture directe de tôle, profilé, tube, produits laminés et treillis d'acier par Nora Paslanmaz ve Celik, à Istanbul, avec découpe et pliage sur demande.",
+        "cutting-bending": "Découpe et pliage sur presse CNC pour tôle, dans différentes épaisseurs et tonnages, par Nora Paslanmaz ve Celik à Istanbul.",
+        "cnc-machining": "Services de tournage, fraisage, perçage et rectification CNC par Nora Paslanmaz ve Celik, pour des pièces aux dimensions et finitions exactes.",
+        "welded-fabrication": "Fabrication soudée structurelle et sur mesure en inox, fer et aluminium, de la pièce unique à l'ensemble complet, par Nora Paslanmaz ve Celik.",
+        "plasma-cutting": "Découpe plasma rapide, à faibles chutes, sur acier et métaux non ferreux jusqu'à 25 mm, par Nora Paslanmaz ve Celik à Istanbul.",
+        "laser-cutting": "Découpe laser de précision sur tôle inox, fer et aluminium, bords nets et délais rapides, par Nora Paslanmaz ve Celik.",
+        "demir-celik-urunler": "Découvrez les catégories de produits en fer et acier de Nora : tôle, profilé, tube, produits laminés et treillis d'acier, fournis depuis Istanbul.",
+        "paslanmaz-urunler": "Découvrez les catégories de produits en acier inoxydable de Nora : tôle, profilé, tube, barre ronde et raccords, fournis depuis Istanbul.",
+        "about": "Nora Paslanmaz ve Celik est un partenaire de fabrication expérimenté pour les produits en fer, acier et acier inoxydable, basé à Istanbul.",
+        "certificates": "Certificats et références sectorielles de Nora Paslanmaz ve Celik, fabricant de fer, d'acier et d'acier inoxydable basé à Istanbul.",
+        "blog": "Actualités et articles techniques de Nora Paslanmaz ve Celik sur les produits en fer, acier et acier inoxydable.",
+        "contact": "Contactez Nora Paslanmaz ve Celik pour un devis sur les produits et services en fer, acier et acier inoxydable à Istanbul.",
+        "iron-steel-products-explained": "Que sont les produits en fer et acier ? Un guide sur la tôle, les profilés, les tubes et les produits laminés, par Nora Paslanmaz ve Celik.",
+        "stainless-steel-products-explained": "Qu'est-ce que l'acier inoxydable et où offre-t-il un avantage ? Un guide de Nora Paslanmaz ve Celik.",
+    },
+}
+
+def schema_org(lang, slug, page_type="WebPage", svc=None):
+    """Return a JSON-LD <script> block. Always includes the Organization
+    (NAP data), plus a Service block on service detail pages."""
+    import json
+    org = {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": NAP["name"],
+        "url": SITE_URL,
+        "telephone": NAP["phone"],
+        "email": NAP["email"],
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": NAP["street"],
+            "addressLocality": "Istanbul",
+            "addressCountry": NAP["country"],
+        },
+    }
+    blocks = [org]
+    if svc is not None:
+        service = {
+            "@context": "https://schema.org",
+            "@type": "Service",
+            "name": svc["title"].replace("&amp;", "&"),
+            "description": svc["intro"][:300],
+            "provider": {"@type": "Organization", "name": NAP["name"]},
+            "areaServed": "TR",
+        }
+        blocks.append(service)
+    return "\n".join([
+        f'<script type="application/ld+json">{json.dumps(b, ensure_ascii=False)}</script>' for b in blocks
+    ])
+
+
+def page(title, current, body, extra_script="", lang="en", slug="index", svc=None, description=None):
     asset_prefix = "" if LANG_FOLDER[lang] == "" else "../"
+    desc = description or META_DESC.get(lang, {}).get(slug, META_DESC["en"]["index"])
     return f"""<!DOCTYPE html>
 <html lang="{lang}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{title} | Nora Paslanmaz ve Demir Celik</title>
+<meta name="description" content="{desc}">
+<meta property="og:title" content="{title} | Nora Paslanmaz ve Demir Celik">
+<meta property="og:description" content="{desc}">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="{lang}">
 <link rel="icon" type="image/png" href="data:image/png;base64,{NORA_LOGO_B64}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{asset_prefix}style.css">
+{schema_org(lang, slug, svc=svc)}
 </head>
 <body>
 {build_chrome(current, lang, slug)}
@@ -1162,6 +1308,249 @@ paslanmaz_items = [
     ("pas_fittings", "Stainless Fittings", "Paslanmaz Fittings"),
 ]
 
+
+# ================= INDIVIDUAL PRODUCT PAGES (24 products x 3 languages) =================
+# Content is deliberately general/educational (what the material is, typical
+# uses) rather than inventing specific dimensions, grades, or certifications
+# we don't actually have data for. Exact specs are pointed to Contact.
+PRODUCT_INFO = {
+    "kutu_profil": {
+        "en": {"what_is": "Box profile (also known as square or rectangular hollow section) is a steel section with a closed, hollow cross-section, formed by rolling and welding flat steel into a tube shape. Its closed profile gives it strong resistance to bending and torsion relative to its weight.",
+               "applications": "Box profile is widely used in structural framing, fencing, gates, furniture frames, and general fabrication work where a strong, lightweight section is needed."},
+        "tr": {"what_is": "Kutu profil, duz celigin haddelenip kaynaklanmasiyla olusturulan, kapali ve icicin bir kesite sahip celik bir urundur. Bu kapali kesit, agirligina oranla egilme ve burulmaya karsi guclu bir direnc saglar.",
+               "applications": "Kutu profil; yapisal iskelet, cit, kapi, mobilya iskeleti ve genel imalat islerinde, guclu ve hafif bir profil gerektiginde yaygin olarak kullanilir."},
+        "fr": {"what_is": "Le profilé carré (aussi appelé section creuse carrée ou rectangulaire) est une section en acier à section fermée et creuse, formée par laminage et soudure de tôle plate en forme de tube. Sa section fermée lui confère une bonne résistance à la flexion et à la torsion par rapport à son poids.",
+               "applications": "Le profilé carré est largement utilisé pour l'ossature structurelle, les clôtures, les portails, les cadres de mobilier et les travaux de fabrication générale nécessitant une section solide et légère."},
+    },
+    "metal_boru": {
+        "en": {"what_is": "Metal pipe is a hollow cylindrical section used to carry fluids or gases, or as a structural element in its own right. It can be produced as welded pipe, formed from rolled steel with a seam, or seamless pipe, extruded without a joint.",
+               "applications": "Metal pipe is used across plumbing, structural framing, scaffolding, handrails, and industrial piping systems."},
+        "tr": {"what_is": "Metal boru, sivi veya gaz tasimak ya da baslli basina yapisal bir eleman olarak kullanilan icicin, silindirik bir kesittir. Kaynakli boru (haddelenmis celikten dikisli) veya dikissiz boru (eksiz ekstrude) olarak uretilebilir.",
+               "applications": "Metal boru; tesisat, yapisal iskelet, iskele, korkuluk ve endustriyel boru hatti sistemlerinde kullanilir."},
+        "fr": {"what_is": "Le tube métallique est une section cylindrique creuse utilisée pour transporter des fluides ou des gaz, ou comme élément structurel à part entière. Il peut être produit sous forme de tube soudé, formé à partir d'acier laminé avec une soudure, ou de tube sans soudure, extrudé sans jointure.",
+               "applications": "Le tube métallique est utilisé en plomberie, ossature structurelle, échafaudage, mains courantes et réseaux de tuyauterie industrielle."},
+    },
+    "kosebent": {
+        "en": {"what_is": "Angle steel is an L-shaped structural section, formed from two flat legs joined at a right angle. It's one of the most common structural shapes because of how efficiently it resists bending along two axes at once.",
+               "applications": "Angle steel is used in structural framing, brackets, shelving, towers, and as a reinforcing or connecting element in fabrication work."},
+        "tr": {"what_is": "Kosebent, birbirine dik acida birlesen iki duz kenardan olusan L seklinde yapisal bir profildir. Aynı anda iki eksende egilmeye karsi verimli direnci sayesinde en yaygin kullanilan yapisal sekillerden biridir.",
+               "applications": "Kosebent; yapisal iskelet, braket, raf, kule ve imalat islerinde takviye veya baglanti elemani olarak kullanilir."},
+        "fr": {"what_is": "La cornière est une section structurelle en forme de L, formée de deux ailes plates jointes à angle droit. C'est l'une des formes structurelles les plus courantes en raison de sa résistance efficace à la flexion selon deux axes à la fois.",
+               "applications": "La cornière est utilisée pour l'ossature structurelle, les supports, les étagères, les tours, et comme élément de renfort ou de liaison dans les travaux de fabrication."},
+    },
+    "lama_demiri": {
+        "en": {"what_is": "Flat bar is a rectangular steel section, flat and rolled to a consistent thickness and width. It's one of the most versatile raw steel forms, used as a starting material for further cutting, welding, or machining.",
+               "applications": "Flat bar is used for framing, brackets, gates, railings, and as stock material for further fabrication."},
+        "tr": {"what_is": "Lama demiri, sabit kalinlik ve genislikte haddelenmis, dikdortgen kesitli duz bir celik urundur. Kesim, kaynak veya islemenin baslangic malzemesi olarak kullanilan en cok yonlu ham celik formlarindan biridir.",
+               "applications": "Lama demiri; iskelet, braket, kapi, korkuluk ve ileri imalat icin ham malzeme olarak kullanilir."},
+        "fr": {"what_is": "Le fer plat est une section en acier rectangulaire, plate et laminée à une épaisseur et une largeur constantes. C'est l'une des formes d'acier brut les plus polyvalentes, utilisée comme matière première pour la découpe, la soudure ou l'usinage.",
+               "applications": "Le fer plat est utilisé pour l'ossature, les supports, les portails, les garde-corps, et comme matière première pour la fabrication."},
+    },
+    "silme_demiri": {
+        "en": {"what_is": "Silme bar is a narrow flat steel strip, thinner than standard flat bar, typically used for trim, edging, and light structural work.",
+               "applications": "Silme bar is commonly used for edging, trim work, light bracketry, and decorative metalwork."},
+        "tr": {"what_is": "Silme demiri, standart lama demirinden daha ince, dar ve duz bir celik seritdir, genellikle kenar bitirme ve hafif yapisal islerde kullanilir.",
+               "applications": "Silme demiri; kenar bitirme, dekoratif metal isleri ve hafif braket uygulamalarinda yaygin olarak kullanilir."},
+        "fr": {"what_is": "Le fer silme est une bande d'acier plate et étroite, plus fine que le fer plat standard, généralement utilisée pour les finitions, les bordures et les travaux structurels légers.",
+               "applications": "Le fer silme est couramment utilisé pour les bordures, les finitions, les petits supports et la ferronnerie décorative."},
+    },
+    "npu_demiri": {
+        "en": {"what_is": "Structural beams such as NPU, NPI, IPE, HEA, and HEB sections are hot-rolled steel profiles with a distinct cross-sectional shape (U-channel or I/H-beam), engineered to carry heavy structural loads efficiently.",
+               "applications": "These beams form the structural skeleton of buildings, bridges, and heavy industrial structures, wherever load-bearing strength is the primary requirement."},
+        "tr": {"what_is": "NPU, NPI, IPE, HEA ve HEB gibi yapisal kirisler, agir yapisal yukleri verimli sekilde tasimak uzere tasarlanmis, belirgin bir kesit sekline (U profili veya I/H kiris) sahip sicak haddelenmis celik profillerdir.",
+               "applications": "Bu kirisler; bina, kopru ve agir endustriyel yapilarin tasiyici iskeletini olusturur, tasima gucunun oncelik oldugu her yerde kullanilir."},
+        "fr": {"what_is": "Les poutrelles structurelles telles que les profilés NPU, NPI, IPE, HEA et HEB sont des profilés en acier laminé à chaud, à section distincte (en U ou en I/H), conçues pour supporter efficacement de lourdes charges structurelles.",
+               "applications": "Ces poutrelles forment l'ossature structurelle des bâtiments, des ponts et des structures industrielles lourdes, partout où la résistance porteuse est l'exigence principale."},
+    },
+    "kare_demir": {
+        "en": {"what_is": "Square bar is solid steel stock with a square cross-section, rolled to a consistent size along its length.",
+               "applications": "Square bar is used in fabrication, railings, gates, machine parts, and as raw stock for further machining."},
+        "tr": {"what_is": "Kare demir, boyu boyunca sabit olcude haddelenmis, kare kesitli dolu bir celik urunudur.",
+               "applications": "Kare demir; imalat, korkuluk, kapi, makine parcalari ve ileri isleme icin ham stok olarak kullanilir."},
+        "fr": {"what_is": "Le fer carré est une barre d'acier pleine à section carrée, laminée à une dimension constante sur toute sa longueur.",
+               "applications": "Le fer carré est utilisé en fabrication, garde-corps, portails, pièces de machines, et comme matière première pour l'usinage."},
+    },
+    "t_demir": {
+        "en": {"what_is": "T-bar is a structural steel section shaped like the letter T, combining a flat top flange with a vertical web.",
+               "applications": "T-bar is used in framing, support structures, and applications needing a stiffening edge, such as shelving and trim work."},
+        "tr": {"what_is": "T demir, duz bir ust baski ile dikey bir govdeyi birlestiren, T harfi seklinde yapisal bir celik profildir.",
+               "applications": "T demir; iskelet, destek yapilari ve raf ile bitirme isleri gibi sertlestirici kenar gerektiren uygulamalarda kullanilir."},
+        "fr": {"what_is": "Le fer en T est une section en acier structurel en forme de T, combinant une aile plate supérieure et une âme verticale.",
+               "applications": "Le fer en T est utilisé pour l'ossature, les structures de support, et les applications nécessitant un bord rigidifiant, comme les étagères et les finitions."},
+    },
+    "transmisyon_mili": {
+        "en": {"what_is": "Transmission shaft is solid round steel bar, precision-rolled or turned, designed to transmit rotational force in mechanical systems.",
+               "applications": "Transmission shaft is used in machinery, drivetrains, and mechanical assemblies requiring a precise, load-bearing rotating shaft."},
+        "tr": {"what_is": "Transmisyon mili, mekanik sistemlerde donme kuvvetini iletmek uzere tasarlanmis, hassas haddelenmis veya islenmis dolu yuvarlak bir celik cubuktur.",
+               "applications": "Transmisyon mili; hassas, yuk tasiyan donen bir mil gerektiren makine, aktarma organlari ve mekanik montajlarda kullanilir."},
+        "fr": {"what_is": "L'arbre de transmission est une barre d'acier ronde pleine, laminée ou tournée avec précision, conçue pour transmettre une force de rotation dans les systèmes mécaniques.",
+               "applications": "L'arbre de transmission est utilisé dans les machines, les transmissions et les ensembles mécaniques nécessitant un arbre rotatif précis et porteur."},
+    },
+    "sac_cesitleri": {
+        "en": {"what_is": "Sheet metal is flat-rolled steel supplied in large sheets or coils, available in a range of thicknesses and finishes.",
+               "applications": "Sheet metal is a base material for laser cutting, plasma cutting, and bending work across construction, automotive, and general fabrication."},
+        "tr": {"what_is": "Sac, buyuk levhalar veya ruloler halinde tedarik edilen, cesitli kalinlik ve yuzey seceneklerine sahip duz haddelenmis celiktir.",
+               "applications": "Sac; insaat, otomotiv ve genel imalatta lazer kesim, plazma kesim ve bukum islerinin temel malzemesidir."},
+        "fr": {"what_is": "La tôle est de l'acier laminé plat fourni en grandes feuilles ou en bobines, disponible dans une gamme d'épaisseurs et de finitions.",
+               "applications": "La tôle est une matière de base pour la découpe laser, la découpe plasma et le pliage dans le bâtiment, l'automobile et la fabrication générale."},
+    },
+    "cati_panelleri": {
+        "en": {"what_is": "Roof panels are pre-formed steel sheets, typically profiled with ribs or corrugations, engineered for weather-resistant roof cladding.",
+               "applications": "Roof panels are used for industrial, commercial, and agricultural building roofs where durability and weather resistance matter."},
+        "tr": {"what_is": "Cati panelleri, genellikle oluklu veya dalgali profile sahip, hava kosullarina dayanikli cati kaplamasi icin tasarlanmis on formlu celik levhalardir.",
+               "applications": "Cati panelleri; dayaniklilik ve hava kosullarina direncin onemli oldugu endustriyel, ticari ve tarimsal bina catilarinda kullanilir."},
+        "fr": {"what_is": "Les panneaux de toiture sont des tôles d'acier préformées, généralement profilées avec des nervures ou des ondulations, conçues pour un bardage de toit résistant aux intempéries.",
+               "applications": "Les panneaux de toiture sont utilisés pour les toits de bâtiments industriels, commerciaux et agricoles où la durabilité et la résistance aux intempéries comptent."},
+    },
+    "cephe_panelleri": {
+        "en": {"what_is": "Facade panels are formed steel sheets used to clad the exterior walls of a building, combining structural cladding with an architectural finish.",
+               "applications": "Facade panels are used for the exterior walls of industrial and commercial buildings, providing weather protection and a finished appearance."},
+        "tr": {"what_is": "Cephe panelleri, bir binanin dis duvarlarini kaplamak icin kullanilan, yapisal kaplamayi mimari bir gorunumle birlestiren sekillendirilmis celik levhalardir.",
+               "applications": "Cephe panelleri; endustriyel ve ticari binalarin dis duvarlarinda, hava korumasi ve dus bir gorunum saglamak icin kullanilir."},
+        "fr": {"what_is": "Les panneaux de façade sont des tôles d'acier formées utilisées pour habiller les murs extérieurs d'un bâtiment, associant un bardage structurel à une finition architecturale.",
+               "applications": "Les panneaux de façade sont utilisés pour les murs extérieurs de bâtiments industriels et commerciaux, offrant une protection contre les intempéries et une finition soignée."},
+    },
+    "imalat_celigi": {
+        "en": {"what_is": "Manufacturing steel refers to general-purpose carbon steel supplied as raw stock for machining and fabrication, chosen for its consistent, workable properties.",
+               "applications": "Manufacturing steel is used as base stock across general machining, fabrication, and parts production."},
+        "tr": {"what_is": "Imalat celigi, tutarli ve islenebilir ozellikleri nedeniyle secilen, isleme ve imalat icin ham stok olarak tedarik edilen genel amacli karbon celigidir.",
+               "applications": "Imalat celigi; genel isleme, imalat ve parca uretiminde temel stok malzeme olarak kullanilir."},
+        "fr": {"what_is": "L'acier de construction désigne un acier au carbone à usage général, fourni comme matière première pour l'usinage et la fabrication, apprécié pour ses propriétés constantes et faciles à travailler.",
+               "applications": "L'acier de construction est utilisé comme matière première dans l'usinage général, la fabrication et la production de pièces."},
+    },
+    "islah_celigi": {
+        "en": {"what_is": "Heat-treated steel (also called quenched and tempered steel) has undergone a controlled heating and cooling process to increase its strength and hardness beyond that of standard carbon steel.",
+               "applications": "Heat-treated steel is used for machine parts, tooling, and components requiring higher strength and wear resistance than standard steel."},
+        "tr": {"what_is": "Islah celigi, standart karbon celiginin otesinde mukavemet ve sertlik kazandirmak icin kontrollu bir isitma ve sogutma islemine tabi tutulmus celiktir.",
+               "applications": "Islah celigi; standart celikten daha yuksek mukavemet ve asinma direnci gerektiren makine parcalari, takim ve bilesenlerde kullanilir."},
+        "fr": {"what_is": "L'acier trempé (également appelé acier trempé et revenu) a subi un processus contrôlé de chauffage et de refroidissement pour augmenter sa résistance et sa dureté au-delà de celles de l'acier au carbone standard.",
+               "applications": "L'acier trempé est utilisé pour les pièces de machines, l'outillage et les composants nécessitant une résistance et une résistance à l'usure supérieures à l'acier standard."},
+    },
+    "otomat_celigi": {
+        "en": {"what_is": "Free-cutting steel (also known as free-machining steel) is a steel alloy formulated with additives such as sulfur to improve machinability, producing cleaner cuts and longer tool life.",
+               "applications": "Free-cutting steel is used for high-volume, precision-machined parts where fast, clean machining matters."},
+        "tr": {"what_is": "Otomat celigi (serbest islenebilir celik), islenebilirligi artirmak icin kukurt gibi katkilarla formule edilmis, daha temiz kesim ve daha uzun takim omru saglayan bir celik alasimidir.",
+               "applications": "Otomat celigi; hizli ve temiz islemenin onemli oldugu, yuksek hacimli ve hassas islenmis parcalarda kullanilir."},
+        "fr": {"what_is": "L'acier de décolletage (aussi appelé acier de coupe facile) est un alliage d'acier formulé avec des additifs tels que le soufre pour améliorer l'usinabilité, produisant des coupes plus nettes et une durée de vie d'outil plus longue.",
+               "applications": "L'acier de décolletage est utilisé pour les pièces usinées de précision à grand volume, où un usinage rapide et propre est essentiel."},
+    },
+    "sementasyon_celigi": {
+        "en": {"what_is": "Case-hardening steel is a low-carbon steel designed to be surface-hardened through a carburizing heat treatment, giving it a hard outer surface while retaining a tougher, more ductile core.",
+               "applications": "Case-hardening steel is used for gears, pins, and mechanical parts that need a wear-resistant surface combined with impact toughness."},
+        "tr": {"what_is": "Sementasyon celigi, sement (karbonlama) isil islemi ile yuzeyi sertlestirilmek uzere tasarlanmis, sert bir dis yuzeye sahipken daha tokluk ve suneklik saglayan bir cekirdek koruyan dusuk karbonlu celiktir.",
+               "applications": "Sementasyon celigi; asinmaya dayanikli bir yuzey ile darbe tokluguna ihtiyac duyan disli, pim ve mekanik parcalarda kullanilir."},
+        "fr": {"what_is": "L'acier de cémentation est un acier à faible teneur en carbone conçu pour être durci en surface par un traitement thermique de cémentation, lui donnant une surface externe dure tout en conservant un cœur plus résistant et ductile.",
+               "applications": "L'acier de cémentation est utilisé pour les engrenages, les axes et les pièces mécaniques nécessitant une surface résistante à l'usure combinée à une bonne résilience aux chocs."},
+    },
+    "pas_sac_levha": {
+        "en": {"what_is": "Stainless sheet plate is flat-rolled stainless steel, combining the corrosion resistance of stainless with the flat, workable form of sheet metal.",
+               "applications": "Stainless sheet plate is used across food processing, kitchen equipment, architecture, and any application needing a hygienic, corrosion-resistant surface."},
+        "tr": {"what_is": "Paslanmaz sac levha, paslanmaz celigin korozyon direncini sacin duz ve islenebilir formuyla birlestiren duz haddelenmis paslanmaz celiktir.",
+               "applications": "Paslanmaz sac levha; gida isleme, mutfak ekipmanlari, mimari ve hijyenik, korozyona dayanikli yuzey gerektiren her uygulamada kullanilir."},
+        "fr": {"what_is": "La tôle inox est de l'acier inoxydable laminé plat, combinant la résistance à la corrosion de l'inox avec la forme plate et facile à travailler de la tôle.",
+               "applications": "La tôle inox est utilisée dans l'agroalimentaire, les équipements de cuisine, l'architecture, et toute application nécessitant une surface hygiénique et résistante à la corrosion."},
+    },
+    "pas_profil": {
+        "en": {"what_is": "Stainless profile covers stainless steel structural sections, formed to standard profile shapes while retaining stainless steel's corrosion resistance.",
+               "applications": "Stainless profile is used in architecture, food processing equipment, and structural applications exposed to moisture or corrosive environments."},
+        "tr": {"what_is": "Paslanmaz profil, paslanmaz celigin korozyon direncini korurken standart profil sekillerine getirilmis paslanmaz celik yapisal kesitleri kapsar.",
+               "applications": "Paslanmaz profil; mimari, gida isleme ekipmanlari ve neme veya korozif ortamlara maruz kalan yapisal uygulamalarda kullanilir."},
+        "fr": {"what_is": "Le profilé inox regroupe les sections structurelles en acier inoxydable, formées selon des profils standards tout en conservant la résistance à la corrosion de l'inox.",
+               "applications": "Le profilé inox est utilisé en architecture, dans les équipements agroalimentaires et les applications structurelles exposées à l'humidité ou aux environnements corrosifs."},
+    },
+    "pas_lama": {
+        "en": {"what_is": "Stainless flat bar is rectangular stainless steel stock, flat and rolled to consistent dimensions.",
+               "applications": "Stainless flat bar is used for brackets, trim, and fabrication work needing corrosion resistance."},
+        "tr": {"what_is": "Paslanmaz lama, sabit olculerde haddelenmis, duz dikdortgen kesitli paslanmaz celik stokdur.",
+               "applications": "Paslanmaz lama; korozyon direnci gerektiren braket, kenar bitirme ve imalat islerinde kullanilir."},
+        "fr": {"what_is": "Le fer plat inox est une barre d'acier inoxydable rectangulaire, plate et laminée à des dimensions constantes.",
+               "applications": "Le fer plat inox est utilisé pour les supports, les finitions et les travaux de fabrication nécessitant une résistance à la corrosion."},
+    },
+    "pas_altikose": {
+        "en": {"what_is": "Stainless hexagon bar is solid stainless steel stock with a hexagonal cross-section, commonly used where a flat-sided bar is needed for grip or fastening.",
+               "applications": "Stainless hexagon bar is used for fasteners, fittings, and machined parts requiring corrosion resistance."},
+        "tr": {"what_is": "Paslanmaz altikose, kavrama veya sikma icin duz yuzeyli bir cubuk gerektiginde kullanilan, altigen kesitli dolu paslanmaz celik stoktur.",
+               "applications": "Paslanmaz altikose; korozyon direnci gerektiren baglanti elemanlari, fittings ve islenmis parcalarda kullanilir."},
+        "fr": {"what_is": "La barre hexagonale inox est une barre pleine en acier inoxydable à section hexagonale, couramment utilisée lorsqu'une barre à faces plates est nécessaire pour la prise ou le serrage.",
+               "applications": "La barre hexagonale inox est utilisée pour les fixations, les raccords et les pièces usinées nécessitant une résistance à la corrosion."},
+    },
+    "pas_dikisli_boru": {
+        "en": {"what_is": "Stainless welded pipe is stainless steel pipe formed by rolling and welding a seam along its length.",
+               "applications": "Stainless welded pipe is used in piping systems, railings, and structural work requiring corrosion resistance at a lower cost than seamless pipe."},
+        "tr": {"what_is": "Paslanmaz dikisli boru, boyu boyunca haddelenip kaynaklanarak olusturulan paslanmaz celik borudur.",
+               "applications": "Paslanmaz dikisli boru; dikissiz boruya gore daha dusuk maliyetle korozyon direnci gerektiren boru hatti, korkuluk ve yapisal islerde kullanilir."},
+        "fr": {"what_is": "Le tube inox soudé est un tube en acier inoxydable formé par laminage et soudure d'une jointure sur toute sa longueur.",
+               "applications": "Le tube inox soudé est utilisé dans les réseaux de tuyauterie, les garde-corps et les travaux structurels nécessitant une résistance à la corrosion à moindre coût que le tube sans soudure."},
+    },
+    "pas_dikissiz_boru": {
+        "en": {"what_is": "Stainless seamless pipe is stainless steel pipe extruded without a weld seam, giving it consistent strength along its entire length.",
+               "applications": "Stainless seamless pipe is used in higher-pressure or higher-purity applications such as food, chemical, and pharmaceutical processing."},
+        "tr": {"what_is": "Paslanmaz dikissiz boru, kaynak dikisi olmadan ekstrude edilen, boyu boyunca tutarli mukavemet saglayan paslanmaz celik borudur.",
+               "applications": "Paslanmaz dikissiz boru; gida, kimya ve ilac isleme gibi daha yuksek basinc veya saflik gerektiren uygulamalarda kullanilir."},
+        "fr": {"what_is": "Le tube inox sans soudure est un tube en acier inoxydable extrudé sans jointure soudée, lui conférant une résistance constante sur toute sa longueur.",
+               "applications": "Le tube inox sans soudure est utilisé dans les applications à haute pression ou haute pureté telles que l'agroalimentaire, la chimie et le pharmaceutique."},
+    },
+    "pas_cubuk_mil": {
+        "en": {"what_is": "Stainless round bar (shaft) is solid, cylindrical stainless steel stock, precision-rolled or turned for use as a shaft or machined component.",
+               "applications": "Stainless round bar is used for shafts, fasteners, and machined parts requiring corrosion resistance and dimensional precision."},
+        "tr": {"what_is": "Paslanmaz cubuk (mil), mil veya islenmis bilesen olarak kullanilmak uzere hassas haddelenmis veya islenmis, dolu silindirik paslanmaz celik stoktur.",
+               "applications": "Paslanmaz cubuk (mil); korozyon direnci ve boyutsal hassasiyet gerektiren mil, baglanti elemani ve islenmis parcalarda kullanilir."},
+        "fr": {"what_is": "La barre ronde inox (arbre) est une matière première cylindrique pleine en acier inoxydable, laminée ou tournée avec précision pour servir d'arbre ou de composant usiné.",
+               "applications": "La barre ronde inox est utilisée pour les arbres, les fixations et les pièces usinées nécessitant une résistance à la corrosion et une précision dimensionnelle."},
+    },
+    "pas_fittings": {
+        "en": {"what_is": "Stainless fittings are pre-formed stainless steel components, such as elbows, tees, and couplings, used to join and route piping systems.",
+               "applications": "Stainless fittings are used wherever stainless pipe needs to be joined, branched, or redirected, particularly in food, chemical, and plumbing systems."},
+        "tr": {"what_is": "Paslanmaz fittings; boru hatlarini birlestirmek ve yonlendirmek icin kullanilan dirsek, te ve kuplaj gibi on formlu paslanmaz celik bilesenlerdir.",
+               "applications": "Paslanmaz fittings; ozellikle gida, kimya ve tesisat sistemlerinde paslanmaz borunun birlestirilmesi, dallandirilmasi veya yonlendirilmesi gereken her yerde kullanilir."},
+        "fr": {"what_is": "Les raccords inox sont des composants préformés en acier inoxydable, tels que coudes, tés et manchons, utilisés pour joindre et orienter les réseaux de tuyauterie.",
+               "applications": "Les raccords inox sont utilisés partout où un tube inox doit être joint, dérivé ou réorienté, notamment dans l'agroalimentaire, la chimie et la plomberie."},
+    },
+}
+
+PRODUCT_DETAIL_UI = {
+    "en": {"what_is": "What is {name}?", "applications": "Typical Applications", "back": "All Products",
+           "cta_p": "Need exact dimensions, grade, or a price for {name}? Send us your specs and we'll get back with a quote.",
+           "cta_btn": "Get a Quote"},
+    "tr": {"what_is": "{name} Nedir?", "applications": "Tipik Kullanim Alanlari", "back": "Tum Urunler",
+           "cta_p": "{name} icin tam olcu, kalite veya fiyat mi lazim? Ozelliklerinizi gonderin, teklifle donus yapalim.",
+           "cta_btn": "Teklif Al"},
+    "fr": {"what_is": "Qu'est-ce que {name} ?", "applications": "Applications Typiques", "back": "Tous les Produits",
+           "cta_p": "Besoin de dimensions exactes, d'une nuance ou d'un prix pour {name} ? Envoyez-nous vos spécifications, nous reviendrons avec un devis.",
+           "cta_btn": "Demander un devis"},
+}
+
+def product_slug(key):
+    return key.replace("_", "-")
+
+def product_detail_body(key, name, native, category_label, category_href, img_key, lang="en"):
+    info = PRODUCT_INFO[key][lang]
+    U = PRODUCT_DETAIL_UI[lang]
+    return f"""
+<section class="banner" style="background-image:url('data:image/jpeg;base64,{PRODUCT_B64[key]}'); background-size:cover; background-position:center;"><div class="banner-content reveal"><h2 class="serif">{name}</h2></div></section>
+<section class="section" style="padding-top:70px;">
+  <div class="wrap service-detail-grid reveal">
+    <div class="service-detail-main">
+      <div class="service-detail-hero" style="background-image:url('data:image/jpeg;base64,{PRODUCT_B64[key]}')"></div>
+      <p style="color:var(--coral); font-family:'Poppins'; font-size:12px; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:10px;">{native}</p>
+      <h3>{U['what_is'].format(name=name)}</h3>
+      <p>{info['what_is']}</p>
+      <h3>{U['applications']}</h3>
+      <p>{info['applications']}</p>
+    </div>
+    <div>
+      <div class="service-sidebar">
+        <h4>{category_label}</h4>
+        <a href="{category_href}">{U['back']}</a>
+      </div>
+      <div class="service-detail-cta">
+        <p>{U['cta_p'].format(name=name)}</p>
+        <a class="more" href="contact.html">{U['cta_btn']}</a>
+      </div>
+    </div>
+  </div>
+</section>
+"""
 FR_PRODUCT_NAMES = {
     "kutu_profil": "Profil\u00e9 Carr\u00e9", "metal_boru": "Tube M\u00e9tallique", "kosebent": "Corni\u00e8re",
     "lama_demiri": "Fer Plat", "silme_demiri": "Fer Silme",
@@ -1180,13 +1569,13 @@ PROD_UI = {"en": "Product Lines", "tr": "\u00dcr\u00fcn Gruplar\u0131", "fr": "G
 
 def product_gallery_body(banner_title, section_title, items, img_key, lang="en"):
     cards = "\n".join([
-        f"""<div class="product-cat-card">
+        f"""<a class="product-cat-card" href="{product_slug(key)}.html">
       <div class="thumb" style="background-image:url('data:image/jpeg;base64,{PRODUCT_B64[key]}')"></div>
       <div class="body">
         <span class="native-name">{native if lang != "tr" else en}</span>
         <h3>{en if lang == "en" else (native if lang == "tr" else FR_PRODUCT_NAMES[key])}</h3>
       </div>
-    </div>""" for key, en, native in items
+    </a>""" for key, en, native in items
     ])
     return f"""
 <section class="banner" style="background-image:url('data:image/jpeg;base64,{IMG_B64[img_key]}'); background-size:cover; background-position:center;"><div class="banner-content reveal"><h2 class="serif">{banner_title}</h2></div></section>
@@ -1206,6 +1595,14 @@ open(f"{EN_OUT_DIR}/demir-celik-urunler.html","w").write(page("Iron &amp; Steel 
 
 paslanmaz_body = product_gallery_body("Stainless Steel Products", "Stainless steel products, by category.", paslanmaz_items, "sheet")
 open(f"{EN_OUT_DIR}/paslanmaz-urunler.html","w").write(page("Stainless Steel Products","paslanmaz",paslanmaz_body,slug="paslanmaz-urunler"))
+
+for key, name, native in demir_items + paslanmaz_items:
+    is_demir = (key, name, native) in demir_items
+    cat_href = "demir-celik-urunler.html" if is_demir else "paslanmaz-urunler.html"
+    cat_label = NAV_LABELS["en"]["demir"] if is_demir else NAV_LABELS["en"]["paslanmaz"]
+    body = product_detail_body(key, name, native, cat_label, cat_href, "profile" if is_demir else "sheet", lang="en")
+    desc = PRODUCT_INFO[key]["en"]["what_is"][:160]
+    open(f"{EN_OUT_DIR}/{product_slug(key)}.html","w").write(page(name, "demir" if is_demir else "paslanmaz", body, slug=product_slug(key), description=desc))
 
 # ---------------- SERVICE DETAIL PAGES ----------------
 service_details = [
@@ -1293,7 +1690,7 @@ def service_detail_body(svc, all_services, lang="en"):
 
 for svc in service_details:
     body = service_detail_body(svc, service_details)
-    open(f"{EN_OUT_DIR}/{svc['slug']}.html","w").write(page(svc['title'],"services",body,slug=svc['slug']))
+    open(f"{EN_OUT_DIR}/{svc['slug']}.html","w").write(page(svc['title'],"services",body,slug=svc['slug'],svc=svc))
 
 # ---------------- ABOUT ----------------
 about_body = f"""
@@ -1450,11 +1847,16 @@ contact_body = f"""
       </ul>
     </div>
     <div class="form-box">
-      <form>
-        <div class="form-row"><label>Full Name</label><input type="text" placeholder="Your name"></div>
-        <div class="form-row"><label>Company</label><input type="text" placeholder="Company name"></div>
-        <div class="form-row"><label>Message</label><textarea placeholder="Quantity, dimensions, and any specs..."></textarea></div>
-        <button type="button" class="submit-btn">Send Inquiry</button>
+      <form class="ajax-form" data-success="Thanks, your inquiry has been sent. We'll get back to you shortly." data-error="Something went wrong. Please try again or call us directly.">
+        <input type="hidden" name="access_key" value="{WEB3FORMS_KEY}">
+        <input type="hidden" name="subject" value="New Quote Request - Nora Website">
+        <input type="checkbox" name="botcheck" style="display:none">
+        <div class="form-row"><label>Full Name</label><input type="text" name="name" placeholder="Your name" required></div>
+        <div class="form-row"><label>Email</label><input type="email" name="email" placeholder="you@company.com" required></div>
+        <div class="form-row"><label>Company</label><input type="text" name="company" placeholder="Company name"></div>
+        <div class="form-row"><label>Message</label><textarea name="message" placeholder="Quantity, dimensions, and any specs..." required></textarea></div>
+        <button type="submit" class="submit-btn">Send Inquiry</button>
+        <p class="form-status" aria-live="polite"></p>
       </form>
     </div>
   </div>
@@ -1477,8 +1879,8 @@ open("/home/claude/nora-site/pages/script.js","w").write(SHARED_SCRIPT_BASE.spli
 TR_OUT_DIR = "/home/claude/nora-site/pages"
 os.makedirs(TR_OUT_DIR, exist_ok=True)
 
-def write_tr(slug, title, current, body, extra_script=""):
-    open(f"{TR_OUT_DIR}/{slug}.html", "w").write(page(title, current, body, extra_script, lang="tr", slug=slug))
+def write_tr(slug, title, current, body, extra_script="", svc=None, description=None):
+    open(f"{TR_OUT_DIR}/{slug}.html", "w").write(page(title, current, body, extra_script, lang="tr", slug=slug, svc=svc, description=description))
 
 # ---------------- TR: HERO ----------------
 HERO_SLIDES_TR = [
@@ -1618,7 +2020,7 @@ write_tr("services", "Hizmetler", "services", services_body_tr)
 
 for svc in service_details_tr:
     body = service_detail_body(svc, service_details_tr, lang="tr")
-    write_tr(svc["slug"], svc["title"], "services", body)
+    write_tr(svc["slug"], svc["title"], "services", body, svc=svc)
 
 # ---------------- TR: PRODUCTS ----------------
 demir_body_tr = product_gallery_body("Demir Celik Urunler", "Kategoriye gore demir ve celik urunlerimiz.", demir_items, "profile", lang="tr")
@@ -1626,6 +2028,14 @@ write_tr("demir-celik-urunler", "Demir Celik Urunler", "demir", demir_body_tr)
 
 paslanmaz_body_tr = product_gallery_body("Paslanmaz Urunler", "Kategoriye gore paslanmaz celik urunlerimiz.", paslanmaz_items, "sheet", lang="tr")
 write_tr("paslanmaz-urunler", "Paslanmaz Urunler", "paslanmaz", paslanmaz_body_tr)
+
+for key, en_name, native in demir_items + paslanmaz_items:
+    is_demir = (key, en_name, native) in demir_items
+    cat_href = "demir-celik-urunler.html" if is_demir else "paslanmaz-urunler.html"
+    cat_label = NAV_LABELS["tr"]["demir"] if is_demir else NAV_LABELS["tr"]["paslanmaz"]
+    body = product_detail_body(key, native, en_name, cat_label, cat_href, "profile" if is_demir else "sheet", lang="tr")
+    desc = PRODUCT_INFO[key]["tr"]["what_is"][:160]
+    write_tr(product_slug(key), native, "demir" if is_demir else "paslanmaz", body, description=desc)
 
 # ---------------- TR: ABOUT ----------------
 about_body_tr = f"""
@@ -1740,11 +2150,16 @@ contact_body_tr = f"""
       </ul>
     </div>
     <div class="form-box">
-      <form>
-        <div class="form-row"><label>Ad Soyad</label><input type="text" placeholder="Adiniz"></div>
-        <div class="form-row"><label>Firma</label><input type="text" placeholder="Firma adi"></div>
-        <div class="form-row"><label>Mesaj</label><textarea placeholder="Miktar, olcu ve teknik detaylar..."></textarea></div>
-        <button type="button" class="submit-btn">Talep Gonder</button>
+      <form class="ajax-form" data-success="Tesekkurler, talebiniz gonderildi. En kisa surede size donus yapacagiz." data-error="Bir sorun olustu. Lutfen tekrar deneyin ya da bizi arayin.">
+        <input type="hidden" name="access_key" value="{WEB3FORMS_KEY}">
+        <input type="hidden" name="subject" value="Yeni Teklif Talebi - Nora Website">
+        <input type="checkbox" name="botcheck" style="display:none">
+        <div class="form-row"><label>Ad Soyad</label><input type="text" name="name" placeholder="Adiniz" required></div>
+        <div class="form-row"><label>E-posta</label><input type="email" name="email" placeholder="siz@firma.com" required></div>
+        <div class="form-row"><label>Firma</label><input type="text" name="company" placeholder="Firma adi"></div>
+        <div class="form-row"><label>Mesaj</label><textarea name="message" placeholder="Miktar, olcu ve teknik detaylar..." required></textarea></div>
+        <button type="submit" class="submit-btn">Talep Gonder</button>
+        <p class="form-status" aria-live="polite"></p>
       </form>
     </div>
   </div>
@@ -1764,8 +2179,8 @@ write_tr("contact", "Iletisim", "contact", contact_body_tr)
 FR_OUT_DIR = "/home/claude/nora-site/pages/fr"
 os.makedirs(FR_OUT_DIR, exist_ok=True)
 
-def write_fr(slug, title, current, body, extra_script=""):
-    open(f"{FR_OUT_DIR}/{slug}.html", "w").write(page(title, current, body, extra_script, lang="fr", slug=slug))
+def write_fr(slug, title, current, body, extra_script="", svc=None, description=None):
+    open(f"{FR_OUT_DIR}/{slug}.html", "w").write(page(title, current, body, extra_script, lang="fr", slug=slug, svc=svc, description=description))
 
 # ---------------- FR: HERO ----------------
 HERO_SLIDES_FR = [
@@ -1905,7 +2320,7 @@ write_fr("services", "Services", "services", services_body_fr)
 
 for svc in service_details_fr:
     body = service_detail_body(svc, service_details_fr, lang="fr")
-    write_fr(svc["slug"], svc["title"], "services", body)
+    write_fr(svc["slug"], svc["title"], "services", body, svc=svc)
 
 # ---------------- FR: PRODUCTS ----------------
 demir_body_fr = product_gallery_body("Produits Fer et Acier", "Nos produits en fer et acier, par cat\u00e9gorie.", demir_items, "profile", lang="fr")
@@ -1913,6 +2328,15 @@ write_fr("demir-celik-urunler", "Produits Fer et Acier", "demir", demir_body_fr)
 
 paslanmaz_body_fr = product_gallery_body("Produits Inox", "Nos produits en acier inoxydable, par cat\u00e9gorie.", paslanmaz_items, "sheet", lang="fr")
 write_fr("paslanmaz-urunler", "Produits Inox", "paslanmaz", paslanmaz_body_fr)
+
+for key, en_name, native in demir_items + paslanmaz_items:
+    is_demir = (key, en_name, native) in demir_items
+    cat_href = "demir-celik-urunler.html" if is_demir else "paslanmaz-urunler.html"
+    cat_label = NAV_LABELS["fr"]["demir"] if is_demir else NAV_LABELS["fr"]["paslanmaz"]
+    fr_name = FR_PRODUCT_NAMES[key]
+    body = product_detail_body(key, fr_name, native, cat_label, cat_href, "profile" if is_demir else "sheet", lang="fr")
+    desc = PRODUCT_INFO[key]["fr"]["what_is"][:160]
+    write_fr(product_slug(key), fr_name, "demir" if is_demir else "paslanmaz", body, description=desc)
 
 # ---------------- FR: ABOUT ----------------
 about_body_fr = f"""
@@ -2027,11 +2451,16 @@ contact_body_fr = f"""
       </ul>
     </div>
     <div class="form-box">
-      <form>
-        <div class="form-row"><label>Nom Complet</label><input type="text" placeholder="Votre nom"></div>
-        <div class="form-row"><label>Entreprise</label><input type="text" placeholder="Nom de l'entreprise"></div>
-        <div class="form-row"><label>Message</label><textarea placeholder="Quantit\u00e9, dimensions et sp\u00e9cifications..."></textarea></div>
-        <button type="button" class="submit-btn">Envoyer la Demande</button>
+      <form class="ajax-form" data-success="Merci, votre demande a bien \u00e9t\u00e9 envoy\u00e9e. Nous vous r\u00e9pondrons rapidement." data-error="Une erreur est survenue. Veuillez r\u00e9essayer ou nous appeler directement.">
+        <input type="hidden" name="access_key" value="{WEB3FORMS_KEY}">
+        <input type="hidden" name="subject" value="Nouvelle Demande de Devis - Site Nora">
+        <input type="checkbox" name="botcheck" style="display:none">
+        <div class="form-row"><label>Nom Complet</label><input type="text" name="name" placeholder="Votre nom" required></div>
+        <div class="form-row"><label>E-mail</label><input type="email" name="email" placeholder="vous@entreprise.com" required></div>
+        <div class="form-row"><label>Entreprise</label><input type="text" name="company" placeholder="Nom de l'entreprise"></div>
+        <div class="form-row"><label>Message</label><textarea name="message" placeholder="Quantit\u00e9, dimensions et sp\u00e9cifications..." required></textarea></div>
+        <button type="submit" class="submit-btn">Envoyer la Demande</button>
+        <p class="form-status" aria-live="polite"></p>
       </form>
     </div>
   </div>

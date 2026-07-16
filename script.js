@@ -23,6 +23,36 @@
     });
   })();
 
+  // Contact form -> Web3Forms, submitted via fetch so the page never
+  // reloads; shows an inline status message instead.
+  document.querySelectorAll('.ajax-form').forEach(function(form){
+    const status = form.querySelector('.form-status');
+    const btn = form.querySelector('button[type="submit"]');
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      if (btn){ btn.disabled = true; }
+      if (status){ status.textContent = ''; status.className = 'form-status'; }
+      fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        body: new FormData(form)
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success){
+          if (status){ status.textContent = form.dataset.success; status.classList.add('ok'); }
+          form.reset();
+        } else {
+          if (status){ status.textContent = form.dataset.error; status.classList.add('err'); }
+        }
+      })
+      .catch(() => {
+        if (status){ status.textContent = form.dataset.error; status.classList.add('err'); }
+      })
+      .finally(() => { if (btn){ btn.disabled = false; } });
+    });
+  });
+
   // Custom round cursor
   const cursor = document.getElementById('cursor');
   let mx=0, my=0, cx=0, cy=0;
