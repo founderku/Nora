@@ -99,6 +99,7 @@
     fullMenu.classList.add('open');
     menuBtn.classList.add('open');
     menuBtn.style.visibility = 'hidden';
+    document.body.classList.add('menu-open');
     document.body.style.position = 'fixed';
     document.body.style.top = -savedScrollY + 'px';
     document.body.style.left = '0';
@@ -108,6 +109,7 @@
     fullMenu.classList.remove('open');
     menuBtn.classList.remove('open');
     menuBtn.style.visibility = 'visible';
+    document.body.classList.remove('menu-open');
     document.body.style.position = '';
     document.body.style.top = '';
     document.body.style.left = '';

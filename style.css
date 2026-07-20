@@ -90,7 +90,6 @@
     padding:34px 80px; mix-blend-mode:normal; pointer-events:none;
   }
   .topbar .logo{pointer-events:auto;}
-  body.menu-open .topbar .logo{opacity:0; visibility:hidden; transition:opacity .25s ease;}
   .topbar .menu-btn{pointer-events:auto;}
   .topbar-right{display:flex; align-items:center; gap:14px; pointer-events:none;}
   .lang-dropdown{position:relative; pointer-events:auto;}
@@ -145,11 +144,9 @@
   /* ---------- FULLSCREEN MENU ---------- */
   .fullmenu{
     position:fixed; inset:0; background:var(--ink); z-index:75;
-    display:flex; flex-direction:column; justify-content:flex-start;
-    padding:170px 60px 40px clamp(60px, 12vw, 200px); transform:translateX(100%); transition:transform .6s cubic-bezier(.65,0,.35,1);
-    overflow-y:auto;
+    display:flex; flex-direction:column; justify-content:center;
+    padding:0 60px 0 clamp(60px, 12vw, 200px); transform:translateX(100%); transition:transform .6s cubic-bezier(.65,0,.35,1);
   }
-  .menu-inner{ margin:auto 0; }
   .fullmenu.open{transform:translateX(0);}
   .menu-inner{width:100%; max-width:900px;}
   .menu-close{
@@ -178,7 +175,7 @@
   }
   .submenu a:hover, .submenu a.active{color:var(--white);}
   .menu-social{
-    margin-top:40px; align-self:flex-end; display:flex; gap:24px;
+    position:absolute; bottom:36px; right:60px; display:flex; gap:24px;
   }
   .menu-social a{
     font-family:'Poppins'; font-size:11px; letter-spacing:0.12em; color:var(--gray); text-transform:uppercase;
@@ -186,9 +183,9 @@
   .menu-social a:hover{color:var(--white);}
 
   /* ---------- HERO SLIDER (smooth horizontal slide, filmstrip-style) ---------- */
-  .hero-spacer{ height:100vh; height:100dvh; }
+  .hero-spacer{ height:100vh; }
   .hero-fixed{
-    position:fixed; inset:0; height:100vh; height:100dvh; z-index:50; overflow:hidden; background:var(--ink);
+    position:fixed; inset:0; z-index:50; overflow:hidden; background:var(--ink);
     opacity:1; visibility:visible; transition:opacity .3s ease;
   }
   .hero-fixed.exited{ opacity:0; visibility:hidden; pointer-events:none; }
@@ -258,8 +255,8 @@
   @keyframes scrollacross{ 0%{left:-30px;} 100%{left:30px;} }
 
   @keyframes kenburns{
-    0%{ transform:scale(1.0); }
-    100%{ transform:scale(1.06); }
+    0%{ transform:scale(1.08); }
+    100%{ transform:scale(1.18); }
   }
   .hero-slide{ animation:kenburns 14s ease-in-out infinite alternate; }
 
@@ -276,30 +273,7 @@
   .banner-content{position:relative; z-index:2; padding:0 60px 44px;}
   .banner h2{font-size:clamp(42px,6vw,90px); color:var(--white);}
 
-  /* ---------- HOME HIGHLIGHTS (after hero, before footer) ---------- */
-  .home-highlights{padding:110px 0;}
-  .hl-grid{display:grid; grid-template-columns:1.3fr 1fr; gap:60px; align-items:start;}
-  .hl-intro p{margin-bottom:24px; max-width:520px;}
-  .hl-download{margin-top:8px;}
-  .hl-certs{border-left:1px solid rgba(255,255,255,0.1); padding-left:40px;}
-  .hl-cert-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:16px; margin:24px 0;}
-  .hl-cert-grid img{width:100%; height:70px; object-fit:contain; background:var(--white); border-radius:4px; padding:8px;}
-  .hl-cta{
-    margin-top:80px; padding-top:60px; border-top:1px solid rgba(255,255,255,0.1);
-    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;
-  }
-  .hl-cta h3{font-family:'Jost'; font-size:clamp(22px,3vw,32px); font-weight:600; max-width:520px;}
-  @media (max-width:860px){
-    .hl-grid{grid-template-columns:1fr; gap:40px;}
-    .hl-certs{border-left:none; padding-left:0; border-top:1px solid rgba(255,255,255,0.1); padding-top:40px;}
-    .hl-cta{flex-direction:column; align-items:flex-start;}
-  }
-
-  /* ---------- ABOUT PAGE: DOWNLOAD BUTTON ---------- */
-  .about-download{margin-top:28px;}
-
   /* ---------- SERVICES SECTION ---------- */
-
   .section{padding:110px 0;}
   .section-eyebrow{
     font-family:'Poppins'; font-size:12px; letter-spacing:0.2em; text-transform:uppercase;
@@ -350,7 +324,7 @@
     display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-top:36px;
   }
   .product-gallery-grid .thumb{
-    height:150px; background-size:150% auto; background-position:center; border-radius:6px;
+    height:150px; background-size:cover; background-position:center; border-radius:6px;
     filter:grayscale(0.1); transition:filter .3s ease, transform .3s ease;
   }
   .product-gallery-grid .thumb:hover{filter:grayscale(0); transform:scale(1.03);}
@@ -390,7 +364,6 @@
   .product-cat-card:hover{background:var(--ink3);}
   .product-cat-card .thumb{
     height:170px; background-size:cover; background-position:center; filter:grayscale(0.15);
-    transform:scale(1.22); transition:transform .3s ease;
   }
   .product-cat-card .body{padding:22px 22px 26px;}
   .product-cat-card h3{font-family:'Jost'; font-size:17px; color:var(--white); margin-bottom:8px; font-weight:600; text-transform:uppercase;}
@@ -526,12 +499,8 @@
   @media (max-width:860px){
     .wrap{padding:0 24px;}
     .topbar{padding:24px 28px;}
-    .fullmenu{
-      padding:110px 24px 24px; justify-content:flex-start; overflow-y:auto;
-    }
-    .menu-list > li{margin-bottom:2px;}
-    .menu-item{font-size:clamp(22px,7vw,32px);}
-    .menu-social{margin-top:28px;}
+    .fullmenu{padding:0 24px;}
+    .menu-social{right:24px;}
     .banner-content{padding:0 24px 34px;}
     .service-grid{grid-template-columns:1fr;}
     .products-grid{grid-template-columns:1fr;}
@@ -570,3 +539,9 @@
     html[dir="rtl"] .social-rail{left:auto; right:10px;}
     html[dir="rtl"] .scroll-hint{left:auto; right:56px;}
   }
+
+  /* ---------- Cyrillic (Russian) font fallback ---------- */
+  /* Poppins and Jost do not include Cyrillic glyphs, so Russian pages
+     load Manrope (Cyrillic-supporting) and force it everywhere,
+     including elements with inline font-family styles. */
+  html[lang="ru"] *{font-family:'Manrope', sans-serif !important;}
