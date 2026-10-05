@@ -152,7 +152,7 @@ edit('script.js', [
 # ---------- HTML pages ----------
 c = Counter()
 FONT_RE = re.compile(r'<link href="(https://fonts\.googleapis\.com/css2\?[^"]+)" rel="stylesheet">')
-VERSION = '3'   # bump when style.css / script.js change
+VERSION = '4'   # bump when style.css / script.js change
 for f in sorted(glob.glob('**/*.html', recursive=True)):
     if f.startswith('google'):
         continue
