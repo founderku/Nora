@@ -72,23 +72,32 @@
     });
   });
 
-  // Custom round cursor
+  // Devices with a real mouse; touch screens skip the cursor and tilt effects.
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+  // Custom round cursor. The animation loop only runs while the cursor is
+  // still catching up with the mouse, and moves it with a GPU transform
+  // instead of left/top so it never forces a page re-layout.
   const cursor = document.getElementById('cursor');
-  let mx=0, my=0, cx=0, cy=0;
-  document.addEventListener('mousemove', e=>{
-    mx=e.clientX; my=e.clientY;
-    if (!cursor.classList.contains('visible')) { cx = mx; cy = my; cursor.classList.add('visible'); }
-  });
-  function animCursor(){
-    cx += (mx-cx)*0.18; cy += (my-cy)*0.18;
-    cursor.style.left = cx+'px'; cursor.style.top = cy+'px';
-    requestAnimationFrame(animCursor);
+  if (cursor && finePointer){
+    let mx=0, my=0, cx=0, cy=0, running=false;
+    const place = ()=>{ cursor.style.transform = `translate3d(${cx}px, ${cy}px, 0) translate(-50%,-50%)`; };
+    function animCursor(){
+      cx += (mx-cx)*0.18; cy += (my-cy)*0.18;
+      if (Math.abs(mx-cx) < 0.1 && Math.abs(my-cy) < 0.1){ cx = mx; cy = my; running = false; }
+      place();
+      if (running) requestAnimationFrame(animCursor);
+    }
+    document.addEventListener('mousemove', e=>{
+      mx=e.clientX; my=e.clientY;
+      if (!cursor.classList.contains('visible')) { cx = mx; cy = my; place(); cursor.classList.add('visible'); }
+      if (!running){ running = true; requestAnimationFrame(animCursor); }
+    }, { passive: true });
+    document.querySelectorAll('a, button, .menu-item').forEach(el=>{
+      el.addEventListener('mouseenter', ()=>cursor.classList.add('grow'));
+      el.addEventListener('mouseleave', ()=>cursor.classList.remove('grow'));
+    });
   }
-  animCursor();
-  document.querySelectorAll('a, button, .menu-item').forEach(el=>{
-    el.addEventListener('mouseenter', ()=>cursor.classList.add('grow'));
-    el.addEventListener('mouseleave', ()=>cursor.classList.remove('grow'));
-  });
 
   // Fullscreen menu toggle
   const menuBtn = document.getElementById('menuBtn');
@@ -143,8 +152,11 @@
 
   // Ambient dust particles - subtle floating motes across the whole site,
   // drifting upward with gentle drift, giving the page a sense of life
+  // Skipped on phones/touch screens and for visitors who prefer reduced motion
+  // (the canvas is also hidden by CSS there).
   (function(){
     const canvas = document.getElementById('dustCanvas');
+    if (!canvas || getComputedStyle(canvas).display === 'none') return;
     const ctx = canvas.getContext('2d');
     let W, H, particles = [];
     const COUNT = 46;
@@ -191,21 +203,31 @@
 
   // Cursor-reactive tilt on cards - a gentle 3D tilt following the pointer,
   // applied to every card-style element across the site (services, products, blog)
+  // Updates are batched to at most one per animation frame.
   (function(){
+    if (!finePointer) return;
     const tiltEls = document.querySelectorAll('.service-card, .product-cat-card, .blog-card, .partner-box');
     tiltEls.forEach(el=>{
       el.style.transition = 'transform .25s ease, box-shadow .25s ease';
-      el.style.willChange = 'transform';
+      let pending = null;
       el.addEventListener('mousemove', (e)=>{
-        const rect = el.getBoundingClientRect();
-        const px = (e.clientX - rect.left) / rect.width - 0.5;
-        const py = (e.clientY - rect.top) / rect.height - 0.5;
-        const rotX = (py * -6).toFixed(2);
-        const rotY = (px * 8).toFixed(2);
-        el.style.transform = `perspective(700px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(1.02) translateZ(0)`;
-        el.style.boxShadow = `${(-px*18).toFixed(0)}px ${(12-py*10).toFixed(0)}px 34px rgba(0,0,0,0.45)`;
-      });
+        const first = !pending;
+        pending = e;
+        if (!first) return;
+        requestAnimationFrame(()=>{
+          if (!pending) return;
+          const rect = el.getBoundingClientRect();
+          const px = (pending.clientX - rect.left) / rect.width - 0.5;
+          const py = (pending.clientY - rect.top) / rect.height - 0.5;
+          pending = null;
+          const rotX = (py * -6).toFixed(2);
+          const rotY = (px * 8).toFixed(2);
+          el.style.transform = `perspective(700px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(1.02) translateZ(0)`;
+          el.style.boxShadow = `${(-px*18).toFixed(0)}px ${(12-py*10).toFixed(0)}px 34px rgba(0,0,0,0.45)`;
+        });
+      }, { passive: true });
       el.addEventListener('mouseleave', ()=>{
+        pending = null;
         el.style.transform = 'perspective(700px) rotateX(0deg) rotateY(0deg) scale(1)';
         el.style.boxShadow = 'none';
       });

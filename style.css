@@ -66,6 +66,14 @@
   #dustCanvas{
     position:fixed; inset:0; z-index:55; pointer-events:none; opacity:0.5;
   }
+  /* Touch devices have no mouse cursor, and phones gain little from the dust
+     effect while paying for a full-screen redraw every frame - skip both. */
+  @media (hover:none), (pointer:coarse), (max-width:760px), (prefers-reduced-motion: reduce){
+    #dustCanvas{display:none;}
+  }
+  @media (hover:none), (pointer:coarse){
+    #cursor{display:none;}
+  }
 
   /* ---------- SOCIAL RAIL ---------- */
   .social-rail{
@@ -254,11 +262,16 @@
   }
   @keyframes scrollacross{ 0%{left:-30px;} 100%{left:30px;} }
 
+  /* Slow zoom only on the visible slide. Running it on every (blurred) slide
+     made the browser re-render all of the blur filters on every frame. */
   @keyframes kenburns{
-    0%{ transform:scale(1.08); }
-    100%{ transform:scale(1.18); }
+    0%{ transform:scale(1.05); }
+    100%{ transform:scale(1.15); }
   }
-  .hero-slide{ animation:kenburns 14s ease-in-out infinite alternate; }
+  .hero-slide.active{ animation:kenburns 14s ease-in-out infinite alternate; }
+  @media (prefers-reduced-motion: reduce){
+    .hero-slide.active{ animation:none; }
+  }
 
   /* ---------- SECTION TRANSITION BANNER (style like reference "Blog"/"Referanslar" pages) ---------- */
   .banner{
